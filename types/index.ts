@@ -20,6 +20,8 @@ export type Order = {
   store_id: string
   items: { name: string; quantity: number; price: number }[]
   total: number
+  customer_name: string | null
+  customer_phone: string | null
   created_at: string
 }
 

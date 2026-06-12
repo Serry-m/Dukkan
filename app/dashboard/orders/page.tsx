@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, Phone, User } from 'lucide-react'
 
 export default async function OrdersPage() {
   const supabase = await createClient()
@@ -37,18 +37,40 @@ export default async function OrdersPage() {
             const items = order.items as { name: string; quantity: number; price: number }[]
             return (
               <div key={order.id} className="bg-white rounded-xl border border-gray-100 p-4">
+                {/* Header: date + total */}
                 <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <p className="text-xs text-gray-400">
-                      {date.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}
-                      {' — '}
-                      {date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
+                  <p className="text-xs text-gray-400">
+                    {date.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {' — '}
+                    {date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
                   <p className="font-bold text-green-600 text-sm">
                     {order.total.toLocaleString('ar-EG')} {store?.currency ?? 'EGP'}
                   </p>
                 </div>
+
+                {/* Customer info */}
+                {(order.customer_name || order.customer_phone) && (
+                  <div className="flex gap-4 mb-3 bg-gray-50 rounded-lg px-3 py-2">
+                    {order.customer_name && (
+                      <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                        <User size={13} className="text-gray-400" />
+                        {order.customer_name}
+                      </div>
+                    )}
+                    {order.customer_phone && (
+                      <a
+                        href={`tel:${order.customer_phone}`}
+                        className="flex items-center gap-1.5 text-sm text-green-600 hover:underline"
+                      >
+                        <Phone size={13} />
+                        {order.customer_phone}
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                {/* Items */}
                 <div className="space-y-1">
                   {items.map((item, i) => (
                     <div key={i} className="flex justify-between text-sm">

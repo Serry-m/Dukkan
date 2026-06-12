@@ -8,17 +8,18 @@ function normalizeEgyptianNumber(number: string): string {
   return '20' + digits
 }
 
-export function buildWhatsAppOrderUrl(store: Store, cart: CartItem[]): string {
+export function buildWhatsAppOrderUrl(
+  store: Store,
+  cart: CartItem[],
+  customerName: string,
+  customerPhone: string
+): string {
   const whatsappNumber = normalizeEgyptianNumber(store.whatsapp_number)
   const lines = cart.map(
     ({ product, quantity }) =>
       `• ${quantity}x ${product.name} — ${formatPrice(product.price * quantity, store.currency)}`
   )
-
-  const total = cart.reduce(
-    (sum, { product, quantity }) => sum + product.price * quantity,
-    0
-  )
+  const total = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
 
   const message = [
     `مرحباً! أريد أن أطلب من ${store.name} 🛒`,
@@ -27,15 +28,22 @@ export function buildWhatsAppOrderUrl(store: Store, cart: CartItem[]): string {
     ``,
     `الإجمالي: ${formatPrice(total, store.currency)}`,
     ``,
+    `━━━━━━━━━━━━━━`,
+    `👤 الاسم: ${customerName}`,
+    `📞 الهاتف: ${customerPhone}`,
+    `━━━━━━━━━━━━━━`,
     `من فضلك تأكد طلبي. شكراً!`,
   ].join('\n')
 
-  const encoded = encodeURIComponent(message)
-  return `https://wa.me/${whatsappNumber}?text=${encoded}`
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
 }
 
-// Save order to DB so the owner can see it in their dashboard
-export async function saveOrder(store: Store, cart: CartItem[]): Promise<void> {
+export async function saveOrder(
+  store: Store,
+  cart: CartItem[],
+  customerName: string,
+  customerPhone: string
+): Promise<void> {
   const supabase = createClient()
   const total = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
   const items = cart.map(({ product, quantity }) => ({
@@ -43,7 +51,13 @@ export async function saveOrder(store: Store, cart: CartItem[]): Promise<void> {
     quantity,
     price: product.price,
   }))
-  await supabase.from('orders').insert({ store_id: store.id, items, total })
+  await supabase.from('orders').insert({
+    store_id: store.id,
+    items,
+    total,
+    customer_name: customerName,
+    customer_phone: customerPhone,
+  })
 }
 
 function formatPrice(amount: number, currency: string): string {
