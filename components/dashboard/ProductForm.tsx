@@ -36,13 +36,10 @@ export default function ProductForm({ storeId, product }: Props) {
     const supabase = createClient()
     const ext = file.name.split('.').pop()
     const path = `products/${storeId}/${Date.now()}.${ext}`
-
-    const { error } = await supabase.storage
-      .from('store-assets')
-      .upload(path, file, { upsert: true })
-
-    if (error) return null
-
+    const { error } = await supabase.storage.from('store-assets').upload(path, file, { upsert: true })
+    if (error) {
+      return null
+    }
     const { data } = supabase.storage.from('store-assets').getPublicUrl(path)
     return data.publicUrl
   }
@@ -57,6 +54,11 @@ export default function ProductForm({ storeId, product }: Props) {
 
     if (imageFile) {
       imageUrl = await uploadImage(imageFile)
+      if (!imageUrl) {
+        setError('فشل رفع الصورة — تأكد من إنشاء Storage bucket باسم store-assets في Supabase')
+        setLoading(false)
+        return
+      }
     }
 
     const payload = {
@@ -84,71 +86,41 @@ export default function ProductForm({ storeId, product }: Props) {
     <Card>
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">{error}</div>
-          )}
+          {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">{error}</div>}
 
           <div className="space-y-1">
             <Label htmlFor="name">اسم المنتج</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="مثال: سماعة بلوتوث"
-              required
-            />
+            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: سماعة بلوتوث" required />
           </div>
 
           <div className="space-y-1">
             <Label htmlFor="price">السعر (جنيه)</Label>
-            <Input
-              id="price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="150"
-              required
-              dir="ltr"
-            />
+            <Input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="150" required dir="ltr" />
           </div>
 
+          {/* Textarea for description so long text isn't cut off */}
           <div className="space-y-1">
             <Label htmlFor="description">الوصف (اختياري)</Label>
-            <Input
+            <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="وصف مختصر للمنتج"
+              placeholder="وصف مختصر للمنتج — اللون، المقاس، المواصفات..."
+              rows={3}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
             />
           </div>
 
           <div className="space-y-1">
             <Label htmlFor="image">صورة المنتج</Label>
             {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="preview"
-                className="w-24 h-24 rounded-lg object-cover mb-2"
-              />
+              <img src={imagePreview} alt="preview" className="w-24 h-24 rounded-lg object-cover mb-2" />
             )}
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
+            <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
           </div>
 
           <div className="flex items-center gap-3">
-            <input
-              id="inStock"
-              type="checkbox"
-              checked={inStock}
-              onChange={(e) => setInStock(e.target.checked)}
-              className="w-4 h-4 accent-green-600"
-            />
+            <input id="inStock" type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="w-4 h-4 accent-green-600" />
             <Label htmlFor="inStock" className="cursor-pointer">متاح في المخزن</Label>
           </div>
 
@@ -156,11 +128,7 @@ export default function ProductForm({ storeId, product }: Props) {
             <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700" disabled={loading}>
               {loading ? 'جاري الحفظ...' : product ? 'حفظ التعديلات' : 'إضافة المنتج'}
             </Button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="flex-1 h-8 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted transition-colors"
-            >
+            <button type="button" onClick={() => router.back()} className="flex-1 h-8 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted transition-colors">
               إلغاء
             </button>
           </div>

@@ -106,6 +106,17 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">{error}</div>}
           {success && <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md">تم الحفظ بنجاح ✓</div>}
 
+          <div className="space-y-1">
+            <Label htmlFor="name">اسم المتجر</Label>
+            <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="مثال: متجر محمود للإكسسوارات" required />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="whatsapp">رقم واتساب</Label>
+            <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))} placeholder="01012345678" required dir="ltr" />
+            <p className="text-xs text-gray-400">أدخل رقمك المصري — كود الدولة يُضاف تلقائياً</p>
+          </div>
+
           {/* Logo upload */}
           <div className="space-y-2">
             <Label>شعار المتجر</Label>
@@ -134,11 +145,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="name">اسم المتجر</Label>
-            <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="مثال: متجر محمود للإكسسوارات" required />
-          </div>
-
-          <div className="space-y-1">
             <Label htmlFor="slug">رابط المتجر</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-400">/store/</span>
@@ -153,19 +159,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               />
             </div>
             <p className="text-xs text-gray-400">أحرف إنجليزية وأرقام وشرطة فقط</p>
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="whatsapp">رقم واتساب</Label>
-            <Input
-              id="whatsapp"
-              value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))}
-              placeholder="01012345678"
-              required
-              dir="ltr"
-            />
-            <p className="text-xs text-gray-400">أدخل رقمك المصري — كود الدولة يُضاف تلقائياً</p>
           </div>
 
           {/* Theme color picker */}
