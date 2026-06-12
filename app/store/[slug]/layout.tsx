@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import ShareStoreButton from '@/components/storefront/ShareStoreButton'
 
 type Props = {
   children: React.ReactNode
@@ -52,12 +53,13 @@ export default async function StorefrontLayout({ children, params }: Props) {
               🛍️
             </div>
           )}
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="font-bold text-gray-900 text-base truncate">{store.name}</h1>
             {store.description && (
               <p className="text-xs text-gray-400 truncate">{store.description}</p>
             )}
           </div>
+          <ShareStoreButton storeName={store.name} themeColor={store.theme_color ?? '#16a34a'} />
         </div>
       </header>
 

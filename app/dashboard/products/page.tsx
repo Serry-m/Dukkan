@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Plus, Pencil } from 'lucide-react'
 import DeleteProductButton from '@/components/dashboard/DeleteProductButton'
 import StockToggle from '@/components/dashboard/StockToggle'
+import ReorderButtons from '@/components/dashboard/ReorderButtons'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -56,8 +57,20 @@ export default async function ProductsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4">
+          {products.map((product, index) => (
+            <div key={product.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+              {/* Reorder arrows */}
+              <ReorderButtons
+                productId={product.id}
+                sortOrder={product.sort_order}
+                isFirst={index === 0}
+                isLast={index === products.length - 1}
+                prevId={products[index - 1]?.id ?? null}
+                prevOrder={products[index - 1]?.sort_order ?? null}
+                nextId={products[index + 1]?.id ?? null}
+                nextOrder={products[index + 1]?.sort_order ?? null}
+              />
+
               {product.image_url ? (
                 <img src={product.image_url} alt={product.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
               ) : (
@@ -69,7 +82,6 @@ export default async function ProductsPage() {
                 <p className="text-green-600 font-bold text-sm">{product.price.toLocaleString('ar-EG')} جنيه</p>
               </div>
 
-              {/* Quick stock toggle */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 <span className="text-xs text-gray-400">{product.in_stock ? 'متاح' : 'نفد'}</span>
                 <StockToggle productId={product.id} inStock={product.in_stock} />
