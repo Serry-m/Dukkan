@@ -18,11 +18,12 @@ export default async function StorefrontPage({ params }: Props) {
 
   if (!store) notFound()
 
+  // Fetch all products — out-of-stock ones are shown with a "نفد" badge
   const { data: products } = await supabase
     .from('products')
     .select('*')
     .eq('store_id', store.id)
-    .eq('in_stock', true)
+    .order('in_stock', { ascending: false }) // in-stock first
     .order('sort_order', { ascending: true })
 
   return (
