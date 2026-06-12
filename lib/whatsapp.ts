@@ -1,12 +1,6 @@
 import type { CartItem, Store } from '@/types'
+import { createClient } from '@/lib/supabase/client'
 
-// Builds a wa.me deep-link that opens WhatsApp with a pre-filled order message.
-// wa.me/{number}?text={encoded_message}
-// When the customer taps "Order via WhatsApp", this URL opens their WhatsApp
-// app directly in a chat with the store owner — no app switching needed.
-
-// Normalize Egyptian numbers: strip leading 0 and ensure 20 prefix
-// e.g. 01147087935 → 201147087935, 201147087935 → 201147087935
 function normalizeEgyptianNumber(number: string): string {
   const digits = number.replace(/\D/g, '')
   if (digits.startsWith('20')) return digits
@@ -38,6 +32,18 @@ export function buildWhatsAppOrderUrl(store: Store, cart: CartItem[]): string {
 
   const encoded = encodeURIComponent(message)
   return `https://wa.me/${whatsappNumber}?text=${encoded}`
+}
+
+// Save order to DB so the owner can see it in their dashboard
+export async function saveOrder(store: Store, cart: CartItem[]): Promise<void> {
+  const supabase = createClient()
+  const total = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const items = cart.map(({ product, quantity }) => ({
+    name: product.name,
+    quantity,
+    price: product.price,
+  }))
+  await supabase.from('orders').insert({ store_id: store.id, items, total })
 }
 
 function formatPrice(amount: number, currency: string): string {

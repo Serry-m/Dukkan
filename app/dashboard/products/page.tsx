@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Plus, Pencil } from 'lucide-react'
 import DeleteProductButton from '@/components/dashboard/DeleteProductButton'
+import StockToggle from '@/components/dashboard/StockToggle'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -40,10 +40,7 @@ export default async function ProductsPage() {
           <h1 className="text-2xl font-bold text-gray-900">المنتجات</h1>
           <p className="text-sm text-gray-500">{products?.length ?? 0} منتج</p>
         </div>
-        <Link
-          href="/dashboard/products/new"
-          className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700')}
-        >
+        <Link href="/dashboard/products/new" className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700')}>
           <Plus size={16} className="ml-1" />
           إضافة منتج
         </Link>
@@ -60,38 +57,26 @@ export default async function ProductsPage() {
       ) : (
         <div className="space-y-3">
           {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4"
-            >
+            <div key={product.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4">
               {product.image_url ? (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-                />
+                <img src={product.image_url} alt={product.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
               ) : (
-                <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">📦</span>
-                </div>
+                <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 text-2xl">📦</div>
               )}
 
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                <p className="text-green-600 font-bold text-sm">
-                  {product.price.toLocaleString('ar-EG')} جنيه
-                </p>
+                <p className="text-green-600 font-bold text-sm">{product.price.toLocaleString('ar-EG')} جنيه</p>
               </div>
 
-              <Badge variant={product.in_stock ? 'default' : 'secondary'}>
-                {product.in_stock ? 'متاح' : 'نفد'}
-              </Badge>
+              {/* Quick stock toggle */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-xs text-gray-400">{product.in_stock ? 'متاح' : 'نفد'}</span>
+                <StockToggle productId={product.id} inStock={product.in_stock} />
+              </div>
 
-              <div className="flex gap-2">
-                <Link
-                  href={`/dashboard/products/${product.id}`}
-                  className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}
-                >
+              <div className="flex gap-1 flex-shrink-0">
+                <Link href={`/dashboard/products/${product.id}`} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}>
                   <Pencil size={15} />
                 </Link>
                 <DeleteProductButton productId={product.id} />

@@ -21,6 +21,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [slug, setSlug] = useState(store?.slug ?? '')
   const [whatsapp, setWhatsapp] = useState(store?.whatsapp_number ?? '')
   const [description, setDescription] = useState(store?.description ?? '')
+  const [themeColor, setThemeColor] = useState(store?.theme_color ?? '#16a34a')
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(store?.logo_url ?? null)
   const [error, setError] = useState<string | null>(null)
@@ -75,7 +76,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       }
     }
 
-    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl }
+    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, theme_color: themeColor }
 
     if (store) {
       const { error } = await supabase.from('stores').update(payload).eq('id', store.id)
@@ -165,6 +166,30 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               dir="ltr"
             />
             <p className="text-xs text-gray-400">أدخل رقمك المصري — كود الدولة يُضاف تلقائياً</p>
+          </div>
+
+          {/* Theme color picker */}
+          <div className="space-y-2">
+            <Label>لون المتجر</Label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={themeColor}
+                onChange={(e) => setThemeColor(e.target.value)}
+                className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5"
+              />
+              <div className="flex gap-2">
+                {['#16a34a','#2563eb','#9333ea','#dc2626','#ea580c','#0891b2'].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setThemeColor(color)}
+                    className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                    style={{ backgroundColor: color, borderColor: themeColor === color ? color : 'transparent' }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-1">

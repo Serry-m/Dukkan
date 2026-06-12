@@ -4,13 +4,22 @@
 
 export type Store = {
   id: string
-  owner_id: string        // links to Supabase auth user
-  slug: string            // unique URL handle e.g. "mahmoud-gadgets"
+  owner_id: string
+  slug: string
   name: string
   description: string | null
   logo_url: string | null
-  whatsapp_number: string // e.g. "201012345678" (international, no +)
-  currency: string        // default "EGP"
+  whatsapp_number: string
+  currency: string
+  theme_color: string     // hex color e.g. "#16a34a"
+  created_at: string
+}
+
+export type Order = {
+  id: string
+  store_id: string
+  items: { name: string; quantity: number; price: number }[]
+  total: number
   created_at: string
 }
 

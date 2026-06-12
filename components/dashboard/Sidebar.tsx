@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Package, Store, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, Store, LogOut, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const navItems = [
   { href: '/dashboard', label: 'الرئيسية', icon: LayoutDashboard },
   { href: '/dashboard/store', label: 'إعدادات المتجر', icon: Store },
   { href: '/dashboard/products', label: 'المنتجات', icon: Package },
+  { href: '/dashboard/orders', label: 'الطلبات', icon: ShoppingBag },
 ]
 
 export default function DashboardSidebar({ userEmail }: { userEmail: string }) {

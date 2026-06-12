@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { Store } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
-import { buildWhatsAppOrderUrl } from '@/lib/whatsapp'
+import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Trash2, MessageCircle } from 'lucide-react'
@@ -18,6 +18,7 @@ export default function CartBar({ store }: { store: Store }) {
 
   function handleOrder() {
     const url = buildWhatsAppOrderUrl(store, items)
+    saveOrder(store, items) // fire-and-forget — don't block the WhatsApp redirect
     clearCart()
     window.open(url, '_blank')
   }
@@ -26,7 +27,8 @@ export default function CartBar({ store }: { store: Store }) {
     <Sheet open={open} onOpenChange={setOpen}>
       {/* SheetTrigger renders as a button by default — we just style it */}
       <SheetTrigger
-        className="fixed bottom-4 left-4 right-4 max-w-lg mx-auto z-50 w-[calc(100%-2rem)] bg-green-600 text-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-xl hover:bg-green-700 active:scale-[0.98] transition-all"
+        className="fixed bottom-4 left-4 right-4 max-w-lg mx-auto z-50 w-[calc(100%-2rem)] text-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-xl active:scale-[0.98] transition-all"
+        style={{ backgroundColor: store.theme_color ?? '#16a34a' }}
       >
         <div className="flex items-center gap-2">
           <div className="bg-white/20 rounded-lg px-2 py-0.5 text-sm font-bold">
@@ -82,7 +84,8 @@ export default function CartBar({ store }: { store: Store }) {
           </div>
 
           <Button
-            className="w-full bg-green-500 hover:bg-green-600 h-12 text-base gap-2"
+            className="w-full h-12 text-base gap-2 text-white"
+            style={{ backgroundColor: store.theme_color ?? '#16a34a' }}
             onClick={handleOrder}
           >
             <MessageCircle size={20} />
