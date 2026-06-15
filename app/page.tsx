@@ -146,9 +146,9 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-5 py-8">
           <Stagger className="grid grid-cols-3 gap-4 text-center">
             {[
-              { value: '+٥٠٠', label: 'تاجر نشط' },
               { value: 'دقيقتان', label: 'وقت الإعداد' },
               { value: '٠٪', label: 'رسوم أو عمولات' },
+              { value: 'واتساب', label: 'طلباتك مباشرة' },
             ].map((stat) => (
               <StaggerItem key={stat.label}>
                 <p className="text-2xl sm:text-3xl font-extrabold text-gray-900">{stat.value}</p>
@@ -252,35 +252,6 @@ export default function HomePage() {
             ))}
           </Stagger>
         </div>
-      </section>
-
-      {/* ── Testimonials ── */}
-      <section className="max-w-5xl mx-auto px-5 py-16">
-        <Reveal>
-          <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-10">تجار يثقون فيه</h2>
-        </Reveal>
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { quote: 'قبل ما أعرف أنا كنت بعت بالكلام. دلوقتي الطلب بييجيلي منظم على الواتساب.', name: 'أحمد سامي', role: 'صاحب متجر إكسسوارات' },
-            { quote: 'الرابط بشاركه في الجروبات وبيجيلي طلبات من غير ما أكون متواجد.', name: 'منى خالد', role: 'تاجرة ملابس أطفال' },
-            { quote: 'أسهل حاجة عملتها في حياتي. المتجر خلّص في ١٠ دقايق.', name: 'كريم وليد', role: 'صاحب متجر إلكترونيات' },
-          ].map((t) => (
-            <StaggerItem key={t.name}>
-              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col gap-4 h-full">
-                <div className="flex gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} className="text-green-500 text-sm">&#9733;</span>
-                  ))}
-                </div>
-                <p className="text-gray-700 text-sm leading-relaxed flex-1">{t.quote}</p>
-                <div>
-                  <p className="font-bold text-gray-900 text-sm">{t.name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{t.role}</p>
-                </div>
-              </div>
-            </StaggerItem>
-          ))}
-        </Stagger>
       </section>
 
       {/* ── Final CTA ── */}

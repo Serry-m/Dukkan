@@ -24,15 +24,14 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [description, setDescription] = useState(store?.description ?? '')
   const [themeColor, setThemeColor] = useState(store?.theme_color ?? '#16a34a')
   const [currency, setCurrency] = useState(store?.currency ?? 'EGP')
+  const [deliveryFee, setDeliveryFee] = useState(store?.delivery_fee?.toString() ?? '0')
   const [isOpen, setIsOpen] = useState(store?.is_open ?? true)
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(store?.logo_url ?? null)
   const [bannerFile, setBannerFile] = useState<File | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(store?.banner_url ?? null)
-  const [font, setFont] = useState(store?.font ?? 'cairo')
   const [layout, setLayout] = useState(store?.layout ?? 'grid')
-  const [cardStyle, setCardStyle] = useState(store?.card_style ?? 'rounded')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -102,7 +101,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       }
     }
 
-    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl, theme_color: themeColor, currency, is_open: isOpen, message_template: messageTemplate.trim() || null, font, layout, card_style: cardStyle }
+    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl, theme_color: themeColor, currency, delivery_fee: parseFloat(deliveryFee) || 0, is_open: isOpen, message_template: messageTemplate.trim() || null, layout }
 
     if (store) {
       const { error } = await supabase.from('stores').update(payload).eq('id', store.id)
@@ -229,23 +228,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               </label>
             </div>
 
-            {/* Font */}
-            <div className="space-y-1 mb-4">
-              <Label htmlFor="font">الخط</Label>
-              <select
-                id="font"
-                value={font}
-                onChange={(e) => setFont(e.target.value as typeof font)}
-                className="w-full h-9 border border-input rounded-lg px-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring/50"
-              >
-                <option value="cairo">Cairo — كايرو</option>
-                <option value="tajawal">Tajawal — طجوال</option>
-                <option value="almarai">Almarai — المراعي</option>
-              </select>
-            </div>
-
             {/* Layout */}
-            <div className="space-y-1.5 mb-4">
+            <div className="space-y-1.5">
               <Label>طريقة عرض المنتجات</Label>
               <div className="grid grid-cols-2 gap-2">
                 {([['grid', 'شبكة (عمودين)'], ['list', 'قائمة (صف لكل منتج)']] as const).map(([val, label]) => (
@@ -254,23 +238,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                     type="button"
                     onClick={() => setLayout(val)}
                     className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${layout === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Card style */}
-            <div className="space-y-1.5">
-              <Label>شكل البطاقات</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {([['rounded', 'زوايا دائرية'], ['sharp', 'زوايا حادة']] as const).map(([val, label]) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => setCardStyle(val)}
-                    className={`px-3 py-2.5 text-sm font-medium border-2 transition-all ${val === 'rounded' ? 'rounded-2xl' : 'rounded-sm'} ${cardStyle === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
                   >
                     {label}
                   </button>
@@ -292,6 +259,22 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 <option key={c.code} value={c.code}>{c.name} ({c.label})</option>
               ))}
             </select>
+          </div>
+
+          {/* Delivery fee */}
+          <div className="space-y-1">
+            <Label htmlFor="delivery">رسوم التوصيل</Label>
+            <Input
+              id="delivery"
+              type="number"
+              min="0"
+              step="0.01"
+              value={deliveryFee}
+              onChange={(e) => setDeliveryFee(e.target.value)}
+              placeholder="0"
+              dir="ltr"
+            />
+            <p className="text-xs text-gray-400">تُضاف تلقائياً لإجمالي الطلب. اتركها 0 إذا كان التوصيل مجانياً أو يُحسب لاحقاً.</p>
           </div>
 
           {/* Store open/closed */}

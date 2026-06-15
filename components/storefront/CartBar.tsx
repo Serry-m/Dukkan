@@ -79,6 +79,8 @@ export default function CartBar({ store }: { store: Store }) {
 
   const themeColor = store.theme_color ?? '#16a34a'
   const curr = currencyLabel(store.currency)
+  const deliveryFee = Number(store.delivery_fee || 0)
+  const grandTotal = totalPrice + deliveryFee
 
   const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2'
 
@@ -133,9 +135,23 @@ export default function CartBar({ store }: { store: Store }) {
               ))}
             </div>
             <div className="border-t pt-4 space-y-4">
-              <div className="flex justify-between font-bold text-lg">
-                <span>الإجمالي</span>
-                <span style={{ color: themeColor }}>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
+              <div className="space-y-1.5">
+                {deliveryFee > 0 && (
+                  <>
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>المجموع الفرعي</span>
+                      <span>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>الشحن</span>
+                      <span>{deliveryFee.toLocaleString('ar-EG')} {curr}</span>
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-between font-bold text-lg">
+                  <span>الإجمالي</span>
+                  <span style={{ color: themeColor }}>{grandTotal.toLocaleString('ar-EG')} {curr}</span>
+                </div>
               </div>
               <Button className="w-full h-12 text-base gap-2 text-white" style={{ backgroundColor: themeColor }} onClick={handleProceed}>
                 متابعة الطلب
@@ -195,9 +211,15 @@ export default function CartBar({ store }: { store: Store }) {
                     <span className="font-medium">{(product.price * quantity).toLocaleString('ar-EG')} {curr}</span>
                   </div>
                 ))}
-                <div className="flex justify-between font-bold text-sm pt-2 border-t border-gray-200 mt-2">
+                {deliveryFee > 0 && (
+                  <div className="flex justify-between text-sm pt-2 border-t border-gray-200 mt-2">
+                    <span className="text-gray-500">الشحن</span>
+                    <span className="font-medium">{deliveryFee.toLocaleString('ar-EG')} {curr}</span>
+                  </div>
+                )}
+                <div className={`flex justify-between font-bold text-sm ${deliveryFee > 0 ? 'pt-1' : 'pt-2 border-t border-gray-200 mt-2'}`}>
                   <span>الإجمالي</span>
-                  <span style={{ color: themeColor }}>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
+                  <span style={{ color: themeColor }}>{grandTotal.toLocaleString('ar-EG')} {curr}</span>
                 </div>
               </div>
             </div>

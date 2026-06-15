@@ -7,7 +7,7 @@ import ProductCard from './ProductCard'
 import ProductDetailSheet from './ProductDetailSheet'
 import CartBar from './CartBar'
 import { orderCategories } from '@/lib/categories'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, Search } from 'lucide-react'
 
 type Props = {
   products: Product[]
@@ -23,6 +23,7 @@ export default function ProductGrid({ products, store }: Props) {
   const [detailProduct, setDetailProduct] = useState<Product | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
+  const [query, setQuery] = useState('')
 
   // Distinct categories, ordered by the owner's saved order.
   const categories = useMemo(() => {
@@ -34,9 +35,16 @@ export default function ProductGrid({ products, store }: Props) {
   }, [products, store.category_order])
 
   const visible = useMemo(() => {
-    if (activeCategory === ALL) return products
-    return products.filter((p) => p.category?.trim() === activeCategory)
-  }, [products, activeCategory])
+    const q = query.trim().toLowerCase()
+    return products.filter((p) => {
+      const matchesCat = activeCategory === ALL || p.category?.trim() === activeCategory
+      const matchesQuery = !q || p.name.toLowerCase().includes(q) || (p.description?.toLowerCase().includes(q) ?? false)
+      return matchesCat && matchesQuery
+    })
+  }, [products, activeCategory, query])
+
+  // Only show the search box when there are enough products to warrant it.
+  const showSearch = products.length >= 6
 
   function openDetail(product: Product) {
     setDetailProduct(product)
@@ -70,6 +78,20 @@ export default function ProductGrid({ products, store }: Props) {
 
   return (
     <>
+      {/* Search */}
+      {showSearch && (
+        <div className="relative mb-3">
+          <Search size={16} className="absolute top-1/2 -translate-y-1/2 right-3 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="ابحث عن منتج..."
+            className="w-full bg-white border border-gray-200 rounded-xl pr-9 pl-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+          />
+        </div>
+      )}
+
       {/* Category filter — only when there is more than one category */}
       {categories.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-none">
@@ -80,19 +102,25 @@ export default function ProductGrid({ products, store }: Props) {
         </div>
       )}
 
-      <div className={`${store.layout === 'list' ? 'grid grid-cols-1 gap-2.5' : 'grid grid-cols-2 gap-3'} pb-32`}>
-        {visible.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            themeColor={themeColor}
-            currency={store.currency}
-            layout={store.layout ?? 'grid'}
-            cardStyle={store.card_style ?? 'rounded'}
-            onSelectVariant={openDetail}
-          />
-        ))}
-      </div>
+      {visible.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-gray-400 text-sm">لا توجد منتجات مطابقة</p>
+        </div>
+      ) : (
+        <div className={`${store.layout === 'list' ? 'grid grid-cols-1 gap-2.5' : 'grid grid-cols-2 gap-3'} pb-32`}>
+          {visible.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              themeColor={themeColor}
+              currency={store.currency}
+              layout={store.layout ?? 'grid'}
+              cardStyle={store.card_style ?? 'rounded'}
+              onSelectVariant={openDetail}
+            />
+          ))}
+        </div>
+      )}
 
       <ProductDetailSheet
         products={visible}

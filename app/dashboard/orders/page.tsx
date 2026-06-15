@@ -1,10 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
 import { ShoppingBag, Phone, User, MapPin, StickyNote, Wallet, CheckCircle2, Clock } from 'lucide-react'
 import { formatPrice } from '@/lib/currency'
 import OrderActions from '@/components/dashboard/OrderActions'
 import type { OrderStatus, OrderItem } from '@/types'
 
-export default async function OrdersPage() {
+const STATUS_FILTERS: { key: string; label: string }[] = [
+  { key: 'all', label: 'الكل' },
+  { key: 'pending', label: 'جديد' },
+  { key: 'confirmed', label: 'مؤكد' },
+  { key: 'delivered', label: 'مسلّم' },
+]
+
+export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  const { status: statusParam } = await searchParams
+  const activeStatus = STATUS_FILTERS.some((f) => f.key === statusParam) ? statusParam! : 'all'
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -20,11 +31,16 @@ export default async function OrdersPage() {
     .eq('store_id', store?.id ?? '')
     .order('created_at', { ascending: false })
 
-  // Revenue is counted only from delivered (completed) orders.
+  // Revenue is counted only from delivered (completed) orders (across all).
   const allOrders = orders ?? []
   const delivered = allOrders.filter((o) => o.status === 'delivered')
   const pending = allOrders.filter((o) => (o.status ?? 'pending') === 'pending')
   const revenue = delivered.reduce((sum, o) => sum + Number(o.total), 0)
+
+  // The visible list respects the status filter.
+  const visibleOrders = activeStatus === 'all'
+    ? allOrders
+    : allOrders.filter((o) => (o.status ?? 'pending') === activeStatus)
 
   return (
     <div className="max-w-3xl">
@@ -54,15 +70,38 @@ export default async function OrdersPage() {
         </div>
       )}
 
-      {!orders?.length ? (
+      {/* Status filter */}
+      {allOrders.length > 0 && (
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+          {STATUS_FILTERS.map((f) => (
+            <Link
+              key={f.key}
+              href={f.key === 'all' ? '/dashboard/orders' : `/dashboard/orders?status=${f.key}`}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                activeStatus === f.key
+                  ? 'bg-green-600 border-green-600 text-white'
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {!allOrders.length ? (
         <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
           <ShoppingBag size={40} className="mx-auto text-gray-200 mb-3" />
           <p className="text-gray-500">لا توجد طلبات بعد</p>
           <p className="text-xs text-gray-400 mt-1">ستظهر الطلبات هنا عندما يطلب العملاء عبر واتساب</p>
         </div>
+      ) : !visibleOrders.length ? (
+        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
+          <p className="text-gray-400 text-sm">لا توجد طلبات بهذه الحالة</p>
+        </div>
       ) : (
         <div className="space-y-3">
-          {orders.map((order) => {
+          {visibleOrders.map((order) => {
             const date = new Date(order.created_at)
             const items = order.items as OrderItem[]
             return (

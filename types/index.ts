@@ -15,6 +15,7 @@ export type Store = {
   is_open: boolean
   message_template: string | null
   view_count: number
+  delivery_fee: number
   category_order: string[]
   layout: 'grid' | 'list'
   font: 'cairo' | 'tajawal' | 'almarai'

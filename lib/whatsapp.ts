@@ -33,7 +33,9 @@ export function buildWhatsAppOrderUrl(
 ): string {
   const whatsappNumber = normalizeEgyptianNumber(store.whatsapp_number)
   const lines = cart.map((item) => lineLabel(item, store.currency))
-  const total = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const subtotal = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const deliveryFee = Number(store.delivery_fee || 0)
+  const total = subtotal + deliveryFee
 
   // Owner can customise the greeting; otherwise use a sensible default.
   const greeting = store.message_template?.trim()
@@ -45,6 +47,12 @@ export function buildWhatsAppOrderUrl(
     ``,
     ...lines,
     ``,
+    ...(deliveryFee > 0
+      ? [
+          `المجموع الفرعي: ${formatPrice(subtotal, store.currency)}`,
+          `الشحن: ${formatPrice(deliveryFee, store.currency)}`,
+        ]
+      : []),
     `الإجمالي: ${formatPrice(total, store.currency)}`,
     ``,
     `━━━━━━━━━━━━━━`,
@@ -65,7 +73,8 @@ export async function saveOrder(
   customer: Customer
 ): Promise<void> {
   const supabase = createClient()
-  const total = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const subtotal = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const total = subtotal + Number(store.delivery_fee || 0)
   const items = cart.map(({ product, quantity, selectedOptions }) => ({
     name: product.name,
     quantity,
