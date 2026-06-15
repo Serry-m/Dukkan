@@ -38,6 +38,7 @@ export default function ProductForm({ storeId, product }: Props) {
     const path = `products/${storeId}/${Date.now()}.${ext}`
     const { error } = await supabase.storage.from('store-assets').upload(path, file, { upsert: true })
     if (error) {
+      setError(`فشل رفع الصورة: ${error.message}`)
       return null
     }
     const { data } = supabase.storage.from('store-assets').getPublicUrl(path)
