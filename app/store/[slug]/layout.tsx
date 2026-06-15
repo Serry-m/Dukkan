@@ -56,8 +56,23 @@ export default async function StorefrontLayout({ children, params }: Props) {
 
   const themeColor = store.theme_color ?? '#16a34a'
 
+  // Owner-chosen font for the storefront.
+  const fontVar: Record<string, string> = {
+    cairo: 'var(--font-cairo)',
+    tajawal: 'var(--font-tajawal)',
+    almarai: 'var(--font-almarai)',
+  }
+  const fontFamily = fontVar[store.font ?? 'cairo'] ?? 'var(--font-cairo)'
+
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f7f8fa]">
+    <div dir="rtl" className="min-h-screen bg-[#f7f8fa]" style={{ fontFamily }}>
+
+      {/* Optional banner image */}
+      {store.banner_url && (
+        <div className="w-full max-w-lg mx-auto aspect-[3/1] overflow-hidden bg-gray-100">
+          <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
+        </div>
+      )}
 
       {/* Sticky header with colored top accent */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">

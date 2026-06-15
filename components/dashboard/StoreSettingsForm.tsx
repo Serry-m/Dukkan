@@ -28,6 +28,11 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(store?.logo_url ?? null)
+  const [bannerFile, setBannerFile] = useState<File | null>(null)
+  const [bannerPreview, setBannerPreview] = useState<string | null>(store?.banner_url ?? null)
+  const [font, setFont] = useState(store?.font ?? 'cairo')
+  const [layout, setLayout] = useState(store?.layout ?? 'grid')
+  const [cardStyle, setCardStyle] = useState(store?.card_style ?? 'rounded')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -50,10 +55,17 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     setLogoPreview(URL.createObjectURL(file))
   }
 
-  async function uploadLogo(file: File): Promise<string | null> {
+  function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setBannerFile(file)
+    setBannerPreview(URL.createObjectURL(file))
+  }
+
+  async function uploadImage(file: File, folder: string): Promise<string | null> {
     const supabase = createClient()
     const ext = file.name.split('.').pop()
-    const path = `logos/${userId}/${Date.now()}.${ext}`
+    const path = `${folder}/${userId}/${Date.now()}.${ext}`
     const { error } = await supabase.storage
       .from('store_assets')
       .upload(path, file, { upsert: true })
@@ -70,17 +82,27 @@ export default function StoreSettingsForm({ store, userId }: Props) {
 
     const supabase = createClient()
     let logoUrl = store?.logo_url ?? null
+    let bannerUrl = store?.banner_url ?? null
 
     if (logoFile) {
-      logoUrl = await uploadLogo(logoFile)
+      logoUrl = await uploadImage(logoFile, 'logos')
       if (!logoUrl) {
-        setError('فشل رفع الشعار — تأكد من إنشاء Storage bucket باسم store-assets')
+        setError('فشل رفع الشعار — تأكد من إنشاء Storage bucket باسم store_assets')
         setLoading(false)
         return
       }
     }
 
-    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, theme_color: themeColor, currency, is_open: isOpen, message_template: messageTemplate.trim() || null }
+    if (bannerFile) {
+      bannerUrl = await uploadImage(bannerFile, 'banners')
+      if (!bannerUrl) {
+        setError('فشل رفع صورة الغلاف')
+        setLoading(false)
+        return
+      }
+    }
+
+    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl, theme_color: themeColor, currency, is_open: isOpen, message_template: messageTemplate.trim() || null, font, layout, card_style: cardStyle }
 
     if (store) {
       const { error } = await supabase.from('stores').update(payload).eq('id', store.id)
@@ -184,6 +206,74 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                     className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
                     style={{ backgroundColor: color, borderColor: themeColor === color ? color : 'transparent' }}
                   />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Storefront design ── */}
+          <div className="pt-2 border-t border-gray-100">
+            <p className="text-sm font-bold text-gray-700 mb-3">تصميم المتجر</p>
+
+            {/* Banner upload */}
+            <div className="space-y-2 mb-4">
+              <Label>صورة الغلاف (اختياري)</Label>
+              {bannerPreview && (
+                <div className="aspect-[3/1] w-full rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
+                  <img src={bannerPreview} alt="banner" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <input id="banner" type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
+              <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
+                {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
+              </label>
+            </div>
+
+            {/* Font */}
+            <div className="space-y-1 mb-4">
+              <Label htmlFor="font">الخط</Label>
+              <select
+                id="font"
+                value={font}
+                onChange={(e) => setFont(e.target.value as typeof font)}
+                className="w-full h-9 border border-input rounded-lg px-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring/50"
+              >
+                <option value="cairo">Cairo — كايرو</option>
+                <option value="tajawal">Tajawal — طجوال</option>
+                <option value="almarai">Almarai — المراعي</option>
+              </select>
+            </div>
+
+            {/* Layout */}
+            <div className="space-y-1.5 mb-4">
+              <Label>طريقة عرض المنتجات</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {([['grid', 'شبكة (عمودين)'], ['list', 'قائمة (صف لكل منتج)']] as const).map(([val, label]) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setLayout(val)}
+                    className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${layout === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Card style */}
+            <div className="space-y-1.5">
+              <Label>شكل البطاقات</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {([['rounded', 'زوايا دائرية'], ['sharp', 'زوايا حادة']] as const).map(([val, label]) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setCardStyle(val)}
+                    className={`px-3 py-2.5 text-sm font-medium border-2 transition-all ${val === 'rounded' ? 'rounded-2xl' : 'rounded-sm'} ${cardStyle === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
+                  >
+                    {label}
+                  </button>
                 ))}
               </div>
             </div>

@@ -1,11 +1,21 @@
 import type { Metadata } from 'next'
-import { Cairo } from 'next/font/google'
+import { Cairo, Tajawal, Almarai } from 'next/font/google'
 import './globals.css'
 
-// Cairo is the best Arabic Google Font — clean, modern, supports Arabic numerals
+// Three Arabic fonts the owner can choose from for their storefront.
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
   variable: '--font-cairo',
+})
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '500', '700', '800'],
+  variable: '--font-tajawal',
+})
+const almarai = Almarai({
+  subsets: ['arabic'],
+  weight: ['400', '700', '800'],
+  variable: '--font-almarai',
 })
 
 export const metadata: Metadata = {
@@ -23,7 +33,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" className={`${cairo.variable} h-full antialiased`}>
+    <html lang="ar" className={`${cairo.variable} ${tajawal.variable} ${almarai.variable} h-full antialiased`}>
       <body className={`min-h-full flex flex-col font-[var(--font-cairo)]`}>
         {children}
       </body>

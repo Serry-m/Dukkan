@@ -6,7 +6,9 @@ import { Plus, Pencil } from 'lucide-react'
 import DeleteProductButton from '@/components/dashboard/DeleteProductButton'
 import StockToggle from '@/components/dashboard/StockToggle'
 import ReorderButtons from '@/components/dashboard/ReorderButtons'
+import CategoriesManager from '@/components/dashboard/CategoriesManager'
 import { formatPrice } from '@/lib/currency'
+import { orderCategories } from '@/lib/categories'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -14,7 +16,7 @@ export default async function ProductsPage() {
 
   const { data: store } = await supabase
     .from('stores')
-    .select('id, currency')
+    .select('id, currency, category_order')
     .eq('owner_id', user!.id)
     .single()
 
@@ -35,6 +37,12 @@ export default async function ProductsPage() {
     .eq('store_id', store.id)
     .order('sort_order', { ascending: true })
 
+  // Distinct categories, ordered by the owner's saved order.
+  const distinctCats = Array.from(
+    new Set((products ?? []).map((p) => p.category?.trim()).filter(Boolean))
+  ) as string[]
+  const orderedCats = orderCategories(distinctCats, store.category_order ?? [])
+
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
@@ -47,6 +55,17 @@ export default async function ProductsPage() {
           إضافة منتج
         </Link>
       </div>
+
+      {/* Categories management */}
+      {orderedCats.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm font-bold text-gray-700">التصنيفات</h2>
+            <span className="text-xs text-gray-400">اسحب لإعادة الترتيب</span>
+          </div>
+          <CategoriesManager storeId={store.id} categories={orderedCats} />
+        </div>
+      )}
 
       {!products?.length ? (
         <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">

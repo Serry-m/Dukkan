@@ -6,6 +6,7 @@ import { useCartStore } from '@/lib/cart-store'
 import ProductCard from './ProductCard'
 import ProductDetailSheet from './ProductDetailSheet'
 import CartBar from './CartBar'
+import { orderCategories } from '@/lib/categories'
 import { ShoppingBag } from 'lucide-react'
 
 type Props = {
@@ -23,14 +24,14 @@ export default function ProductGrid({ products, store }: Props) {
   const [detailOpen, setDetailOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
 
-  // Distinct categories in product order (skip empties).
+  // Distinct categories, ordered by the owner's saved order.
   const categories = useMemo(() => {
     const seen = new Set<string>()
     for (const p of products) {
       if (p.category?.trim()) seen.add(p.category.trim())
     }
-    return Array.from(seen)
-  }, [products])
+    return orderCategories(Array.from(seen), store.category_order ?? [])
+  }, [products, store.category_order])
 
   const visible = useMemo(() => {
     if (activeCategory === ALL) return products
@@ -79,13 +80,15 @@ export default function ProductGrid({ products, store }: Props) {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3 pb-32">
+      <div className={`${store.layout === 'list' ? 'grid grid-cols-1 gap-2.5' : 'grid grid-cols-2 gap-3'} pb-32`}>
         {visible.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
             themeColor={themeColor}
             currency={store.currency}
+            layout={store.layout ?? 'grid'}
+            cardStyle={store.card_style ?? 'rounded'}
             onSelectVariant={openDetail}
           />
         ))}
