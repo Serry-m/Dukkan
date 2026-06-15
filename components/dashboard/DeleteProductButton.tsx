@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function DeleteProductButton({ productId }: { productId: string }) {
   const router = useRouter()
@@ -15,6 +16,7 @@ export default function DeleteProductButton({ productId }: { productId: string }
     setLoading(true)
     const supabase = createClient()
     await supabase.from('products').delete().eq('id', productId)
+    toast.success('تم حذف المنتج')
     router.refresh()
   }
 

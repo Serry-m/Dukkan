@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { OrderStatus } from '@/types'
 import { Check, Truck, Trash2, RotateCcw } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Props = {
   orderId: string
@@ -26,7 +27,10 @@ export default function OrderActions({ orderId, status }: Props) {
     setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId)
-    if (!error) setCurrent(newStatus)
+    if (!error) {
+      setCurrent(newStatus)
+      toast.success('تم تحديث حالة الطلب')
+    }
     setLoading(false)
     router.refresh()
   }
@@ -36,6 +40,7 @@ export default function OrderActions({ orderId, status }: Props) {
     setLoading(true)
     const supabase = createClient()
     await supabase.from('orders').delete().eq('id', orderId)
+    toast.success('تم حذف الطلب')
     setLoading(false)
     router.refresh()
   }

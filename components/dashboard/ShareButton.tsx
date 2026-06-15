@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ShareButton({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false)
@@ -10,6 +11,7 @@ export default function ShareButton({ slug }: { slug: string }) {
     const url = `${window.location.origin}/store/${slug}`
     await navigator.clipboard.writeText(url)
     setCopied(true)
+    toast.success('تم نسخ رابط المتجر')
     setTimeout(() => setCopied(false), 2000)
   }
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Share2, Check } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function ShareStoreButton({ storeName, themeColor }: { storeName: string; themeColor: string }) {
   const [copied, setCopied] = useState(false)
@@ -15,6 +16,7 @@ export default function ShareStoreButton({ storeName, themeColor }: { storeName:
     } else {
       await navigator.clipboard.writeText(url)
       setCopied(true)
+      toast.success('تم نسخ الرابط')
       setTimeout(() => setCopied(false), 2000)
     }
   }

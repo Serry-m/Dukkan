@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { Store } from '@/types'
 import { CURRENCIES } from '@/lib/currency'
 import { isLightColor } from '@/lib/color'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,7 +35,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [bannerPreview, setBannerPreview] = useState<string | null>(store?.banner_url ?? null)
   const [layout, setLayout] = useState(store?.layout ?? 'grid')
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   function handleNameChange(value: string) {
@@ -77,7 +77,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    setSuccess(false)
     setLoading(true)
 
     const supabase = createClient()
@@ -120,7 +119,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       }
     }
 
-    setSuccess(true)
+    toast.success(store ? 'تم حفظ التغييرات' : 'تم إنشاء المتجر')
     setLoading(false)
     router.refresh()
   }
@@ -128,7 +127,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
-      {success && <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg">تم الحفظ بنجاح ✓</div>}
 
       {/* ── Section 1: Basic info ── */}
       <Card>

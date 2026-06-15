@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus, X, ImagePlus } from 'lucide-react'
+import { toast } from 'sonner'
 
 type Props = {
   storeId: string
@@ -134,6 +135,7 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
       if (error) { setError(error.message); setLoading(false); return }
     }
 
+    toast.success(product ? 'تم حفظ المنتج' : 'تمت إضافة المنتج')
     router.push('/dashboard/products')
     router.refresh()
   }
