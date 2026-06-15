@@ -65,7 +65,15 @@ export default async function StorefrontLayout({ children, params }: Props) {
   const fontFamily = fontVar[store.font ?? 'cairo'] ?? 'var(--font-cairo)'
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f7f8fa]" style={{ fontFamily }}>
+    <div
+      dir="rtl"
+      className="min-h-screen"
+      style={{
+        fontFamily,
+        // Faint theme-tinted glow at the top fading into the neutral base.
+        background: `radial-gradient(125% 55% at 50% 0%, ${themeColor}0d, transparent 58%), #f7f8fa`,
+      }}
+    >
 
       {/* Optional banner image */}
       {store.banner_url && (

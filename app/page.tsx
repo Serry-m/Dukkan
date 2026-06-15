@@ -18,6 +18,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden" dir="rtl">
 
+      {/* Subtle film grain over the whole page */}
+      <div className="grain-overlay fixed inset-0 z-[60] pointer-events-none opacity-[0.035]" aria-hidden="true" />
+
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between gap-4">

@@ -72,7 +72,7 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
   // ── LIST layout: horizontal row ──
   if (layout === 'list') {
     return (
-      <div className={`bg-white ${radius} overflow-hidden flex items-stretch border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.06)] ${outOfStock ? 'opacity-60' : ''}`}>
+      <div className={`bg-white ${radius} overflow-hidden flex items-stretch border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
         <button onClick={() => !outOfStock && onSelectVariant(product)} className="w-24 flex-shrink-0 bg-gray-50 relative" disabled={outOfStock}>
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
@@ -103,7 +103,7 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
 
   // ── GRID layout: vertical card ──
   return (
-    <div className={`bg-white ${radius} overflow-hidden flex flex-col border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.06)] ${outOfStock ? 'opacity-60' : ''}`}>
+    <div className={`bg-white ${radius} overflow-hidden flex flex-col border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
       <button onClick={() => !outOfStock && onSelectVariant(product)} className="aspect-square bg-gray-50 relative overflow-hidden block w-full text-right" disabled={outOfStock}>
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
