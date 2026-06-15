@@ -16,11 +16,13 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setSuccess(null)
 
     if (password !== confirmPassword) {
       setError('كلمتا المرور غير متطابقتين')
@@ -36,26 +38,26 @@ export default function SignupPage() {
     const { data, error } = await supabase.auth.signUp({ email, password })
 
     if (error) {
-      if (error.message.toLowerCase().includes('already')) {
+      const msg = error.message.toLowerCase()
+      if (msg.includes('already') || msg.includes('registered')) {
         setError('هذا البريد مسجل بالفعل — سجّل الدخول بدلاً من ذلك')
+      } else if (msg.includes('rate') || msg.includes('limit')) {
+        setError('عدد كبير من المحاولات — انتظر قليلاً ثم حاول مرة أخرى')
       } else {
-        setError('حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى.')
+        setError(`تعذّر إنشاء الحساب: ${error.message}`)
       }
       setLoading(false)
       return
     }
 
     // If email confirmation is ON, Supabase returns a user with no session.
-    // Don't bounce them to a protected route — tell them to check their inbox.
     if (data.user && !data.session) {
-      setError('تم إنشاء الحساب! تحقق من بريدك الإلكتروني لتأكيد الحساب ثم سجّل الدخول.')
+      setSuccess('تم إنشاء حسابك! تحقق من بريدك الإلكتروني لتأكيد الحساب ثم سجّل الدخول.')
       setLoading(false)
       return
     }
 
-    // After signup, Supabase sends a confirmation email.
-    // For now we redirect to dashboard — disable email confirmation
-    // in Supabase dashboard > Auth > Email > "Confirm email" toggle for dev.
+    // Email confirmation OFF → we have a session, go straight in.
     router.push('/dashboard')
     router.refresh()
   }
@@ -73,6 +75,14 @@ export default function SignupPage() {
             {error && (
               <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
                 {error}
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md space-y-2">
+                <p>{success}</p>
+                <Link href="/login" className="inline-block font-bold underline">
+                  الذهاب لتسجيل الدخول ←
+                </Link>
               </div>
             )}
             <div className="space-y-1">
