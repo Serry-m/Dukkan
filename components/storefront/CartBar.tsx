@@ -5,6 +5,7 @@ import type { Store } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
 import { currencyLabel } from '@/lib/currency'
+import { readableText } from '@/lib/color'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle, Package } from 'lucide-react'
@@ -78,6 +79,7 @@ export default function CartBar({ store }: { store: Store }) {
   }
 
   const themeColor = store.theme_color ?? '#16a34a'
+  const onTheme = readableText(themeColor)
   const curr = currencyLabel(store.currency)
   const deliveryFee = Number(store.delivery_fee || 0)
   const grandTotal = totalPrice + deliveryFee
@@ -87,8 +89,8 @@ export default function CartBar({ store }: { store: Store }) {
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger
-        className="fixed bottom-4 left-4 right-4 max-w-lg mx-auto z-50 w-[calc(100%-2rem)] text-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-xl active:scale-[0.98] transition-all"
-        style={{ backgroundColor: themeColor }}
+        className="fixed bottom-4 left-4 right-4 max-w-lg mx-auto z-50 w-[calc(100%-2rem)] rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-xl active:scale-[0.98] transition-all"
+        style={{ backgroundColor: themeColor, color: onTheme }}
       >
         <div className="flex items-center gap-2">
           <div className="bg-white/20 rounded-lg px-2 py-0.5 text-sm font-bold">{totalItems}</div>
@@ -153,7 +155,7 @@ export default function CartBar({ store }: { store: Store }) {
                   <span style={{ color: themeColor }}>{grandTotal.toLocaleString('ar-EG')} {curr}</span>
                 </div>
               </div>
-              <Button className="w-full h-12 text-base gap-2 text-white" style={{ backgroundColor: themeColor }} onClick={handleProceed}>
+              <Button className="w-full h-12 text-base gap-2" style={{ backgroundColor: themeColor, color: onTheme }} onClick={handleProceed}>
                 متابعة الطلب
                 <ArrowRight size={18} />
               </Button>
@@ -252,8 +254,8 @@ export default function CartBar({ store }: { store: Store }) {
             </p>
             <button
               onClick={() => { setStep('cart'); setOpen(false); setCustomerName(''); setCustomerPhone(''); setCustomerAddress(''); setNotes('') }}
-              className="mt-2 text-sm font-medium px-6 py-2.5 rounded-xl text-white transition-colors"
-              style={{ backgroundColor: themeColor }}
+              className="mt-2 text-sm font-medium px-6 py-2.5 rounded-xl transition-colors"
+              style={{ backgroundColor: themeColor, color: onTheme }}
             >
               العودة للمتجر
             </button>

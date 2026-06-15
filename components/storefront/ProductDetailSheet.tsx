@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
+import { readableText } from '@/lib/color'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Package, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -213,8 +214,8 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
           <button
             onClick={handleAdd}
             disabled={outOfStock || !allChosen}
-            className="w-full h-12 rounded-2xl text-white text-base font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40"
-            style={{ backgroundColor: themeColor }}
+            className="w-full h-12 rounded-2xl text-base font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40"
+            style={{ backgroundColor: themeColor, color: readableText(themeColor) }}
           >
             <ShoppingCart size={18} /> {outOfStock ? 'غير متاح' : 'أضف للسلة'}
           </button>

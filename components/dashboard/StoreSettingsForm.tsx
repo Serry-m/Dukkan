@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Store } from '@/types'
 import { CURRENCIES } from '@/lib/currency'
+import { isLightColor } from '@/lib/color'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -208,6 +209,11 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 ))}
               </div>
             </div>
+            {isLightColor(themeColor) && (
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                ⚠️ هذا اللون فاتح جداً — قد يصعب قراءة النص عليه. يُفضّل لون أغمق لأزرار المتجر.
+              </p>
+            )}
           </div>
 
           {/* ── Storefront design ── */}

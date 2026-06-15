@@ -3,6 +3,7 @@
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
+import { readableText } from '@/lib/color'
 import { Plus, Minus, Package, SlidersHorizontal } from 'lucide-react'
 
 type Props = {
@@ -26,6 +27,7 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
 
   const radius = cardStyle === 'sharp' ? 'rounded-md' : 'rounded-2xl'
   const innerRadius = cardStyle === 'sharp' ? 'rounded-sm' : 'rounded-xl'
+  const onTheme = readableText(themeColor)
 
   // Shared add/quantity control.
   const addControl = outOfStock ? (
@@ -33,16 +35,16 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
   ) : hasOptions ? (
     <button
       onClick={() => onSelectVariant(product)}
-      className={`w-full text-white text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95`}
-      style={{ backgroundColor: themeColor }}
+      className={`w-full text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95`}
+      style={{ backgroundColor: themeColor, color: onTheme }}
     >
       اختر الخيارات
     </button>
   ) : quantity === 0 ? (
     <button
       onClick={() => addItem(product)}
-      className={`w-full text-white text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95 active:brightness-95`}
-      style={{ backgroundColor: themeColor }}
+      className={`w-full text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95 active:brightness-95`}
+      style={{ backgroundColor: themeColor, color: onTheme }}
     >
       أضف للسلة
     </button>
