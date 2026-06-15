@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareStoreButton from '@/components/storefront/ShareStoreButton'
+import { Store } from 'lucide-react'
 
 type Props = {
   children: React.ReactNode
@@ -37,29 +38,42 @@ export default async function StorefrontLayout({ children, params }: Props) {
 
   if (!store) notFound()
 
+  const themeColor = store.theme_color ?? '#16a34a'
+
   return (
-    <div dir="rtl" className="min-h-screen bg-gray-50">
-      {/* Store header — mobile-first, max readable width on desktop */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
+    <div dir="rtl" className="min-h-screen bg-[#f7f8fa]">
+
+      {/* Sticky header with colored top accent */}
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
+        {/* Theme-colored accent stripe */}
+        <div className="h-[3px]" style={{ backgroundColor: themeColor }} />
+
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
+          {/* Logo */}
           {store.logo_url ? (
             <img
               src={store.logo_url}
               alt={store.name}
-              className="w-11 h-11 rounded-full object-cover flex-shrink-0 ring-2 ring-green-100"
+              className="w-10 h-10 rounded-xl object-cover flex-shrink-0 border border-gray-100"
             />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center text-xl flex-shrink-0">
-              🛍️
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: `${themeColor}15` }}
+            >
+              <Store size={20} style={{ color: themeColor }} />
             </div>
           )}
+
+          {/* Store info */}
           <div className="min-w-0 flex-1">
-            <h1 className="font-bold text-gray-900 text-base truncate">{store.name}</h1>
+            <h1 className="font-bold text-gray-900 text-[15px] leading-tight truncate">{store.name}</h1>
             {store.description && (
-              <p className="text-xs text-gray-400 truncate">{store.description}</p>
+              <p className="text-xs text-gray-400 mt-0.5 truncate">{store.description}</p>
             )}
           </div>
-          <ShareStoreButton storeName={store.name} themeColor={store.theme_color ?? '#16a34a'} />
+
+          <ShareStoreButton storeName={store.name} themeColor={themeColor} />
         </div>
       </header>
 
