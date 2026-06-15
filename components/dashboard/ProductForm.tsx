@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, ImagePlus } from 'lucide-react'
 
 type Props = {
   storeId: string
@@ -20,6 +20,9 @@ type Props = {
 // typing; we split into an array only on save.
 type DraftOption = { name: string; valuesRaw: string }
 
+// A photo slot is either an already-saved url or a freshly picked file.
+type ImageSlot = { url: string | null; file: File | null; preview: string }
+
 export default function ProductForm({ storeId, product, categories = [] }: Props) {
   const router = useRouter()
   const [name, setName] = useState(product?.name ?? '')
@@ -27,19 +30,34 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
   const [description, setDescription] = useState(product?.description ?? '')
   const [category, setCategory] = useState(product?.category ?? '')
   const [inStock, setInStock] = useState(product?.in_stock ?? true)
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(product?.image_url ?? null)
+  // Up to 3 photo slots. Each is either an already-saved url or a new file.
+  const initialImages = product?.images?.length
+    ? product.images
+    : product?.image_url
+      ? [product.image_url]
+      : []
+  const [imageSlots, setImageSlots] = useState<ImageSlot[]>(
+    initialImages.map((u) => ({ url: u, file: null, preview: u }))
+  )
   const [options, setOptions] = useState<DraftOption[]>(
     (product?.options ?? []).map((o) => ({ name: o.name, valuesRaw: o.values.join('، ') }))
   )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const MAX_IMAGES = 3
+
+  function handleAddImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
+    setImageSlots((prev) =>
+      prev.length >= MAX_IMAGES ? prev : [...prev, { url: null, file, preview: URL.createObjectURL(file) }]
+    )
+    e.target.value = '' // allow re-selecting the same file
+  }
+
+  function removeImage(i: number) {
+    setImageSlots((prev) => prev.filter((_, idx) => idx !== i))
   }
 
   function addOption() {
@@ -71,15 +89,19 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
     setLoading(true)
 
     const supabase = createClient()
-    let imageUrl = product?.image_url ?? null
 
-    if (imageFile) {
-      imageUrl = await uploadImage(imageFile)
-      if (!imageUrl) {
-        setLoading(false)
-        return
+    // Upload any new photos; keep existing urls. Order is preserved.
+    const images: string[] = []
+    for (const slot of imageSlots) {
+      if (slot.file) {
+        const url = await uploadImage(slot.file)
+        if (!url) { setLoading(false); return }
+        images.push(url)
+      } else if (slot.url) {
+        images.push(slot.url)
       }
     }
+    const imageUrl = images[0] ?? null
 
     // Clean the option groups: drop empty names / values.
     const cleanOptions: ProductOption[] = options
@@ -101,6 +123,7 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
       options: cleanOptions,
       in_stock: inStock,
       image_url: imageUrl,
+      images,
     }
 
     if (product) {
@@ -159,12 +182,37 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
             />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="image">صورة المنتج</Label>
-            {imagePreview && (
-              <img src={imagePreview} alt="preview" className="w-24 h-24 rounded-lg object-cover mb-2" />
-            )}
-            <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
+          {/* Product photos — up to 3 */}
+          <div className="space-y-2">
+            <Label>صور المنتج <span className="text-gray-400 font-normal">(حتى ٣ صور)</span></Label>
+            <div className="flex gap-2.5 flex-wrap">
+              {imageSlots.map((slot, i) => (
+                <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 group">
+                  <img src={slot.preview} alt={`صورة ${i + 1}`} className="w-full h-full object-cover" />
+                  {i === 0 && (
+                    <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full">رئيسية</span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500 transition-colors"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              ))}
+              {imageSlots.length < MAX_IMAGES && (
+                <label
+                  htmlFor="image"
+                  className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-green-400 hover:bg-green-50/40 transition-colors text-gray-400"
+                >
+                  <ImagePlus size={20} />
+                  <span className="text-[10px] font-medium">إضافة صورة</span>
+                </label>
+              )}
+            </div>
+            <input id="image" type="file" accept="image/*" className="hidden" onChange={handleAddImage} />
+            <p className="text-xs text-gray-400">الصورة الأولى هي الرئيسية التي تظهر في قائمة المنتجات</p>
           </div>
 
           {/* Variant options editor */}

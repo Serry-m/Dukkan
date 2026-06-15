@@ -20,6 +20,7 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
   const addItem = useCartStore((s) => s.addItem)
   const [currentId, setCurrentId] = useState<string | null>(startProduct?.id ?? null)
   const [selected, setSelected] = useState<Record<string, string>>({})
+  const [photoIndex, setPhotoIndex] = useState(0)
   const touchStartX = useRef<number | null>(null)
 
   // Siblings = products sharing the opened product's category (or all uncategorised).
@@ -34,9 +35,10 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
     if (startProduct) setCurrentId(startProduct.id)
   }, [startProduct])
 
-  // Reset chosen options whenever the displayed product changes.
+  // Reset chosen options + photo position whenever the displayed product changes.
   useEffect(() => {
     setSelected({})
+    setPhotoIndex(0)
   }, [currentId])
 
   const current = siblings.find((p) => p.id === currentId) ?? startProduct
@@ -44,6 +46,10 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
 
   const index = siblings.findIndex((p) => p.id === current.id)
   const hasNav = siblings.length > 1
+  // Photos for the current product (fall back to the single image_url).
+  const photos = current.images?.length ? current.images : current.image_url ? [current.image_url] : []
+  const hasMultiplePhotos = photos.length > 1
+  const safePhotoIndex = Math.min(photoIndex, Math.max(0, photos.length - 1))
   const options = current.options ?? []
   const allChosen = options.every((opt) => selected[opt.name])
   const curr = currencyLabel(currency)
@@ -56,15 +62,27 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
     if (index < siblings.length - 1) setCurrentId(siblings[index + 1].id)
   }
 
-  function onTouchStart(e: React.TouchEvent) {
+  function prevPhoto() { setPhotoIndex((i) => Math.max(0, i - 1)) }
+  function nextPhoto() { setPhotoIndex((i) => Math.min(photos.length - 1, i + 1)) }
+
+  // Swipe on the image cycles photos; if the product has only one photo,
+  // it falls back to switching between sibling products.
+  function onImageTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX
   }
-  function onTouchEnd(e: React.TouchEvent) {
+  function onImageTouchEnd(e: React.TouchEvent) {
     if (touchStartX.current === null) return
     const dx = e.changedTouches[0].clientX - touchStartX.current
-    // RTL: swipe left -> next, swipe right -> previous
-    if (dx < -50) goNext()
-    else if (dx > 50) goPrev()
+    if (Math.abs(dx) > 50) {
+      if (hasMultiplePhotos) {
+        // RTL: swipe left -> next photo, swipe right -> previous photo
+        if (dx < 0) nextPhoto()
+        else prevPhoto()
+      } else {
+        if (dx < 0) goNext()
+        else goPrev()
+      }
+    }
     touchStartX.current = null
   }
 
@@ -86,20 +104,20 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
         </SheetHeader>
 
         {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-          {/* Hero image with sibling navigation */}
-          <div className="relative h-52 sm:h-60 w-full bg-gray-50">
-            {current.image_url ? (
-              <img src={current.image_url} alt={current.name} className="w-full h-full object-cover" />
+        <div className="overflow-y-auto flex-1">
+          {/* Hero: photo carousel + sibling navigation */}
+          <div className="relative h-52 sm:h-60 w-full bg-gray-50" onTouchStart={onImageTouchStart} onTouchEnd={onImageTouchEnd}>
+            {photos.length > 0 ? (
+              <img src={photos[safePhotoIndex]} alt={current.name} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
                 <Package size={48} style={{ color: `${themeColor}60` }} />
               </div>
             )}
 
+            {/* Sibling navigation arrows */}
             {hasNav && (
               <>
-                {/* Previous (right side in RTL) */}
                 <button
                   onClick={goPrev}
                   disabled={index === 0}
@@ -107,7 +125,6 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
                 >
                   <ChevronRight size={20} className="text-gray-700" />
                 </button>
-                {/* Next (left side in RTL) */}
                 <button
                   onClick={goNext}
                   disabled={index === siblings.length - 1}
@@ -115,11 +132,28 @@ export default function ProductDetailSheet({ products, startProduct, open, onOpe
                 >
                   <ChevronLeft size={20} className="text-gray-700" />
                 </button>
-                {/* Counter */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/55 text-white text-[11px] font-medium px-2.5 py-1 rounded-full tabular-nums">
+                {/* Sibling position */}
+                <div className="absolute top-3 right-3 bg-black/55 text-white text-[11px] font-medium px-2.5 py-1 rounded-full tabular-nums">
                   {(index + 1).toLocaleString('ar-EG')} / {siblings.length.toLocaleString('ar-EG')}
                 </div>
               </>
+            )}
+
+            {/* Photo dots */}
+            {hasMultiplePhotos && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {photos.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPhotoIndex(i)}
+                    className="h-1.5 rounded-full transition-all"
+                    style={{
+                      width: i === safePhotoIndex ? 18 : 6,
+                      backgroundColor: i === safePhotoIndex ? '#fff' : 'rgba(255,255,255,0.6)',
+                    }}
+                  />
+                ))}
+              </div>
             )}
 
             {outOfStock && (

@@ -57,7 +57,8 @@ export type Product = {
   name: string
   description: string | null
   price: number
-  image_url: string | null
+  image_url: string | null   // primary image (= images[0]); used for cards/thumbnails
+  images: string[]           // up to 3 photos shown in the detail carousel
   in_stock: boolean
   sort_order: number
   category: string | null
