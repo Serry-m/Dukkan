@@ -17,22 +17,43 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false)
   const [ready, setReady] = useState(false)
 
-  // Exchange the one-time code for a session so updateUser works
   useEffect(() => {
-    const code = searchParams.get('code')
-    if (!code) {
-      setError('الرابط غير صالح أو منتهي الصلاحية. اطلب رابطاً جديداً من صفحة تسجيل الدخول.')
-      return
-    }
-
     const supabase = createClient()
-    supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
-      if (error) {
-        setError('الرابط منتهي الصلاحية. اطلب رابطاً جديداً من صفحة تسجيل الدخول.')
-      } else {
+
+    // Implicit flow: Supabase puts #access_token=...&type=recovery in the hash.
+    // The browser client auto-parses it and fires PASSWORD_RECOVERY.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }
     })
+
+    // PKCE flow: Supabase puts ?code= in the query string.
+    const code = searchParams.get('code')
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) {
+          setError('الرابط منتهي الصلاحية. اطلب رابطاً جديداً من صفحة تسجيل الدخول.')
+        } else {
+          setReady(true)
+        }
+      })
+    }
+
+    // If neither flow triggers within 6 seconds, show an error.
+    const timeout = setTimeout(() => {
+      setReady((current) => {
+        if (!current) {
+          setError('الرابط غير صالح أو منتهي الصلاحية. اطلب رابطاً جديداً من صفحة تسجيل الدخول.')
+        }
+        return current
+      })
+    }, 6000)
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [searchParams])
 
   async function handleReset(e: React.FormEvent) {
@@ -72,7 +93,7 @@ function ResetPasswordForm() {
         )}
 
         {!ready && !error && (
-          <div className="text-center py-4">
+          <div className="text-center py-6">
             <div className="inline-block w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-gray-500 mt-3">جاري التحقق من الرابط...</p>
           </div>
@@ -136,7 +157,7 @@ export default function ResetPasswordPage() {
         </CardHeader>
         <Suspense fallback={
           <CardContent>
-            <div className="text-center py-4">
+            <div className="text-center py-6">
               <div className="inline-block w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
             </div>
           </CardContent>
