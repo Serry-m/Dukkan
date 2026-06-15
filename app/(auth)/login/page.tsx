@@ -45,7 +45,11 @@ export default function LoginPage() {
     })
     setLoading(false)
     if (error) {
-      setError(`خطأ: ${error.message}`)
+      if (error.message.includes('rate limit')) {
+        setError('تم إرسال عدد كبير من الطلبات — انتظر ساعة وحاول مرة أخرى')
+      } else {
+        setError('حدث خطأ، تأكد من البريد الإلكتروني')
+      }
       return
     }
     setSuccess('تم إرسال رابط إعادة تعيين كلمة المرور — تحقق من بريدك الإلكتروني')
