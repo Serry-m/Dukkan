@@ -95,7 +95,8 @@ export default function ProductGrid({ products, store }: Props) {
       </div>
 
       <ProductDetailSheet
-        product={detailProduct}
+        products={visible}
+        startProduct={detailProduct}
         open={detailOpen}
         onOpenChange={setDetailOpen}
         themeColor={themeColor}

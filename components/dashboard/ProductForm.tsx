@@ -170,33 +170,52 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
           {/* Variant options editor */}
           <div className="space-y-2">
             <Label>الخيارات (اختياري)</Label>
-            <p className="text-xs text-gray-400 -mt-1">مثل المقاس أو اللون — يختار العميل قيمة عند الطلب</p>
-            <div className="space-y-2">
-              {options.map((opt, i) => (
-                <div key={i} className="flex gap-2 items-start bg-gray-50 rounded-xl p-2.5">
-                  <div className="flex-1 space-y-2">
-                    <Input
-                      value={opt.name}
-                      onChange={(e) => updateOption(i, { name: e.target.value })}
-                      placeholder="اسم الخيار (مثال: المقاس)"
-                      className="bg-white"
-                    />
-                    <Input
-                      value={opt.valuesRaw}
-                      onChange={(e) => updateOption(i, { valuesRaw: e.target.value })}
-                      placeholder="القيم مفصولة بفاصلة (S، M، L)"
-                      className="bg-white"
-                    />
+            <p className="text-xs text-gray-400 -mt-1">
+              أضف خياراً واحداً لكل نوع (مثل «المقاس») واكتب كل القيم بداخله مفصولة بفاصلة. لا تنشئ خياراً منفصلاً لكل قيمة.
+            </p>
+            <div className="space-y-3">
+              {options.map((opt, i) => {
+                const previewValues = opt.valuesRaw.split(/[,،]/).map((v) => v.trim()).filter(Boolean)
+                return (
+                  <div key={i} className="bg-gray-50 rounded-xl p-3 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-gray-500">الخيار {(i + 1).toLocaleString('ar-EG')}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeOption(i)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        <X size={15} />
+                      </button>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600">اسم الخيار</label>
+                      <Input
+                        value={opt.name}
+                        onChange={(e) => updateOption(i, { name: e.target.value })}
+                        placeholder="مثال: المقاس"
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium text-gray-600">القيم (افصل بينها بفاصلة)</label>
+                      <Input
+                        value={opt.valuesRaw}
+                        onChange={(e) => updateOption(i, { valuesRaw: e.target.value })}
+                        placeholder="S، M، L"
+                        className="bg-white"
+                      />
+                      {previewValues.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {previewValues.map((v, vi) => (
+                            <span key={vi} className="text-xs bg-white border border-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{v}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeOption(i)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
+                )
+              })}
             </div>
             <button
               type="button"
