@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
+import { Reveal, SlideIn, Float, Stagger, StaggerItem } from '@/components/landing/Motion'
 import {
   CheckCircle,
   Zap,
@@ -9,34 +10,29 @@ import {
   BarChart2,
   ArrowLeft,
   Store,
+  ShoppingBasket,
 } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className="min-h-screen bg-white overflow-x-hidden" dir="rtl">
 
       {/* ── Nav ── */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
-              <Store size={16} className="text-white" />
+              <ShoppingBasket size={16} className="text-white" />
             </div>
             <span className="font-bold text-gray-900 text-[15px]">دكان</span>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 transition-colors font-medium hidden sm:block"
-            >
+            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 transition-colors font-medium hidden sm:block">
               تسجيل الدخول
             </Link>
             <Link
               href="/signup"
-              className={cn(
-                buttonVariants({ size: 'sm' }),
-                'bg-green-600 hover:bg-green-700 text-white font-semibold px-4 h-9 text-sm'
-              )}
+              className={cn(buttonVariants({ size: 'sm' }), 'bg-green-600 hover:bg-green-700 text-white font-semibold px-4 h-9 text-sm')}
             >
               ابدأ مجاناً
             </Link>
@@ -46,54 +42,51 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-white">
-        {/* Background decoration */}
+        {/* Soft animated background blobs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-green-50 rounded-full opacity-40 blur-3xl" />
+          <div className="absolute -top-20 left-1/3 w-[520px] h-[520px] bg-green-100 rounded-full opacity-50 blur-3xl" />
+          <div className="absolute top-10 -right-20 w-[360px] h-[360px] bg-emerald-50 rounded-full opacity-60 blur-3xl" />
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-5 pt-16 pb-14 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div className="relative max-w-5xl mx-auto px-5 pt-16 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           {/* Text */}
-          <div className="order-2 lg:order-1 text-right lg:text-right">
-            <span className="inline-block text-xs font-bold text-green-700 bg-green-50 border border-green-100 px-3 py-1 rounded-full mb-5 tracking-wide">
-              مجاني بالكامل - لا رسوم ولا عمولات
-            </span>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-[1.15] tracking-tight mb-5">
-              متجرك على واتساب<br />
-              <span className="text-green-600">في دقيقتين</span>
-            </h1>
-            <p className="text-lg text-gray-500 leading-relaxed mb-8 max-w-md">
-              شارك رابطاً واحداً مع عملائك وابدأ تستقبل الطلبات مباشرة على واتساب — بدون تطبيق ولا تعقيد.
-            </p>
-            <div className="flex items-center gap-3 flex-wrap">
-              <Link
-                href="/signup"
-                className={cn(
-                  buttonVariants(),
-                  'bg-green-600 hover:bg-green-700 text-white font-bold px-7 h-12 text-base gap-2'
-                )}
-              >
-                أنشئ متجرك الآن
-                <ArrowLeft size={16} />
-              </Link>
-              <Link
-                href="/login"
-                className={cn(
-                  buttonVariants({ variant: 'outline' }),
-                  'px-7 h-12 text-base font-medium border-gray-200 text-gray-600 hover:bg-gray-50'
-                )}
-              >
-                تسجيل الدخول
-              </Link>
-            </div>
+          <div className="order-2 lg:order-1">
+            <Stagger>
+              <StaggerItem>
+                <span className="inline-block text-xs font-bold text-green-700 bg-green-50 border border-green-100 px-3 py-1 rounded-full mb-5 tracking-wide">
+                  مجاني بالكامل - لا رسوم ولا عمولات
+                </span>
+              </StaggerItem>
+              <StaggerItem>
+                <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-[1.15] tracking-tight mb-5">
+                  متجرك على واتساب<br />
+                  <span className="text-green-600">في دقيقتين</span>
+                </h1>
+              </StaggerItem>
+              <StaggerItem>
+                <p className="text-lg text-gray-500 leading-relaxed mb-8 max-w-md">
+                  شارك رابطاً واحداً مع عملائك وابدأ تستقبل الطلبات مباشرة على واتساب — بدون تطبيق ولا تعقيد.
+                </p>
+              </StaggerItem>
+              <StaggerItem>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Link href="/signup" className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700 text-white font-bold px-7 h-12 text-base gap-2 shadow-lg shadow-green-200')}>
+                    أنشئ متجرك الآن
+                    <ArrowLeft size={16} />
+                  </Link>
+                  <Link href="/login" className={cn(buttonVariants({ variant: 'outline' }), 'px-7 h-12 text-base font-medium border-gray-200 text-gray-600 hover:bg-gray-50')}>
+                    تسجيل الدخول
+                  </Link>
+                </div>
+              </StaggerItem>
+            </Stagger>
           </div>
 
-          {/* Visual: phone mockup */}
-          <div className="order-1 lg:order-2 flex justify-center lg:justify-start">
+          {/* Phone mockup */}
+          <SlideIn from="left" delay={0.15} className="order-1 lg:order-2 flex justify-center lg:justify-start">
             <div className="relative w-56 sm:w-64">
-              {/* Phone frame */}
               <div className="bg-gray-900 rounded-[2.5rem] p-2 shadow-2xl shadow-gray-300/60">
                 <div className="bg-white rounded-[2rem] overflow-hidden">
-                  {/* Phone top bar */}
                   <div className="bg-green-600 px-4 pt-5 pb-4">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -105,12 +98,10 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Mock product cards */}
                   <div className="bg-[#f7f8fa] p-2.5 space-y-2">
                     {[
-                      { name: 'سماعة بلوتوث', price: '٢٥٠', img: 'headphones' },
-                      { name: 'شاحن سريع', price: '١٢٠', img: 'charger' },
+                      { name: 'سماعة بلوتوث', price: '٢٥٠' },
+                      { name: 'شاحن سريع', price: '١٢٠' },
                     ].map((item) => (
                       <div key={item.name} className="bg-white rounded-xl flex items-center gap-2.5 p-2 shadow-sm border border-gray-100">
                         <div className="w-10 h-10 rounded-lg bg-green-50 flex-shrink-0 flex items-center justify-center">
@@ -125,8 +116,6 @@ export default function HomePage() {
                         </div>
                       </div>
                     ))}
-
-                    {/* Cart bar */}
                     <div className="bg-green-600 rounded-xl px-3 py-2.5 flex items-center justify-between mt-1">
                       <span className="text-white text-[10px] font-bold">عرض السلة</span>
                       <span className="text-white text-[10px] font-semibold">٣٧٠ جنيه</span>
@@ -136,173 +125,171 @@ export default function HomePage() {
               </div>
 
               {/* Floating WhatsApp badge */}
-              <div className="absolute -left-6 bottom-16 bg-white rounded-2xl shadow-xl border border-gray-100 px-3 py-2.5 flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#25D366] flex items-center justify-center flex-shrink-0">
-                  <MessageCircle size={13} className="text-white" />
+              <Float className="absolute -left-6 bottom-16">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 px-3 py-2.5 flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-[#25D366] flex items-center justify-center flex-shrink-0">
+                    <MessageCircle size={13} className="text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-800 leading-none">طلب جديد!</p>
+                    <p className="text-[9px] text-gray-400 mt-0.5">من: محمد أحمد</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold text-gray-800 leading-none">طلب جديد!</p>
-                  <p className="text-[9px] text-gray-400 mt-0.5">من: محمد أحمد</p>
-                </div>
-              </div>
+              </Float>
             </div>
-          </div>
+          </SlideIn>
         </div>
       </section>
 
-      {/* ── Stats bar ── */}
+      {/* ── Stats ── */}
       <section className="border-y border-gray-100 bg-gray-50">
         <div className="max-w-5xl mx-auto px-5 py-8">
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <Stagger className="grid grid-cols-3 gap-4 text-center">
             {[
               { value: '+٥٠٠', label: 'تاجر نشط' },
               { value: 'دقيقتان', label: 'وقت الإعداد' },
               { value: '٠٪', label: 'رسوم أو عمولات' },
             ].map((stat) => (
-              <div key={stat.label}>
+              <StaggerItem key={stat.label}>
                 <p className="text-2xl sm:text-3xl font-extrabold text-gray-900">{stat.value}</p>
                 <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* ── Features bento ── */}
       <section className="max-w-5xl mx-auto px-5 py-16">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-10">
-          كل ما تحتاجه في مكان واحد
-        </h2>
+        <Reveal>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-10">
+            كل ما تحتاجه في مكان واحد
+          </h2>
+        </Reveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Large feature */}
-          <div className="sm:row-span-2 bg-green-600 rounded-2xl p-7 flex flex-col justify-between min-h-[220px]">
-            <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center">
-              <Zap size={22} className="text-white" />
+          <Reveal className="sm:row-span-2">
+            <div className="bg-green-600 rounded-2xl p-7 flex flex-col justify-between h-full min-h-[220px]">
+              <div className="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center">
+                <Zap size={22} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">متجر جاهز في دقيقتين</h3>
+                <p className="text-green-100 text-sm leading-relaxed">
+                  اكتب اسم متجرك، أضف منتجاتك، وشارك الرابط. بدون خطوات معقدة.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-white mb-2">متجر جاهز في دقيقتين</h3>
-              <p className="text-green-100 text-sm leading-relaxed">
-                اكتب اسم متجرك، أضف منتجاتك، وشارك الرابط. بدون خطوات معقدة.
-              </p>
-            </div>
-          </div>
+          </Reveal>
 
-          {/* Feature 2 */}
-          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-              <Link2 size={18} className="text-green-700" />
+          <Reveal delay={0.1}>
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                <Link2 size={18} className="text-green-700" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">رابط مخصص لمتجرك</h3>
+                <p className="text-sm text-gray-500">رابط قصير يحمل اسم متجرك، سهل المشاركة على أي منصة.</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold text-gray-900 mb-1">رابط مخصص لمتجرك</h3>
-              <p className="text-sm text-gray-500">رابط قصير يحمل اسم متجرك، سهل المشاركة على أي منصة.</p>
-            </div>
-          </div>
+          </Reveal>
 
-          {/* Feature 3 */}
-          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4">
-            <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-              <MessageCircle size={18} className="text-green-700" />
+          <Reveal delay={0.2}>
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                <MessageCircle size={18} className="text-green-700" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1">الطلبات مباشرة على واتساب</h3>
+                <p className="text-sm text-gray-500">رسالة منظمة بتفاصيل الطلب والعميل — بنقرة واحدة.</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold text-gray-900 mb-1">الطلبات مباشرة على واتساب</h3>
-              <p className="text-sm text-gray-500">رسالة منظمة بتفاصيل الطلب والعميل — بنقرة واحدة.</p>
-            </div>
-          </div>
+          </Reveal>
         </div>
 
-        {/* Additional features row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
           {[
-            { icon: BarChart2, title: 'تتبع طلباتك', desc: 'لوحة تحكم تعرض كل الطلبات والعملاء' },
+            { icon: BarChart2, title: 'تتبع طلباتك', desc: 'لوحة تحكم تعرض كل الطلبات والعملاء والإيرادات' },
             { icon: Store, title: 'تحكم كامل', desc: 'عدّل المنتجات والأسعار والمخزون في أي وقت' },
             { icon: CheckCircle, title: 'بدون رسوم', desc: 'لا عمولات ولا اشتراك شهري — مجاني تماماً' },
           ].map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="bg-gray-50 border border-gray-100 rounded-2xl p-6">
-              <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center mb-3">
-                <Icon size={17} className="text-green-700" />
+            <StaggerItem key={title}>
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 h-full">
+                <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center mb-3">
+                  <Icon size={17} className="text-green-700" />
+                </div>
+                <h3 className="font-bold text-gray-900 text-sm mb-1">{title}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
               </div>
-              <h3 className="font-bold text-gray-900 text-sm mb-1">{title}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       {/* ── How it works ── */}
       <section className="bg-gray-50 border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-5 py-16">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-12">
-            ابدأ في ٣ خطوات
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
+          <Reveal>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-12">
+              ابدأ في ٣ خطوات
+            </h2>
+          </Reveal>
+          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
             {[
               { num: '١', title: 'سجّل حسابك', desc: 'أنشئ حساباً مجانياً بالبريد الإلكتروني في ثوانٍ.' },
               { num: '٢', title: 'أضف منتجاتك', desc: 'أضف صور الأسعار والأوصاف لمنتجاتك بسهولة.' },
               { num: '٣', title: 'شارك وابيع', desc: 'شارك رابطك واستقبل الطلبات مباشرة على واتساب.' },
-            ].map((step, i) => (
-              <div key={step.num} className="flex flex-col items-center text-center sm:items-center relative">
-                <div className="w-14 h-14 rounded-2xl bg-green-600 text-white text-2xl font-extrabold flex items-center justify-center mb-4 shadow-lg shadow-green-200">
-                  {step.num}
+            ].map((step) => (
+              <StaggerItem key={step.num}>
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-green-600 text-white text-2xl font-extrabold flex items-center justify-center mb-4 shadow-lg shadow-green-200">
+                    {step.num}
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-base mb-2">{step.title}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed max-w-[180px]">{step.desc}</p>
                 </div>
-                <h3 className="font-bold text-gray-900 text-base mb-2">{step.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed max-w-[180px]">{step.desc}</p>
-
-                {/* Connector line (desktop only) */}
-                {i < 2 && (
-                  <div className="hidden sm:block absolute left-0 top-7 w-full border-t-2 border-dashed border-green-200 -z-10" />
-                )}
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       {/* ── Testimonials ── */}
       <section className="max-w-5xl mx-auto px-5 py-16">
-        <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-10">
-          تجار يثقون فيه
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Reveal>
+          <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-10">تجار يثقون فيه</h2>
+        </Reveal>
+        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            {
-              quote: 'قبل ما أعرف أنا كنت بعت بالكلام. دلوقتي الطلب بييجيلي منظم على الواتساب.',
-              name: 'أحمد سامي',
-              role: 'صاحب متجر إكسسوارات',
-            },
-            {
-              quote: 'الرابط بشاركه في الجروبات وبيجيلي طلبات من غير ما أكون متواجد.',
-              name: 'منى خالد',
-              role: 'تاجرة ملابس أطفال',
-            },
-            {
-              quote: 'أسهل حاجة عملتها في حياتي. المتجر خلّص في ١٠ دقايق.',
-              name: 'كريم وليد',
-              role: 'صاحب متجر إلكترونيات',
-            },
+            { quote: 'قبل ما أعرف أنا كنت بعت بالكلام. دلوقتي الطلب بييجيلي منظم على الواتساب.', name: 'أحمد سامي', role: 'صاحب متجر إكسسوارات' },
+            { quote: 'الرابط بشاركه في الجروبات وبيجيلي طلبات من غير ما أكون متواجد.', name: 'منى خالد', role: 'تاجرة ملابس أطفال' },
+            { quote: 'أسهل حاجة عملتها في حياتي. المتجر خلّص في ١٠ دقايق.', name: 'كريم وليد', role: 'صاحب متجر إلكترونيات' },
           ].map((t) => (
-            <div key={t.name} className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col gap-4">
-              <div className="flex gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className="text-green-500 text-sm">&#9733;</span>
-                ))}
+            <StaggerItem key={t.name}>
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col gap-4 h-full">
+                <div className="flex gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className="text-green-500 text-sm">&#9733;</span>
+                  ))}
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed flex-1">{t.quote}</p>
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">{t.name}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{t.role}</p>
+                </div>
               </div>
-              <p className="text-gray-700 text-sm leading-relaxed flex-1">{t.quote}</p>
-              <div>
-                <p className="font-bold text-gray-900 text-sm">{t.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{t.role}</p>
-              </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </section>
 
       {/* ── Final CTA ── */}
-      <section className="bg-green-600">
-        <div className="max-w-5xl mx-auto px-5 py-16 text-center">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
-            جاهز تبدأ؟
-          </h2>
+      <section className="bg-green-600 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-16 -right-10 w-72 h-72 bg-green-500 rounded-full opacity-40 blur-3xl" />
+        </div>
+        <Reveal className="relative max-w-5xl mx-auto px-5 py-16 text-center">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">جاهز تبدأ؟</h2>
           <p className="text-green-100 text-base mb-8 max-w-sm mx-auto">
             انضم للتجار اللي بيبيعوا عبر واتساب بشكل منظم واحترافي.
           </p>
@@ -313,7 +300,7 @@ export default function HomePage() {
             أنشئ متجرك مجاناً
             <ArrowLeft size={18} />
           </Link>
-        </div>
+        </Reveal>
       </section>
 
       {/* ── Footer ── */}
@@ -321,23 +308,14 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-5 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-green-600 flex items-center justify-center">
-              <Store size={12} className="text-white" />
+              <ShoppingBasket size={12} className="text-white" />
             </div>
             <span className="text-gray-400 font-medium">دكان</span>
           </div>
-          <p className="text-gray-600 text-xs text-center">
-            جميع الحقوق محفوظة {new Date().getFullYear()}
-          </p>
+          <p className="text-gray-600 text-xs text-center">جميع الحقوق محفوظة {new Date().getFullYear()}</p>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-gray-500 hover:text-gray-300 transition-colors">
-              تسجيل الدخول
-            </Link>
-            <Link
-              href="/signup"
-              className="text-green-500 hover:text-green-400 font-medium transition-colors"
-            >
-              إنشاء حساب
-            </Link>
+            <Link href="/login" className="text-gray-500 hover:text-gray-300 transition-colors">تسجيل الدخول</Link>
+            <Link href="/signup" className="text-green-500 hover:text-green-400 font-medium transition-colors">إنشاء حساب</Link>
           </div>
         </div>
       </footer>
