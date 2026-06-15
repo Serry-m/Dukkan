@@ -2,7 +2,10 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareStoreButton from '@/components/storefront/ShareStoreButton'
+import { isPro } from '@/lib/plan'
 import { Store } from 'lucide-react'
+import Link from 'next/link'
+import { BrandMark } from '@/components/BrandMark'
 
 type Props = {
   children: React.ReactNode
@@ -117,6 +120,20 @@ export default async function StorefrontLayout({ children, params }: Props) {
       </header>
 
       {children}
+
+      {/* "Made with دكان" badge — free plan only */}
+      {!isPro(store) && (
+        <div className="max-w-lg mx-auto px-4 pb-8 pt-2 flex justify-center">
+          <Link
+            href="/"
+            target="_blank"
+            className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <BrandMark size={16} className="rounded" />
+            صُنع بواسطة دكان
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

@@ -16,6 +16,8 @@ export type Store = {
   message_template: string | null
   view_count: number
   delivery_fee: number
+  plan: 'free' | 'pro'
+  plan_expires_at: string | null
   category_order: string[]
   layout: 'grid' | 'list'
   font: 'cairo' | 'tajawal' | 'almarai'

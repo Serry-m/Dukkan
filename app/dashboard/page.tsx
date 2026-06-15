@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
-import { Package, Store, ShoppingBag, Eye, TrendingUp, Check, ArrowLeft } from 'lucide-react'
+import { Package, Store, ShoppingBag, Eye, TrendingUp, Check, ArrowLeft, Crown } from 'lucide-react'
 import ShareButton from '@/components/dashboard/ShareButton'
+import { isPro, FREE_PRODUCT_LIMIT } from '@/lib/plan'
 import type { OrderItem } from '@/types'
 
 export default async function DashboardPage() {
@@ -69,9 +70,36 @@ export default async function DashboardPage() {
   ]
   const doneCount = steps.filter((s) => s.done).length
 
+  const pro = isPro(store)
+
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">مرحباً</h1>
+
+      {/* Plan banner */}
+      {pro ? (
+        <div className="mb-6 flex items-center gap-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 text-white px-4 py-3">
+          <Crown size={18} />
+          <span className="font-bold text-sm">خطة Pro نشطة</span>
+          <Link href="/dashboard/upgrade" className="mr-auto text-xs text-green-100 hover:text-white underline">
+            التفاصيل
+          </Link>
+        </div>
+      ) : (
+        <Link
+          href="/dashboard/upgrade"
+          className="mb-6 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 hover:bg-green-100/70 transition-colors"
+        >
+          <Crown size={18} className="text-green-700 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-green-800">الخطة المجانية</p>
+            <p className="text-xs text-green-700/80">
+              {(productCount ?? 0).toLocaleString('ar-EG')} / {FREE_PRODUCT_LIMIT.toLocaleString('ar-EG')} منتج · رقّ إلى Pro لإزالة الحدود
+            </p>
+          </div>
+          <span className="text-xs font-bold text-green-700 flex-shrink-0">ترقية ←</span>
+        </Link>
+      )}
 
       {/* Onboarding checklist — shown until the store is set up */}
       {!setupComplete && (
