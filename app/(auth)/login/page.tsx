@@ -45,7 +45,7 @@ export default function LoginPage() {
     })
     setLoading(false)
     if (error) {
-      setError('حدث خطأ، تأكد من البريد الإلكتروني')
+      setError(`خطأ: ${error.message}`)
       return
     }
     setSuccess('تم إرسال رابط إعادة تعيين كلمة المرور — تحقق من بريدك الإلكتروني')
