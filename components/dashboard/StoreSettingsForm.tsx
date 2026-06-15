@@ -51,10 +51,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     const ext = file.name.split('.').pop()
     const path = `logos/${userId}/${Date.now()}.${ext}`
     const { error } = await supabase.storage
-      .from('store-assets')
+      .from('store_assets')
       .upload(path, file, { upsert: true })
     if (error) return null
-    const { data } = supabase.storage.from('store-assets').getPublicUrl(path)
+    const { data } = supabase.storage.from('store_assets').getPublicUrl(path)
     return data.publicUrl
   }
 
