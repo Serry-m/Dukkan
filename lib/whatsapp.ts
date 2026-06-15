@@ -1,5 +1,6 @@
 import type { CartItem, Store } from '@/types'
 import { createClient } from '@/lib/supabase/client'
+import { formatPrice } from '@/lib/currency'
 
 function normalizeEgyptianNumber(number: string): string {
   const digits = number.replace(/\D/g, '')
@@ -51,15 +52,13 @@ export async function saveOrder(
     quantity,
     price: product.price,
   }))
-  await supabase.from('orders').insert({
+  const { error } = await supabase.from('orders').insert({
     store_id: store.id,
     items,
     total,
     customer_name: customerName,
     customer_phone: customerPhone,
   })
-}
-
-function formatPrice(amount: number, currency: string): string {
-  return `${amount.toLocaleString('ar-EG')} ${currency}`
+  // Surface the failure to the caller so the UI can react.
+  if (error) throw error
 }

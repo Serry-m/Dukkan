@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Store } from '@/types'
+import { CURRENCIES } from '@/lib/currency'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +23,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [whatsapp, setWhatsapp] = useState(store?.whatsapp_number ?? '')
   const [description, setDescription] = useState(store?.description ?? '')
   const [themeColor, setThemeColor] = useState(store?.theme_color ?? '#16a34a')
+  const [currency, setCurrency] = useState(store?.currency ?? 'EGP')
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(store?.logo_url ?? null)
   const [error, setError] = useState<string | null>(null)
@@ -76,7 +78,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       }
     }
 
-    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, theme_color: themeColor }
+    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, theme_color: themeColor, currency }
 
     if (store) {
       const { error } = await supabase.from('stores').update(payload).eq('id', store.id)
@@ -183,6 +185,21 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Currency selector */}
+          <div className="space-y-1">
+            <Label htmlFor="currency">العملة</Label>
+            <select
+              id="currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full h-9 border border-input rounded-lg px-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring/50"
+            >
+              {CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>{c.name} ({c.label})</option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-1">

@@ -94,7 +94,7 @@ export default function ProductForm({ storeId, product }: Props) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="price">السعر (جنيه)</Label>
+            <Label htmlFor="price">السعر</Label>
             <Input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="150" required dir="ltr" />
           </div>
 

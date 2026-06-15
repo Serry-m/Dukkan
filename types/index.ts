@@ -15,6 +15,8 @@ export type Store = {
   created_at: string
 }
 
+export type OrderStatus = 'pending' | 'confirmed' | 'delivered'
+
 export type Order = {
   id: string
   store_id: string
@@ -22,6 +24,7 @@ export type Order = {
   total: number
   customer_name: string | null
   customer_phone: string | null
+  status: OrderStatus
   created_at: string
 }
 

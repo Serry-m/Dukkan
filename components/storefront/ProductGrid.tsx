@@ -34,7 +34,7 @@ export default function ProductGrid({ products, store }: Props) {
     <>
       <div className="grid grid-cols-2 gap-3 pb-32">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} themeColor={themeColor} />
+          <ProductCard key={product.id} product={product} themeColor={themeColor} currency={store.currency} />
         ))}
       </div>
       {totalItems > 0 && <CartBar store={store} />}

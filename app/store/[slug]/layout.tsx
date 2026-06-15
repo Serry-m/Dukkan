@@ -14,15 +14,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = await createClient()
   const { data: store } = await supabase
     .from('stores')
-    .select('name, description')
+    .select('name, description, logo_url')
     .eq('slug', slug)
     .single()
 
   if (!store) return { title: 'متجر غير موجود' }
 
+  const description = store.description ?? `تسوق من ${store.name} عبر واتساب`
+  const images = store.logo_url ? [{ url: store.logo_url }] : undefined
+
   return {
     title: store.name,
-    description: store.description ?? `تسوق من ${store.name} عبر واتساب`,
+    description,
+    // Rich preview when the store link is shared on WhatsApp / social.
+    openGraph: {
+      title: store.name,
+      description,
+      type: 'website',
+      images,
+    },
+    twitter: {
+      card: 'summary',
+      title: store.name,
+      description,
+      images: store.logo_url ? [store.logo_url] : undefined,
+    },
   }
 }
 

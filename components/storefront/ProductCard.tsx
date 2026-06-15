@@ -2,14 +2,16 @@
 
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
+import { currencyLabel } from '@/lib/currency'
 import { Plus, Minus, Package } from 'lucide-react'
 
 type Props = {
   product: Product
   themeColor: string
+  currency: string
 }
 
-export default function ProductCard({ product, themeColor }: Props) {
+export default function ProductCard({ product, themeColor, currency }: Props) {
   const items = useCartStore((s) => s.items)
   const addItem = useCartStore((s) => s.addItem)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
@@ -57,7 +59,7 @@ export default function ProductCard({ product, themeColor }: Props) {
           <span className="font-bold text-base tabular-nums" style={{ color: outOfStock ? '#9ca3af' : themeColor }}>
             {product.price.toLocaleString('ar-EG')}
           </span>
-          <span className="text-xs text-gray-400 font-normal">جنيه</span>
+          <span className="text-xs text-gray-400 font-normal">{currencyLabel(currency)}</span>
         </div>
 
         {outOfStock ? (

@@ -6,6 +6,7 @@ import { Plus, Pencil } from 'lucide-react'
 import DeleteProductButton from '@/components/dashboard/DeleteProductButton'
 import StockToggle from '@/components/dashboard/StockToggle'
 import ReorderButtons from '@/components/dashboard/ReorderButtons'
+import { formatPrice } from '@/lib/currency'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -13,7 +14,7 @@ export default async function ProductsPage() {
 
   const { data: store } = await supabase
     .from('stores')
-    .select('id')
+    .select('id, currency')
     .eq('owner_id', user!.id)
     .single()
 
@@ -79,7 +80,7 @@ export default async function ProductsPage() {
 
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                <p className="text-green-600 font-bold text-sm">{product.price.toLocaleString('ar-EG')} جنيه</p>
+                <p className="text-green-600 font-bold text-sm">{formatPrice(product.price, store.currency)}</p>
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">

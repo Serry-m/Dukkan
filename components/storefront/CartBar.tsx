@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { Store } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
+import { currencyLabel } from '@/lib/currency'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle } from 'lucide-react'
@@ -36,17 +37,31 @@ export default function CartBar({ store }: { store: Store }) {
     setStep('info')
   }
 
-  function handleOrder() {
+  async function handleOrder() {
     if (!customerName.trim()) { setError('من فضلك أدخل اسمك'); return }
     const phoneDigits = customerPhone.replace(/\D/g, '')
     if (phoneDigits.length < 10 || phoneDigits.length > 11) {
       setError('رقم الهاتف غير صحيح — أدخل 11 رقم مثل 01012345678')
       return
     }
+    // Guard: a store with no WhatsApp number can't receive orders.
+    if (!store.whatsapp_number?.trim()) {
+      setError('هذا المتجر لم يضبط رقم واتساب بعد — تواصل مع صاحب المتجر')
+      return
+    }
 
     setOrdering(true)
+    setError('')
     const url = buildWhatsAppOrderUrl(store, items, customerName.trim(), phoneDigits)
-    saveOrder(store, items, customerName.trim(), phoneDigits)
+
+    // Save the order before redirecting. If it fails we still let the customer
+    // through to WhatsApp (that's the real order channel) but log the failure.
+    try {
+      await saveOrder(store, items, customerName.trim(), phoneDigits)
+    } catch (err) {
+      console.error('Failed to save order:', err)
+    }
+
     clearCart()
     setStep('done')
     setOrdering(false)
@@ -54,6 +69,7 @@ export default function CartBar({ store }: { store: Store }) {
   }
 
   const themeColor = store.theme_color ?? '#16a34a'
+  const curr = currencyLabel(store.currency)
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -66,7 +82,7 @@ export default function CartBar({ store }: { store: Store }) {
           <span className="text-sm font-medium">عرض السلة</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="font-bold">{totalPrice.toLocaleString('ar-EG')} جنيه</span>
+          <span className="font-bold">{totalPrice.toLocaleString('ar-EG')} {curr}</span>
           <ShoppingCart size={18} />
         </div>
       </SheetTrigger>
@@ -89,10 +105,10 @@ export default function CartBar({ store }: { store: Store }) {
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">{product.name}</p>
-                    <p className="text-xs text-gray-400">{quantity} × {product.price.toLocaleString('ar-EG')} جنيه</p>
+                    <p className="text-xs text-gray-400">{quantity} × {product.price.toLocaleString('ar-EG')} {curr}</p>
                   </div>
                   <p className="font-bold text-sm flex-shrink-0" style={{ color: themeColor }}>
-                    {(product.price * quantity).toLocaleString('ar-EG')} جنيه
+                    {(product.price * quantity).toLocaleString('ar-EG')} {curr}
                   </p>
                   <button onClick={() => removeItem(product.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0">
                     <Trash2 size={16} />
@@ -103,7 +119,7 @@ export default function CartBar({ store }: { store: Store }) {
             <div className="border-t pt-4 space-y-4">
               <div className="flex justify-between font-bold text-lg">
                 <span>الإجمالي</span>
-                <span style={{ color: themeColor }}>{totalPrice.toLocaleString('ar-EG')} جنيه</span>
+                <span style={{ color: themeColor }}>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
               </div>
               <Button className="w-full h-12 text-base gap-2 text-white" style={{ backgroundColor: themeColor }} onClick={handleProceed}>
                 متابعة الطلب
@@ -143,12 +159,12 @@ export default function CartBar({ store }: { store: Store }) {
                 {items.map(({ product, quantity }) => (
                   <div key={product.id} className="flex justify-between text-sm">
                     <span className="text-gray-600">{quantity}× {product.name}</span>
-                    <span className="font-medium">{(product.price * quantity).toLocaleString('ar-EG')} جنيه</span>
+                    <span className="font-medium">{(product.price * quantity).toLocaleString('ar-EG')} {curr}</span>
                   </div>
                 ))}
                 <div className="flex justify-between font-bold text-sm pt-2 border-t border-gray-200 mt-2">
                   <span>الإجمالي</span>
-                  <span style={{ color: themeColor }}>{totalPrice.toLocaleString('ar-EG')} جنيه</span>
+                  <span style={{ color: themeColor }}>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
                 </div>
               </div>
             </div>

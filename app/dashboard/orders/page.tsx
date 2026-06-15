@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { ShoppingBag, Phone, User } from 'lucide-react'
+import { formatPrice } from '@/lib/currency'
+import OrderActions from '@/components/dashboard/OrderActions'
+import type { OrderStatus } from '@/types'
 
 export default async function OrdersPage() {
   const supabase = await createClient()
@@ -45,7 +48,7 @@ export default async function OrdersPage() {
                     {date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                   <p className="font-bold text-green-600 text-sm">
-                    {order.total.toLocaleString('ar-EG')} {store?.currency ?? 'EGP'}
+                    {formatPrice(order.total, store?.currency)}
                   </p>
                 </div>
 
@@ -78,6 +81,11 @@ export default async function OrdersPage() {
                       <span className="text-gray-400">{(item.price * item.quantity).toLocaleString('ar-EG')}</span>
                     </div>
                   ))}
+                </div>
+
+                {/* Status + actions */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <OrderActions orderId={order.id} status={(order.status ?? 'pending') as OrderStatus} />
                 </div>
               </div>
             )

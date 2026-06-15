@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Package, Store, LogOut, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, Package, Store, LogOut, ShoppingBag, ShoppingBasket } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const navItems = [
@@ -30,8 +30,10 @@ export default function DashboardSidebar({ userEmail }: { userEmail: string }) {
       {/* Logo area */}
       <div className="p-6 border-b border-gray-100">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🛍️</span>
-          <span className="font-bold text-gray-900 text-lg">ستور واتساب</span>
+          <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
+            <ShoppingBasket size={16} className="text-white" />
+          </div>
+          <span className="font-bold text-gray-900 text-lg">دكان</span>
         </div>
       </div>
 

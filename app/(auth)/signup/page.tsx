@@ -32,10 +32,22 @@ export default function SignupPage() {
 
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({ email, password })
 
     if (error) {
-      setError('حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى.')
+      if (error.message.toLowerCase().includes('already')) {
+        setError('هذا البريد مسجل بالفعل — سجّل الدخول بدلاً من ذلك')
+      } else {
+        setError('حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى.')
+      }
+      setLoading(false)
+      return
+    }
+
+    // If email confirmation is ON, Supabase returns a user with no session.
+    // Don't bounce them to a protected route — tell them to check their inbox.
+    if (data.user && !data.session) {
+      setError('تم إنشاء الحساب! تحقق من بريدك الإلكتروني لتأكيد الحساب ثم سجّل الدخول.')
       setLoading(false)
       return
     }
