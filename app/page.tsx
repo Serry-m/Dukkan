@@ -299,7 +299,11 @@ export default function HomePage() {
             <BrandMark size={24} className="rounded-md" />
             <span className="text-gray-400 font-medium">دكان</span>
           </div>
-          <p className="text-gray-600 text-xs text-center">جميع الحقوق محفوظة {new Date().getFullYear()}</p>
+          <div className="flex items-center gap-4 flex-wrap justify-center">
+            <Link href="/privacy" className="text-gray-500 hover:text-gray-300 transition-colors">الخصوصية</Link>
+            <Link href="/terms" className="text-gray-500 hover:text-gray-300 transition-colors">الشروط</Link>
+            <span className="text-gray-700 text-xs">جميع الحقوق محفوظة {new Date().getFullYear()}</span>
+          </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-gray-500 hover:text-gray-300 transition-colors">تسجيل الدخول</Link>
             <Link href="/signup" className="text-green-500 hover:text-green-400 font-medium transition-colors">إنشاء حساب</Link>

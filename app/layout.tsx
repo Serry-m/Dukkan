@@ -20,11 +20,17 @@ const almarai = Almarai({
 })
 
 export const metadata: Metadata = {
-  title: 'دكان',
-  description: 'أنشئ متجرك على واتساب في دقائق',
+  title: 'دكان — متجرك على واتساب',
+  description: 'أنشئ متجرك على واتساب في دقيقتين — شارك رابطاً واحداً واستقبل الطلبات مباشرة. مجاني بدون رسوم.',
   icons: {
     icon: '/icon.svg',
     apple: '/icon.svg',
+  },
+  openGraph: {
+    title: 'دكان — متجرك على واتساب',
+    description: 'أنشئ متجرك على واتساب في دقيقتين. مجاني بدون رسوم ولا عمولات.',
+    type: 'website',
+    locale: 'ar_EG',
   },
 }
 
