@@ -11,6 +11,14 @@ const cairo = Cairo({
 export const metadata: Metadata = {
   title: 'دكان',
   description: 'أنشئ متجرك على واتساب في دقائق',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
+}
+
+export const viewport = {
+  themeColor: '#16a34a',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

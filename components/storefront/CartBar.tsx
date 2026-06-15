@@ -7,9 +7,14 @@ import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
 import { currencyLabel } from '@/lib/currency'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle } from 'lucide-react'
+import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle, Package } from 'lucide-react'
 
 type Step = 'cart' | 'info' | 'done'
+
+function optionsLabel(opts?: Record<string, string>): string {
+  if (!opts || !Object.keys(opts).length) return ''
+  return Object.entries(opts).map(([k, v]) => `${k}: ${v}`).join('، ')
+}
 
 export default function CartBar({ store }: { store: Store }) {
   const items = useCartStore((s) => s.items)
@@ -21,15 +26,14 @@ export default function CartBar({ store }: { store: Store }) {
   const [step, setStep] = useState<Step>('cart')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const [customerAddress, setCustomerAddress] = useState('')
+  const [notes, setNotes] = useState('')
   const [error, setError] = useState('')
   const [ordering, setOrdering] = useState(false)
 
   function handleOpenChange(val: boolean) {
     setOpen(val)
-    if (!val) {
-      // Only reset step if order wasn't just placed
-      if (step !== 'done') setStep('cart')
-    }
+    if (!val && step !== 'done') setStep('cart')
   }
 
   function handleProceed() {
@@ -38,13 +42,14 @@ export default function CartBar({ store }: { store: Store }) {
   }
 
   async function handleOrder() {
+    if (!store.is_open) { setError('المتجر مغلق مؤقتاً — لا يمكن إتمام الطلب الآن'); return }
     if (!customerName.trim()) { setError('من فضلك أدخل اسمك'); return }
     const phoneDigits = customerPhone.replace(/\D/g, '')
     if (phoneDigits.length < 10 || phoneDigits.length > 11) {
       setError('رقم الهاتف غير صحيح — أدخل 11 رقم مثل 01012345678')
       return
     }
-    // Guard: a store with no WhatsApp number can't receive orders.
+    if (!customerAddress.trim()) { setError('من فضلك أدخل عنوان التوصيل'); return }
     if (!store.whatsapp_number?.trim()) {
       setError('هذا المتجر لم يضبط رقم واتساب بعد — تواصل مع صاحب المتجر')
       return
@@ -52,12 +57,16 @@ export default function CartBar({ store }: { store: Store }) {
 
     setOrdering(true)
     setError('')
-    const url = buildWhatsAppOrderUrl(store, items, customerName.trim(), phoneDigits)
+    const customer = {
+      name: customerName.trim(),
+      phone: phoneDigits,
+      address: customerAddress.trim(),
+      notes: notes.trim(),
+    }
+    const url = buildWhatsAppOrderUrl(store, items, customer)
 
-    // Save the order before redirecting. If it fails we still let the customer
-    // through to WhatsApp (that's the real order channel) but log the failure.
     try {
-      await saveOrder(store, items, customerName.trim(), phoneDigits)
+      await saveOrder(store, items, customer)
     } catch (err) {
       console.error('Failed to save order:', err)
     }
@@ -70,6 +79,8 @@ export default function CartBar({ store }: { store: Store }) {
 
   const themeColor = store.theme_color ?? '#16a34a'
   const curr = currencyLabel(store.currency)
+
+  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2'
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -87,7 +98,7 @@ export default function CartBar({ store }: { store: Store }) {
         </div>
       </SheetTrigger>
 
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-auto px-4 pb-8" dir="rtl">
+      <SheetContent side="bottom" className="rounded-t-2xl max-h-[88vh] overflow-auto px-4 pb-8" dir="rtl">
 
         {/* ── Step 1: Cart ── */}
         {step === 'cart' && (
@@ -96,21 +107,26 @@ export default function CartBar({ store }: { store: Store }) {
               <SheetTitle>سلة التسوق</SheetTitle>
             </SheetHeader>
             <div className="py-4 space-y-3">
-              {items.map(({ product, quantity }) => (
-                <div key={product.id} className="flex items-center gap-3">
+              {items.map(({ product, quantity, selectedOptions, lineId }) => (
+                <div key={lineId} className="flex items-center gap-3">
                   {product.image_url ? (
                     <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                   ) : (
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-xl flex-shrink-0">📦</div>
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <Package size={18} className="text-gray-300" />
+                    </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">{product.name}</p>
+                    {optionsLabel(selectedOptions) && (
+                      <p className="text-[11px] text-gray-400 truncate">{optionsLabel(selectedOptions)}</p>
+                    )}
                     <p className="text-xs text-gray-400">{quantity} × {product.price.toLocaleString('ar-EG')} {curr}</p>
                   </div>
                   <p className="font-bold text-sm flex-shrink-0" style={{ color: themeColor }}>
                     {(product.price * quantity).toLocaleString('ar-EG')} {curr}
                   </p>
-                  <button onClick={() => removeItem(product.id)} className="text-gray-300 hover:text-red-400 flex-shrink-0">
+                  <button onClick={() => removeItem(lineId)} className="text-gray-300 hover:text-red-400 flex-shrink-0">
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -133,14 +149,14 @@ export default function CartBar({ store }: { store: Store }) {
         {step === 'info' && (
           <>
             <SheetHeader className="text-right pb-4 border-b">
-              <SheetTitle>بيانات التواصل</SheetTitle>
+              <SheetTitle>بيانات الطلب</SheetTitle>
             </SheetHeader>
             <div className="py-5 space-y-4">
-              <p className="text-sm text-gray-500">حتى يتمكن البائع من التواصل معك لتأكيد الطلب</p>
+              <p className="text-sm text-gray-500">حتى يتمكن البائع من التواصل معك وتوصيل طلبك</p>
               {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">الاسم</label>
-                <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="محمد أحمد" className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2" />
+                <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="محمد أحمد" className={inputClass} />
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">رقم الهاتف</label>
@@ -151,14 +167,31 @@ export default function CartBar({ store }: { store: Store }) {
                   placeholder="01012345678"
                   dir="ltr"
                   maxLength={11}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+                  className={inputClass}
                 />
-                <p className="text-xs text-gray-400">11 رقم مثل 01012345678</p>
               </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">عنوان التوصيل</label>
+                <textarea
+                  value={customerAddress}
+                  onChange={(e) => setCustomerAddress(e.target.value)}
+                  placeholder="المدينة، الحي، الشارع، رقم المبنى/الشقة"
+                  rows={2}
+                  className={`${inputClass} resize-none`}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">ملاحظات (اختياري)</label>
+                <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="أي تفاصيل إضافية للطلب" className={inputClass} />
+              </div>
+
               <div className="bg-gray-50 rounded-xl p-3 space-y-1">
-                {items.map(({ product, quantity }) => (
-                  <div key={product.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600">{quantity}× {product.name}</span>
+                {items.map(({ product, quantity, selectedOptions, lineId }) => (
+                  <div key={lineId} className="flex justify-between text-sm">
+                    <span className="text-gray-600">
+                      {quantity}× {product.name}
+                      {optionsLabel(selectedOptions) && <span className="text-gray-400"> ({optionsLabel(selectedOptions)})</span>}
+                    </span>
                     <span className="font-medium">{(product.price * quantity).toLocaleString('ar-EG')} {curr}</span>
                   </div>
                 ))}
@@ -196,7 +229,7 @@ export default function CartBar({ store }: { store: Store }) {
               تم فتح واتساب مع تفاصيل طلبك. انتظر تأكيد البائع على الرقم المسجل.
             </p>
             <button
-              onClick={() => { setStep('cart'); setOpen(false); setCustomerName(''); setCustomerPhone('') }}
+              onClick={() => { setStep('cart'); setOpen(false); setCustomerName(''); setCustomerPhone(''); setCustomerAddress(''); setNotes('') }}
               className="mt-2 text-sm font-medium px-6 py-2.5 rounded-xl text-white transition-colors"
               style={{ backgroundColor: themeColor }}
             >

@@ -14,11 +14,18 @@ export default async function NewProductPage() {
 
   if (!store) redirect('/dashboard/store')
 
+  const { data: cats } = await supabase
+    .from('products')
+    .select('category')
+    .eq('store_id', store.id)
+    .not('category', 'is', null)
+  const categories = Array.from(new Set((cats ?? []).map((c) => c.category).filter(Boolean))) as string[]
+
   return (
     <div className="max-w-xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">إضافة منتج جديد</h1>
       <p className="text-gray-500 text-sm mb-6">أضف منتجاً لمتجرك</p>
-      <ProductForm storeId={store.id} product={null} />
+      <ProductForm storeId={store.id} product={null} categories={categories} />
     </div>
   )
 }

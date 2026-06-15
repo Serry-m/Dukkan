@@ -12,20 +12,38 @@ export type Store = {
   whatsapp_number: string
   currency: string
   theme_color: string     // hex color e.g. "#16a34a"
+  is_open: boolean
+  message_template: string | null
+  view_count: number
   created_at: string
 }
 
 export type OrderStatus = 'pending' | 'confirmed' | 'delivered'
 
+export type OrderItem = {
+  name: string
+  quantity: number
+  price: number
+  options?: Record<string, string> | null  // selected variant options, e.g. { "المقاس": "M" }
+}
+
 export type Order = {
   id: string
   store_id: string
-  items: { name: string; quantity: number; price: number }[]
+  items: OrderItem[]
   total: number
   customer_name: string | null
   customer_phone: string | null
+  customer_address: string | null
+  notes: string | null
   status: OrderStatus
   created_at: string
+}
+
+// A variant option group, e.g. { name: "المقاس", values: ["S","M","L"] }
+export type ProductOption = {
+  name: string
+  values: string[]
 }
 
 export type Product = {
@@ -37,12 +55,19 @@ export type Product = {
   image_url: string | null
   in_stock: boolean
   sort_order: number
+  category: string | null
+  options: ProductOption[]
   created_at: string
 }
 
 // CartItem is client-only — never stored in the DB.
 // It combines product data with the quantity the customer chose.
+// `selectedOptions` holds the variant choices (e.g. { "المقاس": "M" }).
+// `lineId` uniquely identifies a cart line: same product with different
+// options becomes a separate line.
 export type CartItem = {
   product: Product
   quantity: number
+  selectedOptions?: Record<string, string>
+  lineId: string
 }

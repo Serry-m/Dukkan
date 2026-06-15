@@ -14,11 +14,18 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
   if (!product) notFound()
 
+  const { data: cats } = await supabase
+    .from('products')
+    .select('category')
+    .eq('store_id', product.store_id)
+    .not('category', 'is', null)
+  const categories = Array.from(new Set((cats ?? []).map((c) => c.category).filter(Boolean))) as string[]
+
   return (
     <div className="max-w-xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">تعديل المنتج</h1>
       <p className="text-gray-500 text-sm mb-6">{product.name}</p>
-      <ProductForm storeId={product.store_id} product={product} />
+      <ProductForm storeId={product.store_id} product={product} categories={categories} />
     </div>
   )
 }

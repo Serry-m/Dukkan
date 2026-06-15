@@ -24,6 +24,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [description, setDescription] = useState(store?.description ?? '')
   const [themeColor, setThemeColor] = useState(store?.theme_color ?? '#16a34a')
   const [currency, setCurrency] = useState(store?.currency ?? 'EGP')
+  const [isOpen, setIsOpen] = useState(store?.is_open ?? true)
+  const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(store?.logo_url ?? null)
   const [error, setError] = useState<string | null>(null)
@@ -78,7 +80,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       }
     }
 
-    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, theme_color: themeColor, currency }
+    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, theme_color: themeColor, currency, is_open: isOpen, message_template: messageTemplate.trim() || null }
 
     if (store) {
       const { error } = await supabase.from('stores').update(payload).eq('id', store.id)
@@ -200,6 +202,35 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 <option key={c.code} value={c.code}>{c.name} ({c.label})</option>
               ))}
             </select>
+          </div>
+
+          {/* Store open/closed */}
+          <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+            <div>
+              <Label className="cursor-pointer">المتجر مفتوح</Label>
+              <p className="text-xs text-gray-400 mt-0.5">عند الإغلاق، يتصفح العملاء لكن لا يمكنهم إتمام الطلب</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen((v) => !v)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${isOpen ? 'bg-green-500' : 'bg-gray-300'}`}
+            >
+              <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${isOpen ? 'right-1' : 'right-6'}`} />
+            </button>
+          </div>
+
+          {/* WhatsApp message template */}
+          <div className="space-y-1">
+            <Label htmlFor="template">رسالة الترحيب في الطلب (اختياري)</Label>
+            <textarea
+              id="template"
+              value={messageTemplate}
+              onChange={(e) => setMessageTemplate(e.target.value)}
+              placeholder="مثال: أهلاً! حابب أطلب من متجرك 🛍️"
+              rows={2}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
+            />
+            <p className="text-xs text-gray-400">أول سطر في رسالة الواتساب التي يرسلها العميل. اتركه فارغاً للرسالة الافتراضية.</p>
           </div>
 
           <div className="space-y-1">
