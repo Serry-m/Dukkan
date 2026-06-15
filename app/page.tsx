@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Reveal, SlideIn, Float, Stagger, StaggerItem } from '@/components/landing/Motion'
+import { BrandMark } from '@/components/BrandMark'
 import {
   CheckCircle,
   Zap,
@@ -10,7 +11,6 @@ import {
   BarChart2,
   ArrowLeft,
   Store,
-  ShoppingBasket,
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -21,9 +21,7 @@ export default function HomePage() {
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
-              <ShoppingBasket size={16} className="text-white" />
-            </div>
+            <BrandMark size={32} />
             <span className="font-bold text-gray-900 text-[15px]">دكان</span>
           </div>
           <div className="flex items-center gap-2">
@@ -278,9 +276,7 @@ export default function HomePage() {
       <footer className="bg-gray-900 border-t border-gray-800">
         <div className="max-w-5xl mx-auto px-5 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-green-600 flex items-center justify-center">
-              <ShoppingBasket size={12} className="text-white" />
-            </div>
+            <BrandMark size={24} className="rounded-md" />
             <span className="text-gray-400 font-medium">دكان</span>
           </div>
           <p className="text-gray-600 text-xs text-center">جميع الحقوق محفوظة {new Date().getFullYear()}</p>

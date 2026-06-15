@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { KeyRound } from 'lucide-react'
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -150,7 +151,7 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-3">
-            <span className="text-2xl">🔑</span>
+            <KeyRound size={22} className="text-green-700" />
           </div>
           <CardTitle className="text-2xl">تعيين كلمة مرور جديدة</CardTitle>
           <CardDescription>أدخل كلمة المرور الجديدة لحسابك</CardDescription>

@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
-import { Camera } from 'lucide-react'
+import { Camera, Store as StoreIcon } from 'lucide-react'
 
 type Props = {
   store: Store | null
@@ -126,11 +126,14 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">{error}</div>}
-          {success && <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md">تم الحفظ بنجاح ✓</div>}
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
+      {success && <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg">تم الحفظ بنجاح ✓</div>}
+
+      {/* ── Section 1: Basic info ── */}
+      <Card>
+        <CardContent className="pt-6 space-y-5">
+          <h2 className="text-sm font-bold text-gray-900">المعلومات الأساسية</h2>
 
           <div className="space-y-1">
             <Label htmlFor="name">اسم المتجر</Label>
@@ -141,33 +144,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
             <Label htmlFor="whatsapp">رقم واتساب</Label>
             <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))} placeholder="01012345678" required dir="ltr" />
             <p className="text-xs text-gray-400">أدخل رقمك المصري — كود الدولة يُضاف تلقائياً</p>
-          </div>
-
-          {/* Logo upload */}
-          <div className="space-y-2">
-            <Label>شعار المتجر</Label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 overflow-hidden flex items-center justify-center flex-shrink-0">
-                {logoPreview ? (
-                  <img src={logoPreview} alt="logo" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-3xl">🛍️</span>
-                )}
-                <label
-                  htmlFor="logo"
-                  className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity rounded-full"
-                >
-                  <Camera size={20} className="text-white" />
-                </label>
-              </div>
-              <div>
-                <input id="logo" type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
-                <label htmlFor="logo" className="text-sm text-green-600 hover:underline cursor-pointer font-medium">
-                  اختر صورة
-                </label>
-                <p className="text-xs text-gray-400 mt-1">PNG أو JPG — يُفضل مربع الشكل</p>
-              </div>
-            </div>
           </div>
 
           <div className="space-y-1">
@@ -185,6 +161,45 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               />
             </div>
             <p className="text-xs text-gray-400">أحرف إنجليزية وأرقام وشرطة فقط</p>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="description">وصف المتجر (اختياري)</Label>
+            <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="مثال: أفضل الإكسسوارات بأسعار منافسة" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Section 2: Appearance ── */}
+      <Card>
+        <CardContent className="pt-6 space-y-5">
+          <h2 className="text-sm font-bold text-gray-900">مظهر المتجر</h2>
+
+          {/* Logo upload */}
+          <div className="space-y-2">
+            <Label>شعار المتجر</Label>
+            <div className="flex items-center gap-4">
+              <div className="relative w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 overflow-hidden flex items-center justify-center flex-shrink-0">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="logo" className="w-full h-full object-cover" />
+                ) : (
+                  <StoreIcon size={26} className="text-gray-300" />
+                )}
+                <label
+                  htmlFor="logo"
+                  className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity rounded-full"
+                >
+                  <Camera size={20} className="text-white" />
+                </label>
+              </div>
+              <div>
+                <input id="logo" type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
+                <label htmlFor="logo" className="text-sm text-green-600 hover:underline cursor-pointer font-medium">
+                  اختر صورة
+                </label>
+                <p className="text-xs text-gray-400 mt-1">PNG أو JPG — يُفضل مربع الشكل</p>
+              </div>
+            </div>
           </div>
 
           {/* Theme color picker */}
@@ -216,41 +231,43 @@ export default function StoreSettingsForm({ store, userId }: Props) {
             )}
           </div>
 
-          {/* ── Storefront design ── */}
-          <div className="pt-2 border-t border-gray-100">
-            <p className="text-sm font-bold text-gray-700 mb-3">تصميم المتجر</p>
-
-            {/* Banner upload */}
-            <div className="space-y-2 mb-4">
-              <Label>صورة الغلاف (اختياري)</Label>
-              {bannerPreview && (
-                <div className="aspect-[3/1] w-full rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
-                  <img src={bannerPreview} alt="banner" className="w-full h-full object-cover" />
-                </div>
-              )}
-              <input id="banner" type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
-              <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
-                {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
-              </label>
-            </div>
-
-            {/* Layout */}
-            <div className="space-y-1.5">
-              <Label>طريقة عرض المنتجات</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {([['grid', 'شبكة (عمودين)'], ['list', 'قائمة (صف لكل منتج)']] as const).map(([val, label]) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => setLayout(val)}
-                    className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${layout === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
-                  >
-                    {label}
-                  </button>
-                ))}
+          {/* Banner upload */}
+          <div className="space-y-2">
+            <Label>صورة الغلاف (اختياري)</Label>
+            {bannerPreview && (
+              <div className="aspect-[3/1] w-full rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
+                <img src={bannerPreview} alt="banner" className="w-full h-full object-cover" />
               </div>
+            )}
+            <input id="banner" type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
+            <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
+              {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
+            </label>
+          </div>
+
+          {/* Layout */}
+          <div className="space-y-1.5">
+            <Label>طريقة عرض المنتجات</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {([['grid', 'شبكة (عمودين)'], ['list', 'قائمة (صف لكل منتج)']] as const).map(([val, label]) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => setLayout(val)}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${layout === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Section 3: Selling & delivery ── */}
+      <Card>
+        <CardContent className="pt-6 space-y-5">
+          <h2 className="text-sm font-bold text-gray-900">البيع والتوصيل</h2>
 
           {/* Currency selector */}
           <div className="space-y-1">
@@ -311,17 +328,15 @@ export default function StoreSettingsForm({ store, userId }: Props) {
             />
             <p className="text-xs text-gray-400">أول سطر في رسالة الواتساب التي يرسلها العميل. اتركه فارغاً للرسالة الافتراضية.</p>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="space-y-1">
-            <Label htmlFor="description">وصف المتجر (اختياري)</Label>
-            <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="مثال: أفضل الإكسسوارات بأسعار منافسة" />
-          </div>
-
-          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
-            {loading ? 'جاري الحفظ...' : store ? 'حفظ التغييرات' : 'إنشاء المتجر'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      {/* Sticky save bar */}
+      <div className="sticky bottom-0 -mx-4 px-4 py-3 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent lg:static lg:mx-0 lg:px-0 lg:bg-none lg:py-0">
+        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
+          {loading ? 'جاري الحفظ...' : store ? 'حفظ التغييرات' : 'إنشاء المتجر'}
+        </Button>
+      </div>
+    </form>
   )
 }

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { BrandMark } from '@/components/BrandMark'
 
 type Mode = 'login' | 'forgot'
 
@@ -59,7 +60,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="text-4xl mb-2">🛍️</div>
+          <div className="flex justify-center mb-3"><BrandMark size={48} className="rounded-2xl" /></div>
           <CardTitle className="text-2xl">
             {mode === 'login' ? 'تسجيل الدخول' : 'نسيت كلمة المرور؟'}
           </CardTitle>

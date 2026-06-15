@@ -46,7 +46,9 @@ export default async function DashboardPage() {
   if (!store) {
     return (
       <div className="max-w-lg mx-auto text-center py-20">
-        <div className="text-5xl mb-4">🏪</div>
+        <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
+          <Store size={30} className="text-green-700" />
+        </div>
         <h1 className="text-2xl font-bold mb-2">أهلاً بك!</h1>
         <p className="text-gray-500 mb-6">ابدأ بإنشاء متجرك الأول على واتساب</p>
         <Link href="/dashboard/store" className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700')}>
@@ -69,7 +71,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">مرحباً 👋</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">مرحباً</h1>
 
       {/* Onboarding checklist — shown until the store is set up */}
       {!setupComplete && (
