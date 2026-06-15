@@ -10,11 +10,13 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus, X, ImagePlus } from 'lucide-react'
 import { toast } from 'sonner'
+import { ProUpsell, ProBadge } from '@/components/dashboard/ProLock'
 
 type Props = {
   storeId: string
   product: Product | null
   categories?: string[]
+  isPro?: boolean
 }
 
 // The editor keeps option values as a raw comma-separated string for easy
@@ -24,7 +26,7 @@ type DraftOption = { name: string; valuesRaw: string }
 // A photo slot is either an already-saved url or a freshly picked file.
 type ImageSlot = { url: string | null; file: File | null; preview: string }
 
-export default function ProductForm({ storeId, product, categories = [] }: Props) {
+export default function ProductForm({ storeId, product, categories = [], isPro = false }: Props) {
   const router = useRouter()
   const [name, setName] = useState(product?.name ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
@@ -46,7 +48,7 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const MAX_IMAGES = 3
+  const MAX_IMAGES = isPro ? 3 : 1
 
   function handleAddImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -156,20 +158,26 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
             <Input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="150" required dir="ltr" />
           </div>
 
-          {/* Category with datalist of existing categories */}
+          {/* Category — Pro */}
           <div className="space-y-1">
-            <Label htmlFor="category">التصنيف (اختياري)</Label>
-            <Input
-              id="category"
-              list="category-list"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="مثال: أقراط، سلاسل، خواتم"
-            />
-            <datalist id="category-list">
-              {categories.map((c) => <option key={c} value={c} />)}
-            </datalist>
-            <p className="text-xs text-gray-400">يساعد العملاء على تصفح متجرك حسب النوع</p>
+            <Label htmlFor="category" className="flex items-center gap-2">التصنيف (اختياري) {!isPro && <ProBadge />}</Label>
+            {isPro ? (
+              <>
+                <Input
+                  id="category"
+                  list="category-list"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder="مثال: أقراط، سلاسل، خواتم"
+                />
+                <datalist id="category-list">
+                  {categories.map((c) => <option key={c} value={c} />)}
+                </datalist>
+                <p className="text-xs text-gray-400">يساعد العملاء على تصفح متجرك حسب النوع</p>
+              </>
+            ) : (
+              <ProUpsell feature="التصنيفات" />
+            )}
           </div>
 
           <div className="space-y-1">
@@ -184,9 +192,13 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
             />
           </div>
 
-          {/* Product photos — up to 3 */}
+          {/* Product photos — up to 3 (Pro), 1 (free) */}
           <div className="space-y-2">
-            <Label>صور المنتج <span className="text-gray-400 font-normal">(حتى ٣ صور)</span></Label>
+            <Label className="flex items-center gap-2">
+              صور المنتج
+              <span className="text-gray-400 font-normal">{isPro ? '(حتى ٣ صور)' : '(صورة واحدة)'}</span>
+              {!isPro && <ProBadge />}
+            </Label>
             <div className="flex gap-2.5 flex-wrap">
               {imageSlots.map((slot, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 group">
@@ -215,11 +227,16 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
             </div>
             <input id="image" type="file" accept="image/*" className="hidden" onChange={handleAddImage} />
             <p className="text-xs text-gray-400">الصورة الأولى هي الرئيسية التي تظهر في قائمة المنتجات</p>
+            {!isPro && <ProUpsell feature="إضافة حتى ٣ صور للمنتج" />}
           </div>
 
-          {/* Variant options editor */}
+          {/* Variant options editor — Pro */}
           <div className="space-y-2">
-            <Label>الخيارات (اختياري)</Label>
+            <Label className="flex items-center gap-2">الخيارات (اختياري) {!isPro && <ProBadge />}</Label>
+            {!isPro ? (
+              <ProUpsell feature="خيارات المنتج (مقاسات وألوان)" />
+            ) : (
+            <>
             <p className="text-xs text-gray-400 -mt-1">
               أضف خياراً واحداً لكل نوع (مثل «المقاس») واكتب كل القيم بداخله مفصولة بفاصلة. لا تنشئ خياراً منفصلاً لكل قيمة.
             </p>
@@ -274,6 +291,8 @@ export default function ProductForm({ storeId, product, categories = [] }: Props
             >
               <Plus size={15} /> إضافة خيار
             </button>
+            </>
+            )}
           </div>
 
           <div className="flex items-center gap-3">

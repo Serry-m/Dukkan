@@ -166,7 +166,13 @@ export default async function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{(store.view_count ?? 0).toLocaleString('ar-EG')}</p>
+            {pro ? (
+              <p className="text-3xl font-bold">{(store.view_count ?? 0).toLocaleString('ar-EG')}</p>
+            ) : (
+              <Link href="/dashboard/upgrade" className="inline-flex items-center gap-1 text-sm font-bold text-green-700">
+                <Crown size={14} /> Pro
+              </Link>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -191,8 +197,8 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Top products */}
-      {topProducts.length > 0 && (
+      {/* Top products — Pro only */}
+      {topProducts.length > 0 && pro && (
         <Card className="mt-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold text-gray-900 flex items-center gap-2">

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Store } from '@/types'
 import { isLightColor } from '@/lib/color'
+import { isPro } from '@/lib/plan'
+import { ProUpsell, ProBadge } from '@/components/dashboard/ProLock'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +21,7 @@ type Props = {
 
 export default function StoreSettingsForm({ store, userId }: Props) {
   const router = useRouter()
+  const pro = isPro(store)
   const [name, setName] = useState(store?.name ?? '')
   const [slug, setSlug] = useState(store?.slug ?? '')
   const [whatsapp, setWhatsapp] = useState(store?.whatsapp_number ?? '')
@@ -229,18 +232,24 @@ export default function StoreSettingsForm({ store, userId }: Props) {
             )}
           </div>
 
-          {/* Banner upload */}
+          {/* Banner upload — Pro */}
           <div className="space-y-2">
-            <Label>صورة الغلاف (اختياري)</Label>
-            {bannerPreview && (
-              <div className="aspect-[3/1] w-full rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
-                <img src={bannerPreview} alt="banner" className="w-full h-full object-cover" />
-              </div>
+            <Label className="flex items-center gap-2">صورة الغلاف (اختياري) {!pro && <ProBadge />}</Label>
+            {pro ? (
+              <>
+                {bannerPreview && (
+                  <div className="aspect-[3/1] w-full rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
+                    <img src={bannerPreview} alt="banner" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <input id="banner" type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
+                <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
+                  {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
+                </label>
+              </>
+            ) : (
+              <ProUpsell feature="صورة الغلاف" />
             )}
-            <input id="banner" type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
-            <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
-              {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
-            </label>
           </div>
 
           {/* Layout */}
@@ -267,20 +276,26 @@ export default function StoreSettingsForm({ store, userId }: Props) {
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">البيع والتوصيل</h2>
 
-          {/* Delivery fee */}
+          {/* Delivery fee — Pro */}
           <div className="space-y-1">
-            <Label htmlFor="delivery">رسوم التوصيل</Label>
-            <Input
-              id="delivery"
-              type="number"
-              min="0"
-              step="0.01"
-              value={deliveryFee}
-              onChange={(e) => setDeliveryFee(e.target.value)}
-              placeholder="0"
-              dir="ltr"
-            />
-            <p className="text-xs text-gray-400">تُضاف تلقائياً لإجمالي الطلب. اتركها 0 إذا كان التوصيل مجانياً أو يُحسب لاحقاً.</p>
+            <Label htmlFor="delivery" className="flex items-center gap-2">رسوم التوصيل {!pro && <ProBadge />}</Label>
+            {pro ? (
+              <>
+                <Input
+                  id="delivery"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={deliveryFee}
+                  onChange={(e) => setDeliveryFee(e.target.value)}
+                  placeholder="0"
+                  dir="ltr"
+                />
+                <p className="text-xs text-gray-400">تُضاف تلقائياً لإجمالي الطلب. اتركها 0 إذا كان التوصيل مجانياً أو يُحسب لاحقاً.</p>
+              </>
+            ) : (
+              <ProUpsell feature="رسوم التوصيل" />
+            )}
           </div>
 
           {/* Store open/closed */}

@@ -56,7 +56,7 @@ export default async function NewProductPage() {
     <div className="max-w-xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">إضافة منتج جديد</h1>
       <p className="text-gray-500 text-sm mb-6">أضف منتجاً لمتجرك</p>
-      <ProductForm storeId={store.id} product={null} categories={categories} />
+      <ProductForm storeId={store.id} product={null} categories={categories} isPro={isPro(store)} />
     </div>
   )
 }
