@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { OrderStatus } from '@/types'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Check, Truck, Trash2, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -36,7 +37,6 @@ export default function OrderActions({ orderId, status }: Props) {
   }
 
   async function handleDelete() {
-    if (!confirm('حذف هذا الطلب نهائياً؟')) return
     setLoading(true)
     const supabase = createClient()
     await supabase.from('orders').delete().eq('id', orderId)
@@ -85,14 +85,21 @@ export default function OrderActions({ orderId, status }: Props) {
         </button>
       )}
 
-      <button
-        onClick={handleDelete}
-        disabled={loading}
-        className="flex items-center justify-center w-7 h-7 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-        aria-label="حذف الطلب"
-      >
-        <Trash2 size={14} />
-      </button>
+      <ConfirmDialog
+        title="حذف الطلب"
+        description="هل أنت متأكد من حذف هذا الطلب نهائياً؟"
+        confirmLabel="حذف"
+        onConfirm={handleDelete}
+        trigger={
+          <button
+            disabled={loading}
+            className="flex items-center justify-center w-7 h-7 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+            aria-label="حذف الطلب"
+          >
+            <Trash2 size={14} />
+          </button>
+        }
+      />
     </div>
   )
 }

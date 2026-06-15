@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -12,7 +13,6 @@ export default function DeleteProductButton({ productId }: { productId: string }
   const [loading, setLoading] = useState(false)
 
   async function handleDelete() {
-    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return
     setLoading(true)
     const supabase = createClient()
     await supabase.from('products').delete().eq('id', productId)
@@ -21,14 +21,21 @@ export default function DeleteProductButton({ productId }: { productId: string }
   }
 
   return (
-    <Button
-      size="icon"
-      variant="ghost"
-      className="text-red-400 hover:text-red-600 hover:bg-red-50"
-      onClick={handleDelete}
-      disabled={loading}
-    >
-      <Trash2 size={15} />
-    </Button>
+    <ConfirmDialog
+      title="حذف المنتج"
+      description="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء."
+      confirmLabel="حذف"
+      onConfirm={handleDelete}
+      trigger={
+        <Button
+          size="icon"
+          variant="ghost"
+          className="text-red-400 hover:text-red-600 hover:bg-red-50"
+          disabled={loading}
+        >
+          <Trash2 size={15} />
+        </Button>
+      }
+    />
   )
 }

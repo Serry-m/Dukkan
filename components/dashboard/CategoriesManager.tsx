@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { GripVertical, Pencil, Trash2, Check, X, FolderOpen, ChevronUp, ChevronDown } from 'lucide-react'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 type Props = {
   storeId: string
@@ -66,7 +67,6 @@ export default function CategoriesManager({ storeId, categories }: Props) {
 
   // ----- Delete (clears category from its products) -----
   async function remove(name: string) {
-    if (!confirm(`حذف تصنيف "${name}"؟ المنتجات لن تُحذف، فقط يُزال التصنيف عنها.`)) return
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').update({ category: null }).eq('store_id', storeId).eq('category', name)
@@ -124,7 +124,15 @@ export default function CategoriesManager({ storeId, categories }: Props) {
             ) : (
               <>
                 <button onClick={() => { setEditing(cat); setEditValue(cat) }} disabled={busy} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100"><Pencil size={14} /></button>
-                <button onClick={() => remove(cat)} disabled={busy} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14} /></button>
+                <ConfirmDialog
+                  title={`حذف تصنيف "${cat}"`}
+                  description="المنتجات لن تُحذف، فقط يُزال التصنيف عنها."
+                  confirmLabel="حذف"
+                  onConfirm={() => remove(cat)}
+                  trigger={
+                    <button disabled={busy} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14} /></button>
+                  }
+                />
               </>
             )}
           </div>
