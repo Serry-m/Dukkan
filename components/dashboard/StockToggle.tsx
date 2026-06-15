@@ -34,8 +34,8 @@ export default function StockToggle({ productId, inStock }: Props) {
     >
       {/* Thumb — absolutely positioned to stay inside the track */}
       <span
-        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 flex items-center justify-center ${
-          current ? 'translate-x-6' : 'translate-x-1'
+        className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-200 flex items-center justify-center ${
+          current ? 'right-1' : 'right-6'
         }`}
       >
         {loading && (
