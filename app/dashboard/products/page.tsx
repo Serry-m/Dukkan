@@ -83,7 +83,9 @@ export default async function ProductsPage() {
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-xs text-gray-400">{product.in_stock ? 'متاح' : 'نفد'}</span>
+                <span className={`text-xs font-medium ${product.in_stock ? 'text-green-600' : 'text-gray-400'}`}>
+                  {product.in_stock ? 'متاح' : 'نفد'}
+                </span>
                 <StockToggle productId={product.id} inStock={product.in_stock} />
               </div>
 
