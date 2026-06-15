@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Store } from '@/types'
-import { CURRENCIES } from '@/lib/currency'
 import { isLightColor } from '@/lib/color'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -25,7 +24,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [whatsapp, setWhatsapp] = useState(store?.whatsapp_number ?? '')
   const [description, setDescription] = useState(store?.description ?? '')
   const [themeColor, setThemeColor] = useState(store?.theme_color ?? '#16a34a')
-  const [currency, setCurrency] = useState(store?.currency ?? 'EGP')
+  // Currency is locked to EGP for now (matches the Egyptian phone validation).
+  const currency = store?.currency ?? 'EGP'
   const [deliveryFee, setDeliveryFee] = useState(store?.delivery_fee?.toString() ?? '0')
   const [isOpen, setIsOpen] = useState(store?.is_open ?? true)
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
@@ -266,21 +266,6 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       <Card>
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">البيع والتوصيل</h2>
-
-          {/* Currency selector */}
-          <div className="space-y-1">
-            <Label htmlFor="currency">العملة</Label>
-            <select
-              id="currency"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="w-full h-9 border border-input rounded-lg px-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring/50"
-            >
-              {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code}>{c.name} ({c.label})</option>
-              ))}
-            </select>
-          </div>
 
           {/* Delivery fee */}
           <div className="space-y-1">
