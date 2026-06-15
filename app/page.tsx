@@ -232,7 +232,7 @@ export default function HomePage() {
         </Stagger>
       </section>
 
-      {/* ── How it works ── */}
+      {/* ── How it works (vertical timeline) ── */}
       <section className="bg-gray-50 border-y border-gray-100">
         <div className="max-w-5xl mx-auto px-5 py-16">
           <Reveal>
@@ -240,19 +240,25 @@ export default function HomePage() {
               ابدأ في ٣ خطوات
             </h2>
           </Reveal>
-          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
+          <Stagger className="max-w-xl mx-auto">
             {[
-              { num: '١', title: 'سجّل حسابك', desc: 'أنشئ حساباً مجانياً بالبريد الإلكتروني في ثوانٍ.' },
-              { num: '٢', title: 'أضف منتجاتك', desc: 'أضف صور الأسعار والأوصاف لمنتجاتك بسهولة.' },
-              { num: '٣', title: 'شارك وابيع', desc: 'شارك رابطك واستقبل الطلبات مباشرة على واتساب.' },
-            ].map((step) => (
+              { num: '١', title: 'سجّل حسابك', desc: 'أنشئ حساباً مجانياً بالبريد الإلكتروني في ثوانٍ، بدون بطاقة ائتمان.' },
+              { num: '٢', title: 'أضف منتجاتك', desc: 'أضف الصور والأسعار والأوصاف والتصنيفات لمنتجاتك بسهولة.' },
+              { num: '٣', title: 'شارك وابيع', desc: 'شارك رابط متجرك واستقبل الطلبات منظّمة مباشرة على واتساب.' },
+            ].map((step, i, arr) => (
               <StaggerItem key={step.num}>
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-green-600 text-white text-2xl font-extrabold flex items-center justify-center mb-4 shadow-lg shadow-green-200">
+                <div className="flex gap-5 relative pb-10 last:pb-0">
+                  {/* Connecting line */}
+                  {i < arr.length - 1 && (
+                    <div className="absolute right-[27px] top-14 bottom-0 w-px bg-green-200" />
+                  )}
+                  <div className="w-14 h-14 rounded-2xl bg-green-600 text-white text-2xl font-extrabold flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-200 relative z-10">
                     {step.num}
                   </div>
-                  <h3 className="font-bold text-gray-900 text-base mb-2">{step.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed max-w-[180px]">{step.desc}</p>
+                  <div className="pt-2">
+                    <h3 className="font-bold text-gray-900 text-lg">{step.title}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed mt-1">{step.desc}</p>
+                  </div>
                 </div>
               </StaggerItem>
             ))}

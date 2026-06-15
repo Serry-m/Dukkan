@@ -49,7 +49,7 @@ export default async function DashboardPage() {
         <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
           <Store size={30} className="text-green-700" />
         </div>
-        <h1 className="text-2xl font-bold mb-2">أهلاً بك!</h1>
+        <h1 className="text-2xl font-bold mb-2">أهلاً بك</h1>
         <p className="text-gray-500 mb-6">ابدأ بإنشاء متجرك الأول على واتساب</p>
         <Link href="/dashboard/store" className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700')}>
           إنشاء متجري

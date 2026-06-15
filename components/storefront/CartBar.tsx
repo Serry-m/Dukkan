@@ -248,7 +248,7 @@ export default function CartBar({ store }: { store: Store }) {
             <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}15` }}>
               <CheckCircle size={36} style={{ color: themeColor }} />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">تم إرسال طلبك!</h3>
+            <h3 className="text-xl font-bold text-gray-900">تم إرسال طلبك</h3>
             <p className="text-sm text-gray-500 max-w-xs">
               تم فتح واتساب مع تفاصيل طلبك. انتظر تأكيد البائع على الرقم المسجل.
             </p>
