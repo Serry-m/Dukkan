@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { Product, Store } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import ProductCard from './ProductCard'
@@ -41,6 +41,19 @@ export default function ProductGrid({ products, store }: Props) {
     setDetailProduct(product)
     setDetailOpen(true)
   }
+
+  // Defensive: when the variant sheet closes, make sure base-ui hasn't left
+  // the page locked with pointer-events:none (which would block checkout).
+  useEffect(() => {
+    if (!detailOpen) {
+      const t = setTimeout(() => {
+        if (document.body.style.pointerEvents === 'none') {
+          document.body.style.pointerEvents = ''
+        }
+      }, 100)
+      return () => clearTimeout(t)
+    }
+  }, [detailOpen])
 
   if (!products.length) {
     return (

@@ -5,7 +5,7 @@ import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Package, Check, ShoppingCart } from 'lucide-react'
+import { Package, ShoppingCart } from 'lucide-react'
 
 type Props = {
   product: Product | null
@@ -18,12 +18,10 @@ type Props = {
 export default function ProductDetailSheet({ product, open, onOpenChange, themeColor, currency }: Props) {
   const addItem = useCartStore((s) => s.addItem)
   const [selected, setSelected] = useState<Record<string, string>>({})
-  const [added, setAdded] = useState(false)
 
   // Reset selections whenever a new product opens.
   useEffect(() => {
     setSelected({})
-    setAdded(false)
   }, [product?.id])
 
   if (!product) return null
@@ -35,11 +33,9 @@ export default function ProductDetailSheet({ product, open, onOpenChange, themeC
   function handleAdd() {
     if (!allChosen) return
     addItem(product!, options.length ? selected : undefined)
-    setAdded(true)
-    setTimeout(() => {
-      onOpenChange(false)
-      setAdded(false)
-    }, 700)
+    // Close immediately. Holding the modal open on a timer can race with
+    // base-ui's pointer-lock cleanup and leave the page unclickable.
+    onOpenChange(false)
   }
 
   return (
@@ -114,11 +110,7 @@ export default function ProductDetailSheet({ product, open, onOpenChange, themeC
             className="w-full h-12 rounded-2xl text-white text-base font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40"
             style={{ backgroundColor: themeColor }}
           >
-            {added ? (
-              <><Check size={20} /> تمت الإضافة</>
-            ) : (
-              <><ShoppingCart size={18} /> أضف للسلة</>
-            )}
+            <ShoppingCart size={18} /> أضف للسلة
           </button>
           {!allChosen && options.length > 0 && (
             <p className="text-center text-xs text-gray-400 mt-2">اختر كل الخيارات لإضافة المنتج</p>

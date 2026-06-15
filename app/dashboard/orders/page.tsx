@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { ShoppingBag, Phone, User, MapPin, StickyNote } from 'lucide-react'
+import { ShoppingBag, Phone, User, MapPin, StickyNote, Wallet, CheckCircle2, Clock } from 'lucide-react'
 import { formatPrice } from '@/lib/currency'
 import OrderActions from '@/components/dashboard/OrderActions'
 import type { OrderStatus, OrderItem } from '@/types'
@@ -20,12 +20,39 @@ export default async function OrdersPage() {
     .eq('store_id', store?.id ?? '')
     .order('created_at', { ascending: false })
 
+  // Revenue is counted only from delivered (completed) orders.
+  const allOrders = orders ?? []
+  const delivered = allOrders.filter((o) => o.status === 'delivered')
+  const pending = allOrders.filter((o) => (o.status ?? 'pending') === 'pending')
+  const revenue = delivered.reduce((sum, o) => sum + Number(o.total), 0)
+
   return (
     <div className="max-w-3xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">الطلبات</h1>
-        <p className="text-sm text-gray-500">{orders?.length ?? 0} طلب</p>
+        <p className="text-sm text-gray-500">{allOrders.length.toLocaleString('ar-EG')} طلب</p>
       </div>
+
+      {/* Revenue dashboard */}
+      {allOrders.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-4 text-white">
+            <Wallet size={18} className="mb-2 opacity-90" />
+            <p className="text-xl font-extrabold leading-none">{formatPrice(revenue, store?.currency)}</p>
+            <p className="text-[11px] text-green-100 mt-1.5">إيرادات الطلبات المسلّمة</p>
+          </div>
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <CheckCircle2 size={18} className="mb-2 text-green-600" />
+            <p className="text-xl font-extrabold text-gray-900 leading-none">{delivered.length.toLocaleString('ar-EG')}</p>
+            <p className="text-[11px] text-gray-400 mt-1.5">طلب مسلّم</p>
+          </div>
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <Clock size={18} className="mb-2 text-amber-500" />
+            <p className="text-xl font-extrabold text-gray-900 leading-none">{pending.length.toLocaleString('ar-EG')}</p>
+            <p className="text-[11px] text-gray-400 mt-1.5">طلب جديد</p>
+          </div>
+        </div>
+      )}
 
       {!orders?.length ? (
         <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
