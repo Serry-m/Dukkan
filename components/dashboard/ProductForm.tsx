@@ -56,7 +56,6 @@ export default function ProductForm({ storeId, product }: Props) {
     if (imageFile) {
       imageUrl = await uploadImage(imageFile)
       if (!imageUrl) {
-        setError('فشل رفع الصورة — تأكد من إنشاء Storage bucket باسم store-assets في Supabase')
         setLoading(false)
         return
       }
