@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Reveal, SlideIn, Float, Stagger, StaggerItem } from '@/components/landing/Motion'
+import Faq from '@/components/landing/Faq'
 import { BrandMark } from '@/components/BrandMark'
 import {
   CheckCircle,
@@ -76,6 +77,10 @@ export default function HomePage() {
                     تسجيل الدخول
                   </Link>
                 </div>
+                <p className="flex items-center gap-1.5 text-xs text-gray-400 mt-3">
+                  <CheckCircle size={13} className="text-green-500" />
+                  مجاني تماماً · بدون بطاقة ائتمان
+                </p>
               </StaggerItem>
             </Stagger>
           </div>
@@ -249,6 +254,18 @@ export default function HomePage() {
               </StaggerItem>
             ))}
           </Stagger>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="bg-white">
+        <div className="max-w-5xl mx-auto px-5 py-16">
+          <Reveal>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-10">الأسئلة الشائعة</h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <Faq />
+          </Reveal>
         </div>
       </section>
 
