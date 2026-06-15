@@ -9,7 +9,7 @@ const cairo = Cairo({
 })
 
 export const metadata: Metadata = {
-  title: 'ستور واتساب',
+  title: 'دكان',
   description: 'أنشئ متجرك على واتساب في دقائق',
 }
 

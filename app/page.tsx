@@ -22,7 +22,7 @@ export default function HomePage() {
             <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
               <Store size={16} className="text-white" />
             </div>
-            <span className="font-bold text-gray-900 text-[15px]">واتساب ستور</span>
+            <span className="font-bold text-gray-900 text-[15px]">دكان</span>
           </div>
           <div className="flex items-center gap-2">
             <Link
@@ -323,7 +323,7 @@ export default function HomePage() {
             <div className="w-6 h-6 rounded-md bg-green-600 flex items-center justify-center">
               <Store size={12} className="text-white" />
             </div>
-            <span className="text-gray-400 font-medium">واتساب ستور</span>
+            <span className="text-gray-400 font-medium">دكان</span>
           </div>
           <p className="text-gray-600 text-xs text-center">
             جميع الحقوق محفوظة {new Date().getFullYear()}
