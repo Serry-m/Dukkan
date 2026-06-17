@@ -57,8 +57,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-green-50/60 via-white to-white" dir="rtl">
+      {/* Ambient brand glow */}
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-green-200/30 rounded-full blur-3xl" />
+      <Card className="relative w-full max-w-md shadow-[var(--shadow-lift)]">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3"><BrandMark size={48} className="rounded-2xl" /></div>
           <CardTitle className="text-2xl">

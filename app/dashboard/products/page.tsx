@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
-import { Plus, Pencil } from 'lucide-react'
+import { Plus, Pencil, Package } from 'lucide-react'
 import DeleteProductButton from '@/components/dashboard/DeleteProductButton'
 import StockToggle from '@/components/dashboard/StockToggle'
 import ReorderButtons from '@/components/dashboard/ReorderButtons'
@@ -68,17 +68,19 @@ export default async function ProductsPage() {
       )}
 
       {!products?.length ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-dashed border-gray-200">
-          <div className="text-4xl mb-3">📦</div>
+        <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+          <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+            <Package size={26} className="text-gray-300" />
+          </div>
           <p className="text-gray-500 mb-4">لا توجد منتجات بعد</p>
           <Link href="/dashboard/products/new" className={cn(buttonVariants({ variant: 'outline' }))}>
             أضف أول منتج
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {products.map((product, index) => (
-            <div key={product.id} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+            <div key={product.id} className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-3 flex items-center gap-3">
               {/* Reorder arrows */}
               <ReorderButtons
                 productId={product.id}
@@ -92,18 +94,25 @@ export default async function ProductsPage() {
               />
 
               {product.image_url ? (
-                <img src={product.image_url} alt={product.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+                <img src={product.image_url} alt={product.name} className="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-gray-100" />
               ) : (
-                <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 text-2xl">📦</div>
+                <div className="w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                  <Package size={20} className="text-gray-300" />
+                </div>
               )}
 
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                <p className="text-green-600 font-bold text-sm">{formatPrice(product.price, store.currency)}</p>
+                <p className="font-semibold text-gray-900 truncate">{product.name}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-green-600 font-bold text-sm tabular-nums">{formatPrice(product.price, store.currency)}</p>
+                  {product.category && (
+                    <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full truncate max-w-[90px]">{product.category}</span>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <span className={`text-xs font-medium ${product.in_stock ? 'text-green-600' : 'text-gray-400'}`}>
+                <span className={`text-xs font-medium hidden sm:inline ${product.in_stock ? 'text-green-600' : 'text-gray-400'}`}>
                   {product.in_stock ? 'متاح' : 'نفد'}
                 </span>
                 <StockToggle productId={product.id} inStock={product.in_stock} />

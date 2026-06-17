@@ -105,74 +105,87 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
             const date = new Date(order.created_at)
             const items = order.items as OrderItem[]
             return (
-              <div key={order.id} className="bg-white rounded-xl border border-gray-100 p-4">
+              <div key={order.id} className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] overflow-hidden">
                 {/* Header: date + total */}
-                <div className="flex items-start justify-between mb-3">
-                  <p className="text-xs text-gray-400">
-                    {date.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    {' — '}
+                <div className="bg-gradient-to-bl from-green-50 to-white px-4 py-3.5 border-b border-green-100/70 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <Clock size={13} className="text-green-600/70" />
+                    {date.toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' })}
+                    {' · '}
                     {date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                  <p className="font-bold text-green-600 text-sm">
+                  </div>
+                  <p className="text-lg font-extrabold text-green-700 tabular-nums leading-none">
                     {formatPrice(order.total, store?.currency)}
                   </p>
                 </div>
 
-                {/* Customer info */}
-                {(order.customer_name || order.customer_phone || order.customer_address || order.notes) && (
-                  <div className="mb-3 bg-gray-50 rounded-lg px-3 py-2.5 space-y-2">
-                    <div className="flex gap-4 flex-wrap">
+                <div className="p-4">
+                  {/* Customer info panel */}
+                  {(order.customer_name || order.customer_phone || order.customer_address || order.notes) && (
+                    <div className="mb-4 rounded-xl border border-green-100 bg-green-50/50 p-3.5 space-y-2.5">
                       {order.customer_name && (
-                        <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                          <User size={13} className="text-gray-400" />
-                          {order.customer_name}
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <User size={14} className="text-green-700" />
+                          </span>
+                          <span className="text-sm font-medium text-gray-800">{order.customer_name}</span>
                         </div>
                       )}
                       {order.customer_phone && (
-                        <a
-                          href={`tel:${order.customer_phone}`}
-                          className="flex items-center gap-1.5 text-sm text-green-600 hover:underline"
-                        >
-                          <Phone size={13} />
-                          {order.customer_phone}
-                        </a>
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <Phone size={14} className="text-green-700" />
+                          </span>
+                          <a href={`tel:${order.customer_phone}`} className="text-sm font-medium text-green-700 hover:underline" dir="ltr">
+                            {order.customer_phone}
+                          </a>
+                        </div>
+                      )}
+                      {order.customer_address && (
+                        <div className="flex items-start gap-2.5">
+                          <span className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <MapPin size={14} className="text-green-700" />
+                          </span>
+                          <span className="text-sm text-gray-700 leading-relaxed">{order.customer_address}</span>
+                        </div>
+                      )}
+                      {order.notes && (
+                        <div className="flex items-start gap-2.5">
+                          <span className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <StickyNote size={14} className="text-green-700" />
+                          </span>
+                          <span className="text-sm text-gray-500 leading-relaxed">{order.notes}</span>
+                        </div>
                       )}
                     </div>
-                    {order.customer_address && (
-                      <div className="flex items-start gap-1.5 text-sm text-gray-600">
-                        <MapPin size={13} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                        <span>{order.customer_address}</span>
-                      </div>
-                    )}
-                    {order.notes && (
-                      <div className="flex items-start gap-1.5 text-sm text-gray-500">
-                        <StickyNote size={13} className="text-gray-400 mt-0.5 flex-shrink-0" />
-                        <span>{order.notes}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+                  )}
 
-                {/* Items */}
-                <div className="space-y-1">
-                  {items.map((item, i) => (
-                    <div key={i} className="flex justify-between text-sm">
-                      <span className="text-gray-700">
-                        {item.quantity}× {item.name}
-                        {item.options && Object.keys(item.options).length > 0 && (
-                          <span className="text-gray-400 text-xs">
-                            {' '}({Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join('، ')})
+                  {/* Items */}
+                  <div className="space-y-1.5">
+                    {items.map((item, i) => (
+                      <div key={i} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 px-3 py-2">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 text-[11px] font-bold text-gray-500 tabular-nums">
+                            ×{item.quantity.toLocaleString('ar-EG')}
                           </span>
-                        )}
-                      </span>
-                      <span className="text-gray-400">{(item.price * item.quantity).toLocaleString('ar-EG')}</span>
-                    </div>
-                  ))}
-                </div>
+                          <span className="text-sm text-gray-800 truncate">
+                            {item.name}
+                            {item.options && Object.keys(item.options).length > 0 && (
+                              <span className="text-gray-400 text-xs"> ({Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join('، ')})</span>
+                            )}
+                          </span>
+                        </div>
+                        <span className="text-sm font-semibold text-gray-700 tabular-nums flex-shrink-0">
+                          {(item.price * item.quantity).toLocaleString('ar-EG')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
 
-                {/* Status + actions */}
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <OrderActions orderId={order.id} status={(order.status ?? 'pending') as OrderStatus} />
+                  {/* Status + actions */}
+                  <div className="mt-4 pt-3 border-t border-gray-100">
+                    <OrderActions orderId={order.id} status={(order.status ?? 'pending') as OrderStatus} />
+                  </div>
                 </div>
               </div>
             )

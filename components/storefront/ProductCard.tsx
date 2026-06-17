@@ -103,10 +103,10 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
 
   // ── GRID layout: vertical card ──
   return (
-    <div className={`bg-white ${radius} overflow-hidden flex flex-col border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
+    <div className={`group bg-white ${radius} overflow-hidden flex flex-col border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
       <button onClick={() => !outOfStock && onSelectVariant(product)} className="aspect-square bg-gray-50 relative overflow-hidden block w-full text-right" disabled={outOfStock}>
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
             <Package size={32} style={{ color: `${themeColor}60` }} />

@@ -147,8 +147,9 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4" dir="rtl">
-      <Card className="w-full max-w-md">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-green-50/60 via-white to-white" dir="rtl">
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-green-200/30 rounded-full blur-3xl" />
+      <Card className="relative w-full max-w-md shadow-[var(--shadow-lift)]">
         <CardHeader className="text-center">
           <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-3">
             <KeyRound size={22} className="text-green-700" />
