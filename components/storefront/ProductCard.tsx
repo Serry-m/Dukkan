@@ -4,7 +4,6 @@ import Link from 'next/link'
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
-import { readableText } from '@/lib/color'
 import { effectivePrice, isOnSale } from '@/lib/price'
 import { ProductBadges } from './ProductBadges'
 import { Plus, Minus, Package, SlidersHorizontal } from 'lucide-react'
@@ -31,24 +30,25 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
 
   const radius = cardStyle === 'sharp' ? 'rounded-md' : 'rounded-2xl'
   const innerRadius = cardStyle === 'sharp' ? 'rounded-sm' : 'rounded-xl'
-  const onTheme = readableText(themeColor)
 
-  // Add / quantity control. Products with options route to the detail page to choose.
+  // Add / quantity control. Outlined (quiet) on cards — the solid accent is
+  // reserved for the cart bar + the product detail page. Variant products
+  // route to the detail page to choose options.
   const addControl = outOfStock ? (
     <div className={`w-full bg-gray-100 text-gray-400 text-xs font-medium ${innerRadius} py-2.5 text-center`}>غير متاح</div>
   ) : hasOptions ? (
     <Link
       href={href}
-      className={`block w-full text-center text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95`}
-      style={{ backgroundColor: themeColor, color: onTheme }}
+      className={`block w-full text-center text-sm font-semibold ${innerRadius} py-2.5 border-[1.5px] transition-all active:scale-95`}
+      style={{ borderColor: themeColor, color: themeColor }}
     >
       اختر الخيارات
     </Link>
   ) : quantity === 0 ? (
     <button
       onClick={() => addItem(product)}
-      className={`w-full text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95 active:brightness-95`}
-      style={{ backgroundColor: themeColor, color: onTheme }}
+      className={`w-full text-sm font-semibold ${innerRadius} py-2.5 border-[1.5px] transition-all active:scale-95`}
+      style={{ borderColor: themeColor, color: themeColor }}
     >
       أضف للسلة
     </button>
@@ -68,12 +68,12 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
   const eff = effectivePrice(product)
   const priceBlock = (
     <div className="flex items-baseline gap-1.5 flex-wrap">
-      <span className="font-bold text-base tabular-nums" style={{ color: outOfStock ? '#9ca3af' : themeColor }}>
+      <span className={`font-bold text-[15px] tabular-nums ${outOfStock ? 'text-gray-400' : onSale ? 'text-red-600' : 'text-gray-900'}`}>
         {eff.toLocaleString('ar-EG')}
       </span>
       <span className="text-xs text-gray-400 font-normal">{currencyLabel(currency)}</span>
       {onSale && (
-        <span className="text-xs text-gray-400 line-through tabular-nums">{product.price.toLocaleString('ar-EG')}</span>
+        <span className="text-xs text-gray-300 line-through tabular-nums">{product.price.toLocaleString('ar-EG')}</span>
       )}
     </div>
   )
@@ -86,8 +86,8 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
-              <Package size={24} style={{ color: `${themeColor}60` }} />
+            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
+              <Package size={24} style={{ color: '#cbd5e1' }} />
             </div>
           )}
           {hasOptions && !outOfStock && (
@@ -120,8 +120,8 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
-            <Package size={32} style={{ color: `${themeColor}60` }} />
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
+            <Package size={32} style={{ color: '#cbd5e1' }} />
           </div>
         )}
         {outOfStock && (

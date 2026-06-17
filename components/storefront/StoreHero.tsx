@@ -35,7 +35,7 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
 
           {/* Name + status */}
           <div className="mt-3 flex items-center gap-2">
-            <h1 className="text-xl font-extrabold text-gray-900">{store.name}</h1>
+            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">{store.name}</h1>
             <span
               className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${
                 store.is_open ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
@@ -47,7 +47,7 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
           </div>
 
           {store.description && (
-            <p className="text-sm text-gray-500 mt-1.5 max-w-sm leading-relaxed">{store.description}</p>
+            <p className="text-sm text-gray-500 mt-2 max-w-sm leading-relaxed">{store.description}</p>
           )}
 
           {/* Info chips */}

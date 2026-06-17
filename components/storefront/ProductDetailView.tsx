@@ -57,8 +57,8 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
           {photos.length ? (
             <img src={photos[photoIndex]} alt={product.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
-              <Package size={56} style={{ color: `${themeColor}60` }} />
+            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
+              <Package size={56} style={{ color: '#cbd5e1' }} />
             </div>
           )}
           {outOfStock && (
@@ -91,13 +91,16 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
             <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{product.category}</span>
           )}
           {isNewProduct(product) && (
-            <span className="text-[11px] font-bold text-white px-2 py-0.5 rounded-full" style={{ backgroundColor: themeColor }}>جديد</span>
+            <span className="text-[11px] font-bold text-white px-2 py-0.5 rounded-full bg-gray-900">جديد</span>
+          )}
+          {product.featured && (
+            <span className="text-[11px] font-bold text-amber-950 bg-amber-400 px-2 py-0.5 rounded-full">مميز</span>
           )}
         </div>
-        <h1 className="text-xl font-bold text-gray-900 mt-2 leading-snug">{product.name}</h1>
-        <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
+        <h1 className="text-2xl font-bold text-gray-900 mt-2 leading-snug tracking-tight">{product.name}</h1>
+        <div className="flex items-center gap-2.5 mt-2 flex-wrap">
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-extrabold tabular-nums" style={{ color: themeColor }}>
+            <span className={`text-2xl font-extrabold tabular-nums ${onSale ? 'text-red-600' : 'text-gray-900'}`}>
               {eff.toLocaleString('ar-EG')}
             </span>
             <span className="text-sm text-gray-400">{curr}</span>
@@ -187,13 +190,13 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
                   {r.image_url ? (
                     <img src={r.image_url} alt={r.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
-                      <Package size={20} style={{ color: `${themeColor}60` }} />
+                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
+                      <Package size={20} style={{ color: '#cbd5e1' }} />
                     </div>
                   )}
                 </div>
                 <p className="text-xs font-medium text-gray-800 truncate mt-1.5">{r.name}</p>
-                <p className="text-xs font-bold tabular-nums" style={{ color: themeColor }}>{effectivePrice(r).toLocaleString('ar-EG')} {curr}</p>
+                <p className="text-xs font-bold tabular-nums text-gray-900">{effectivePrice(r).toLocaleString('ar-EG')} {curr}</p>
               </Link>
             ))}
           </div>

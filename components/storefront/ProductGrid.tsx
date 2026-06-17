@@ -108,7 +108,7 @@ function CategoryChip({ label, active, themeColor, onClick }: { label: string; a
       className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border transition-all active:scale-95 whitespace-nowrap"
       style={
         active
-          ? { backgroundColor: themeColor, borderColor: themeColor, color: '#fff' }
+          ? { backgroundColor: '#111827', borderColor: '#111827', color: '#fff' }
           : { backgroundColor: '#fff', borderColor: '#e5e7eb', color: '#4b5563' }
       }
     >
