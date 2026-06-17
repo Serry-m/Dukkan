@@ -6,7 +6,9 @@ import { createClient } from '@/lib/supabase/client'
 import type { Store } from '@/types'
 import { isLightColor } from '@/lib/color'
 import { isPro } from '@/lib/plan'
+import { THEME_LIST } from '@/lib/themes'
 import { ProUpsell, ProBadge } from '@/components/dashboard/ProLock'
+import { Lock, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,6 +39,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [bannerFile, setBannerFile] = useState<File | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(store?.banner_url ?? null)
   const [layout, setLayout] = useState(store?.layout ?? 'grid')
+  const [theme, setTheme] = useState(store?.theme ?? 'modern')
   const [about, setAbout] = useState(store?.about ?? '')
   const [location, setLocation] = useState(store?.location ?? '')
   const [workingHours, setWorkingHours] = useState(store?.working_hours ?? '')
@@ -113,7 +116,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     const payload = {
       name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl,
       theme_color: themeColor, currency, delivery_fee: parseFloat(deliveryFee) || 0, is_open: isOpen,
-      message_template: messageTemplate.trim() || null, layout,
+      message_template: messageTemplate.trim() || null, layout, theme,
       about: about.trim() || null,
       location: location.trim() || null,
       working_hours: workingHours.trim() || null,
@@ -191,6 +194,41 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       <Card>
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">مظهر المتجر</h2>
+
+          {/* Theme picker */}
+          <div className="space-y-2">
+            <Label>قالب المتجر</Label>
+            <div className="grid grid-cols-2 gap-2.5">
+              {THEME_LIST.map((t) => {
+                const locked = t.pro && !pro
+                const selected = theme === t.id
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => !locked && setTheme(t.id)}
+                    disabled={locked}
+                    className={`relative text-right rounded-xl border-2 p-3 transition-all ${
+                      selected ? 'border-green-500' : 'border-gray-200 hover:border-gray-300'
+                    } ${locked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="w-8 h-8 rounded-lg border border-gray-200" style={{ backgroundColor: t.swatch }} />
+                      {selected && <Check size={16} className="text-green-600" />}
+                      {locked && <Lock size={13} className="text-gray-400" />}
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
+                      {t.name} {t.pro && <ProBadge />}
+                    </p>
+                    <p className="text-[11px] text-gray-400 leading-snug mt-0.5">{t.desc}</p>
+                  </button>
+                )
+              })}
+            </div>
+            {THEME_LIST.some((t) => t.pro) && !pro && (
+              <ProUpsell feature="القوالب الإضافية (أنيق، جريء)" />
+            )}
+          </div>
 
           {/* Logo upload */}
           <div className="space-y-2">

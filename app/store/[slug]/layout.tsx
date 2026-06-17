@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import ShareStoreButton from '@/components/storefront/ShareStoreButton'
 import CartBar from '@/components/storefront/CartBar'
 import { StoreFooter } from '@/components/storefront/StoreFooter'
+import { getTheme } from '@/lib/themes'
 import { Store } from 'lucide-react'
 
 type Props = {
@@ -57,14 +58,15 @@ export default async function StorefrontLayout({ children, params }: Props) {
   if (!store) notFound()
 
   const themeColor = store.theme_color ?? '#16a34a'
+  const theme = getTheme(store.theme)
 
-  // Owner-chosen font for the storefront.
+  // Theme-driven font for the storefront.
   const fontVar: Record<string, string> = {
     cairo: 'var(--font-cairo)',
     tajawal: 'var(--font-tajawal)',
     almarai: 'var(--font-almarai)',
   }
-  const fontFamily = fontVar[store.font ?? 'cairo'] ?? 'var(--font-cairo)'
+  const fontFamily = fontVar[theme.font] ?? 'var(--font-cairo)'
 
   return (
     <div
@@ -72,8 +74,8 @@ export default async function StorefrontLayout({ children, params }: Props) {
       className="min-h-screen"
       style={{
         fontFamily,
-        // Faint theme-tinted glow at the top fading into the neutral base.
-        background: `radial-gradient(125% 55% at 50% 0%, ${themeColor}0d, transparent 58%), #f7f8fa`,
+        // Faint theme-tinted glow over the theme's base surface.
+        background: `radial-gradient(125% 55% at 50% 0%, ${themeColor}0d, transparent 58%), ${theme.pageBg}`,
       }}
     >
 

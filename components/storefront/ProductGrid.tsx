@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import type { Product, Store } from '@/types'
 import ProductCard from './ProductCard'
 import { orderCategories } from '@/lib/categories'
+import { getTheme } from '@/lib/themes'
 import { ShoppingBag, Search } from 'lucide-react'
 
 type Props = {
@@ -15,6 +16,7 @@ const ALL = '__all__'
 
 export default function ProductGrid({ products, store }: Props) {
   const themeColor = store.theme_color ?? '#16a34a'
+  const theme = getTheme(store.theme)
 
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
   const [query, setQuery] = useState('')
@@ -92,7 +94,7 @@ export default function ProductGrid({ products, store }: Props) {
               themeColor={themeColor}
               currency={store.currency}
               layout={store.layout ?? 'grid'}
-              cardStyle={store.card_style ?? 'rounded'}
+              theme={theme}
             />
           ))}
         </div>

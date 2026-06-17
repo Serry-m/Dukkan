@@ -16,6 +16,7 @@ export type Store = {
   message_template: string | null
   view_count: number
   delivery_fee: number
+  theme: string
   about: string | null
   location: string | null
   working_hours: string | null

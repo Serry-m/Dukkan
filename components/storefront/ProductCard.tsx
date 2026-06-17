@@ -6,6 +6,7 @@ import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
 import { effectivePrice, isOnSale } from '@/lib/price'
 import { ProductBadges } from './ProductBadges'
+import type { ThemeConfig } from '@/lib/themes'
 import { Plus, Minus, Package, SlidersHorizontal } from 'lucide-react'
 
 type Props = {
@@ -14,10 +15,10 @@ type Props = {
   themeColor: string
   currency: string
   layout?: 'grid' | 'list'
-  cardStyle?: 'rounded' | 'sharp'
+  theme: ThemeConfig
 }
 
-export default function ProductCard({ product, slug, themeColor, currency, layout = 'grid', cardStyle = 'rounded' }: Props) {
+export default function ProductCard({ product, slug, themeColor, currency, layout = 'grid', theme }: Props) {
   const items = useCartStore((s) => s.items)
   const addItem = useCartStore((s) => s.addItem)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
@@ -28,8 +29,8 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
   const outOfStock = !product.in_stock
   const href = `/store/${slug}/product/${product.id}`
 
-  const radius = cardStyle === 'sharp' ? 'rounded-md' : 'rounded-2xl'
-  const innerRadius = cardStyle === 'sharp' ? 'rounded-sm' : 'rounded-xl'
+  const radius = theme.cardRadius
+  const innerRadius = theme.innerRadius
 
   // Add / quantity control. Outlined (quiet) on cards — the solid accent is
   // reserved for the cart bar + the product detail page. Variant products
@@ -81,7 +82,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
   // ── LIST layout: horizontal row ──
   if (layout === 'list') {
     return (
-      <div className={`group bg-white ${radius} overflow-hidden flex items-stretch ring-1 ring-gray-900/[0.05] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
+      <div className={`group bg-white ${radius} overflow-hidden flex items-stretch ${theme.cardSurface} transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
         <Link href={href} className="w-24 flex-shrink-0 bg-gray-50 relative overflow-hidden">
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -101,7 +102,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
         </Link>
         <div className="flex-1 p-3 flex flex-col gap-1.5 min-w-0">
           <Link href={href} className="text-right">
-            <p className="font-semibold text-gray-900 text-sm leading-snug line-clamp-1">{product.name}</p>
+            <p className={`${theme.nameClass} leading-snug line-clamp-1`}>{product.name}</p>
             {product.description && <p className="text-[11px] text-gray-400 line-clamp-1">{product.description}</p>}
           </Link>
           <div className="flex items-center justify-between gap-2 mt-auto">
@@ -115,7 +116,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
 
   // ── GRID layout: vertical card ──
   return (
-    <div className={`group bg-white ${radius} overflow-hidden flex flex-col ring-1 ring-gray-900/[0.05] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
+    <div className={`group bg-white ${radius} overflow-hidden flex flex-col ${theme.cardSurface} transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
       <Link href={href} className="aspect-square bg-gray-50 relative overflow-hidden block w-full text-right">
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -141,7 +142,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
 
       <div className="p-3 flex flex-col flex-1 gap-2">
         <Link href={href} className="flex-1 text-right">
-          <p className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2">{product.name}</p>
+          <p className={`${theme.nameClass} leading-snug line-clamp-2`}>{product.name}</p>
           {product.description && (
             <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1 leading-relaxed">{product.description}</p>
           )}
