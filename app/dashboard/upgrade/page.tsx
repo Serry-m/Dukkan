@@ -17,8 +17,6 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
     ? new Date(store.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
 
-  // Manual subscription: merchant contacts us on WhatsApp; we activate Pro.
-  // Set NEXT_PUBLIC_SUPPORT_WHATSAPP to your support number (e.g. 201001234567).
   const support = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || '201000000000'
   const waText = encodeURIComponent(
     pro
@@ -28,70 +26,75 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
   const waLink = `https://wa.me/${support}?text=${waText}`
 
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="max-w-md mx-auto">
       {status === 'success' && (
         <div className="mb-5 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 text-sm">
-          <CheckCircle2 size={16} /> تم الدفع بنجاح — تم تفعيل خطة Pro
+          <CheckCircle2 size={16} /> تم تفعيل خطة Pro
         </div>
       )}
       {status === 'failed' && (
         <div className="mb-5 bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
-          لم تتم عملية الدفع. يمكنك المحاولة مرة أخرى.
+          لم تتم العملية. يمكنك المحاولة مرة أخرى.
         </div>
       )}
 
-      {/* Current plan */}
-      {pro ? (
-        <div className="rounded-2xl bg-gradient-to-br from-green-600 to-green-700 text-white p-6 mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Crown size={20} />
-            <span className="font-bold text-lg">أنت مشترك في خطة Pro</span>
-          </div>
-          <p className="text-green-100 text-sm">
-            {expires ? `الاشتراك ساري حتى ${expires}` : 'اشتراكك نشط'}
-          </p>
-        </div>
-      ) : (
-        <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-3">
-            <Crown size={26} className="text-green-700" />
-          </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">ترقية إلى دكان Pro</h1>
-          <p className="text-gray-500 text-sm mt-1">أزل الحدود وافتح كل الميزات</p>
+      {pro && (
+        <div className="mb-4 flex items-center gap-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 text-white px-4 py-3">
+          <Crown size={18} />
+          <span className="text-sm font-bold">خطة Pro نشطة</span>
+          {expires && <span className="text-xs text-green-100 mr-auto">حتى {expires}</span>}
         </div>
       )}
 
-      {/* Benefits */}
-      <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-6 mb-6">
-        <div className="flex items-baseline gap-1 mb-5">
-          <span className="text-3xl font-extrabold text-gray-900">{PRO_PRICE_EGP}</span>
-          <span className="text-gray-400 text-sm">جنيه / شهرياً</span>
+      {/* Premium pricing card */}
+      <div className="relative overflow-hidden rounded-3xl border border-green-200 bg-white p-8 shadow-[var(--shadow-lift)]">
+        {/* Ambient glow */}
+        <div className="pointer-events-none absolute -top-10 -left-10 h-40 w-40 rounded-full bg-green-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-green-500/10 blur-3xl" />
+
+        <div className="relative flex flex-col items-center text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
+            <Crown size={30} className="text-green-700" />
+          </div>
+
+          <div className="mb-1 flex items-baseline gap-2">
+            <span className="text-5xl font-extrabold tracking-tight text-gray-900 tabular-nums">{PRO_PRICE_EGP}</span>
+            <div className="flex flex-col items-start leading-tight">
+              <span className="text-base font-semibold text-gray-500">جنيه</span>
+              <span className="text-xs text-gray-400">/ شهرياً</span>
+            </div>
+          </div>
+
+          <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700">
+            <Crown size={12} /> دكان Pro
+          </span>
         </div>
-        <ul className="space-y-3">
+
+        <div className="relative my-7 space-y-3.5">
           {PRO_FEATURES.map((f) => (
-            <li key={f} className="flex items-start gap-3 text-sm text-gray-700">
-              <span className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Check size={13} className="text-green-700" />
+            <div key={f} className="flex items-start gap-3 text-right">
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-green-100">
+                <Check size={13} strokeWidth={3} className="text-green-700" />
               </span>
-              {f}
-            </li>
+              <span className="text-sm leading-relaxed text-gray-700">{f}</span>
+            </div>
           ))}
-        </ul>
+        </div>
+
+        <a
+          href={waLink}
+          target="_blank"
+          rel="noreferrer"
+          className="relative flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-green-600 text-base font-bold text-white shadow-lg shadow-green-600/20 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/25 active:scale-[0.98]"
+        >
+          <MessageCircle size={18} />
+          {pro ? 'تواصل معنا للتجديد' : 'تواصل معنا للاشتراك'}
+        </a>
+
+        <p className="relative mt-4 text-center text-xs text-gray-400">
+          راسلنا على واتساب وسنفعّل خطة Pro لمتجرك خلال دقائق. الاشتراك شهري.
+        </p>
       </div>
-
-      <a
-        href={waLink}
-        target="_blank"
-        rel="noreferrer"
-        className="w-full h-12 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-base flex items-center justify-center gap-2 transition-colors"
-      >
-        <MessageCircle size={18} />
-        {pro ? 'تواصل معنا للتجديد' : 'تواصل معنا للاشتراك'}
-      </a>
-
-      <p className="text-center text-xs text-gray-400 mt-4">
-        راسلنا على واتساب وسنفعّل خطة Pro لمتجرك خلال دقائق. الاشتراك شهري.
-      </p>
     </div>
   )
 }

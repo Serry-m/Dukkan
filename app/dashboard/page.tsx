@@ -157,44 +157,46 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
-              <Eye size={14} /> الزيارات
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {pro ? (
-              <p className="text-3xl font-bold">{(store.view_count ?? 0).toLocaleString('ar-EG')}</p>
-            ) : (
-              <Link href="/dashboard/upgrade" className="inline-flex items-center gap-1 text-sm font-bold text-green-700">
-                <Crown size={14} /> Pro
-              </Link>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
-              <ShoppingBag size={14} /> الطلبات
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{(orderCount ?? 0).toLocaleString('ar-EG')}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
-              <Package size={14} /> المنتجات
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{(productCount ?? 0).toLocaleString('ar-EG')}</p>
-          </CardContent>
-        </Card>
+      {/* Stats — refined metric cards */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        {/* Visits */}
+        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
+          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
+            <Eye size={18} className="text-green-700" />
+          </div>
+          {pro ? (
+            <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
+              {(store.view_count ?? 0).toLocaleString('ar-EG')}
+            </p>
+          ) : (
+            <Link href="/dashboard/upgrade" className="inline-flex items-center gap-1 text-sm font-bold text-green-700">
+              <Crown size={14} /> Pro
+            </Link>
+          )}
+          <p className="text-xs text-gray-400 mt-1.5">الزيارات</p>
+        </div>
+
+        {/* Orders */}
+        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
+          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
+            <ShoppingBag size={18} className="text-green-700" />
+          </div>
+          <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
+            {(orderCount ?? 0).toLocaleString('ar-EG')}
+          </p>
+          <p className="text-xs text-gray-400 mt-1.5">الطلبات</p>
+        </div>
+
+        {/* Products */}
+        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
+          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
+            <Package size={18} className="text-green-700" />
+          </div>
+          <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
+            {(productCount ?? 0).toLocaleString('ar-EG')}
+          </p>
+          <p className="text-xs text-gray-400 mt-1.5">المنتجات</p>
+        </div>
       </div>
 
       {/* Top products — Pro only */}

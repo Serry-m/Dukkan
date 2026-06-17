@@ -83,34 +83,80 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        {/* Stores */}
-        <div className="space-y-2">
-          {list.map((s) => (
-            <div key={s.id} className="bg-white rounded-xl ring-1 ring-foreground/[0.07] p-4 flex items-center gap-3 flex-wrap">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="font-bold text-gray-900 truncate">{s.name}</p>
-                  {s.pro ? (
-                    <span className="text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
-                  ) : (
-                    <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
-                  )}
-                </div>
-                <p className="text-xs text-gray-400 truncate">{s.email} · {s.products.toLocaleString('ar-EG')} منتج</p>
-                {s.pro && s.plan_expires_at && (
-                  <p className="text-[11px] text-gray-400 mt-0.5">ينتهي: {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                )}
-              </div>
-              <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="text-gray-300 hover:text-gray-600">
-                <ExternalLink size={15} />
-              </a>
-              <AdminPlanActions storeId={s.id} isPro={s.pro} />
+        {list.length === 0 ? (
+          <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] py-16 text-center text-sm text-gray-400">
+            لا توجد متاجر بعد
+          </div>
+        ) : (
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] overflow-hidden">
+              <table className="w-full text-sm text-right">
+                <thead>
+                  <tr className="bg-gray-50/70 text-[11px] font-bold text-gray-400 border-b border-gray-100">
+                    <th className="px-4 py-3 font-bold">المتجر</th>
+                    <th className="px-4 py-3 font-bold">المالك</th>
+                    <th className="px-4 py-3 font-bold">المنتجات</th>
+                    <th className="px-4 py-3 font-bold">الحالة</th>
+                    <th className="px-4 py-3 font-bold text-left">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {list.map((s) => (
+                    <tr key={s.id} className="hover:bg-gray-50/40 transition-colors">
+                      <td className="px-4 py-3">
+                        <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-bold text-gray-900 hover:text-green-700">
+                          <span className="truncate max-w-[160px]">{s.name}</span>
+                          <ExternalLink size={13} className="text-gray-300 flex-shrink-0" />
+                        </a>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[200px]">{s.email}</td>
+                      <td className="px-4 py-3 tabular-nums text-gray-700">{s.products.toLocaleString('ar-EG')}</td>
+                      <td className="px-4 py-3">
+                        {s.pro ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="w-fit text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
+                            {s.plan_expires_at && (
+                              <span className="text-[10px] text-gray-400">حتى {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}</span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end"><AdminPlanActions storeId={s.id} isPro={s.pro} /></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-          {list.length === 0 && (
-            <p className="text-center text-sm text-gray-400 py-12">لا توجد متاجر بعد</p>
-          )}
-        </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden space-y-2">
+              {list.map((s) => (
+                <div key={s.id} className="bg-white rounded-xl ring-1 ring-foreground/[0.07] p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="font-bold text-gray-900 truncate">{s.name}</a>
+                    {s.pro ? (
+                      <span className="text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
+                    ) : (
+                      <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 truncate">{s.email} · {s.products.toLocaleString('ar-EG')} منتج</p>
+                  {s.pro && s.plan_expires_at && (
+                    <p className="text-[11px] text-gray-400 mt-0.5">ينتهي: {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  )}
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+                    <AdminPlanActions storeId={s.id} isPro={s.pro} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </main>
     </div>
   )
