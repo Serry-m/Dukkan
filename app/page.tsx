@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Reveal, SlideIn, Stagger, StaggerItem } from '@/components/landing/Motion'
 import { OrderNotification, CategoryMarquee } from '@/components/landing/Effects'
+import { LandingNav } from '@/components/landing/LandingNav'
+import { ProductShowcase } from '@/components/landing/ProductShowcase'
 import Faq from '@/components/landing/Faq'
 import { BrandMark } from '@/components/BrandMark'
 import {
@@ -23,25 +25,7 @@ export default function HomePage() {
       <div className="grain-overlay fixed inset-0 z-[60] pointer-events-none opacity-[0.035]" aria-hidden="true" />
 
       {/* ── Nav ── */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <BrandMark size={32} />
-            <span className="font-bold text-gray-900 text-[15px]">دكان</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 transition-colors font-medium hidden sm:block">
-              تسجيل الدخول
-            </Link>
-            <Link
-              href="/signup"
-              className={cn(buttonVariants({ size: 'sm' }), 'bg-green-600 hover:bg-green-700 text-white font-semibold px-4 h-9 text-sm')}
-            >
-              ابدأ مجاناً
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <LandingNav />
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-white">
@@ -228,6 +212,19 @@ export default function HomePage() {
             </StaggerItem>
           ))}
         </Stagger>
+      </section>
+
+      {/* ── Customer flow showcase (scroll-pinned) ── */}
+      <section className="border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-5 py-16">
+          <Reveal>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center mb-3">
+              كيف يطلب عميلك؟
+            </h2>
+            <p className="text-gray-500 text-center mb-12 max-w-md mx-auto">ثلاث خطوات بسيطة من التصفّح حتى وصول الطلب على واتساب</p>
+          </Reveal>
+          <ProductShowcase />
+        </div>
       </section>
 
       {/* ── How it works (vertical timeline) ── */}
