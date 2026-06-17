@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareStoreButton from '@/components/storefront/ShareStoreButton'
 import CartBar from '@/components/storefront/CartBar'
+import { StoreChatButton } from '@/components/storefront/StoreChatButton'
 import { StoreFooter } from '@/components/storefront/StoreFooter'
 import { getTheme } from '@/lib/themes'
 import { Store } from 'lucide-react'
@@ -115,6 +116,13 @@ export default async function StorefrontLayout({ children, params }: Props) {
 
       {/* Store footer — about, info, socials, contact, made-with */}
       <StoreFooter store={store} themeColor={themeColor} />
+
+      {/* Floating WhatsApp contact — ask before buying */}
+      <StoreChatButton
+        whatsappNumber={store.whatsapp_number}
+        storeName={store.name}
+        themeColor={themeColor}
+      />
 
       {/* Cart bar — visible across the storefront whenever the cart has items */}
       <CartBar store={store} />

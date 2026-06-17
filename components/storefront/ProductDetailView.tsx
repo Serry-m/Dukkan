@@ -7,7 +7,8 @@ import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
 import { effectivePrice, isOnSale, discountPercent, isNewProduct } from '@/lib/price'
-import { Package, Plus, Minus, ShoppingCart, Check, ChevronRight } from 'lucide-react'
+import { Plus, Minus, ShoppingCart, Check, ChevronRight } from 'lucide-react'
+import { ImagePlaceholder } from './ImagePlaceholder'
 import { toast } from 'sonner'
 
 type Props = {
@@ -58,9 +59,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
           {photos.length ? (
             <img src={photos[photoIndex]} alt={product.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
-              <Package size={56} style={{ color: '#cbd5e1' }} />
-            </div>
+            <ImagePlaceholder size={48} label />
           )}
           {outOfStock && (
             <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
@@ -195,9 +194,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
                   {r.image_url ? (
                     <img src={r.image_url} alt={r.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
-                      <Package size={20} style={{ color: '#cbd5e1' }} />
-                    </div>
+                    <ImagePlaceholder size={18} />
                   )}
                 </div>
                 <p className="text-xs font-medium text-gray-800 truncate mt-1.5">{r.name}</p>

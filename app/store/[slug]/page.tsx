@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import ProductGrid from '@/components/storefront/ProductGrid'
 import ViewTracker from '@/components/storefront/ViewTracker'
 import { StoreHero } from '@/components/storefront/StoreHero'
+import { TrustStrip } from '@/components/storefront/TrustStrip'
 import { Clock } from 'lucide-react'
 
 type Props = {
@@ -43,6 +44,8 @@ export default async function StorefrontPage({ params }: Props) {
             <span>المتجر مغلق مؤقتاً — يمكنك التصفح والطلب لاحقاً</span>
           </div>
         )}
+
+        <TrustStrip />
 
         <ProductGrid products={products ?? []} store={store} />
       </main>

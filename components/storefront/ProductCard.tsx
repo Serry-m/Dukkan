@@ -7,7 +7,8 @@ import { currencyLabel } from '@/lib/currency'
 import { effectivePrice, isOnSale } from '@/lib/price'
 import { ProductBadges } from './ProductBadges'
 import type { ThemeConfig } from '@/lib/themes'
-import { Plus, Minus, Package, SlidersHorizontal } from 'lucide-react'
+import { Plus, Minus, SlidersHorizontal } from 'lucide-react'
+import { ImagePlaceholder } from './ImagePlaceholder'
 
 type Props = {
   product: Product
@@ -87,9 +88,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
-              <Package size={24} strokeWidth={1.25} style={{ color: '#cbd5e1' }} />
-            </div>
+            <ImagePlaceholder size={22} />
           )}
           {hasOptions && !outOfStock && (
             <span className="absolute top-1.5 right-1.5 bg-white/90 text-[9px] font-medium text-gray-600 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
@@ -121,9 +120,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
-            <Package size={32} strokeWidth={1.25} style={{ color: '#cbd5e1' }} />
-          </div>
+          <ImagePlaceholder size={30} />
         )}
         {outOfStock && (
           <div className="absolute inset-0 bg-white/75 flex items-center justify-center">
