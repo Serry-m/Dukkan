@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import type { Product } from '@/types'
 import ProductDetailView from '@/components/storefront/ProductDetailView'
+import { productJsonLd } from '@/lib/structured-data'
 
 type Props = { params: Promise<{ slug: string; id: string }> }
 
@@ -35,7 +37,7 @@ export default async function ProductPage({ params }: Props) {
   const { slug, id } = await params
   const supabase = await createClient()
 
-  const { data: store } = await supabase.from('stores').select('id, slug, theme_color, currency').eq('slug', slug).single()
+  const { data: store } = await supabase.from('stores').select('id, slug, name, theme_color, currency').eq('slug', slug).single()
   if (!store) notFound()
 
   const { data: product } = await supabase
@@ -60,13 +62,27 @@ export default async function ProductPage({ params }: Props) {
   const sameCat = product.category ? all.filter((p) => p.category === product.category) : []
   const related = [...sameCat, ...all.filter((p) => !sameCat.includes(p))].slice(0, 8)
 
+  // Absolute URL for this product page (rich-result canonical).
+  const h = await headers()
+  const host = h.get('host')
+  const proto = h.get('x-forwarded-proto') ?? 'https'
+  const url = host ? `${proto}://${host}/store/${store.slug}/product/${product.id}` : undefined
+
+  const jsonLd = productJsonLd({ product, storeName: store.name, currency: store.currency, url })
+
   return (
-    <ProductDetailView
-      product={product}
-      slug={store.slug}
-      themeColor={store.theme_color ?? '#16a34a'}
-      currency={store.currency}
-      related={related}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductDetailView
+        product={product}
+        slug={store.slug}
+        themeColor={store.theme_color ?? '#16a34a'}
+        currency={store.currency}
+        related={related}
+      />
+    </>
   )
 }
