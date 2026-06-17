@@ -32,6 +32,16 @@ export type Store = {
   created_at: string
 }
 
+export type Coupon = {
+  id: string
+  store_id: string
+  code: string
+  type: 'percent' | 'fixed'
+  value: number
+  active: boolean
+  created_at: string
+}
+
 export type OrderStatus = 'pending' | 'confirmed' | 'delivered'
 
 export type OrderItem = {
@@ -50,6 +60,7 @@ export type Order = {
   customer_phone: string | null
   customer_address: string | null
   notes: string | null
+  coupon_code: string | null
   status: OrderStatus
   created_at: string
 }

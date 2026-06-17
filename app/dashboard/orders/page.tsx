@@ -114,9 +114,16 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                     {' · '}
                     {date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                  <p className="text-lg font-extrabold text-green-700 tabular-nums leading-none">
-                    {formatPrice(order.total, store?.currency)}
-                  </p>
+                  <div className="text-left">
+                    <p className="text-lg font-extrabold text-green-700 tabular-nums leading-none">
+                      {formatPrice(order.total, store?.currency)}
+                    </p>
+                    {order.coupon_code && (
+                      <span className="inline-block mt-1 text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded" dir="ltr">
+                        🎟 {order.coupon_code}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="p-4">

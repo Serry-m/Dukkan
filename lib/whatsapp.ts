@@ -25,6 +25,7 @@ type Customer = {
   phone: string
   address?: string
   notes?: string
+  discount?: { code: string; amount: number }
 }
 
 export function buildWhatsAppOrderUrl(
@@ -36,7 +37,9 @@ export function buildWhatsAppOrderUrl(
   const lines = cart.map((item) => lineLabel(item, store.currency))
   const subtotal = cart.reduce((sum, { product, quantity }) => sum + effectivePrice(product) * quantity, 0)
   const deliveryFee = Number(store.delivery_fee || 0)
-  const total = subtotal + deliveryFee
+  const discount = customer.discount?.amount ?? 0
+  const total = Math.max(0, subtotal - discount) + deliveryFee
+  const showBreakdown = deliveryFee > 0 || discount > 0
 
   // Owner can customise the greeting; otherwise use a sensible default.
   const greeting = store.message_template?.trim()
@@ -48,12 +51,9 @@ export function buildWhatsAppOrderUrl(
     ``,
     ...lines,
     ``,
-    ...(deliveryFee > 0
-      ? [
-          `المجموع الفرعي: ${formatPrice(subtotal, store.currency)}`,
-          `الشحن: ${formatPrice(deliveryFee, store.currency)}`,
-        ]
-      : []),
+    ...(showBreakdown ? [`المجموع الفرعي: ${formatPrice(subtotal, store.currency)}`] : []),
+    ...(discount > 0 ? [`خصم (${customer.discount!.code}): -${formatPrice(discount, store.currency)}`] : []),
+    ...(deliveryFee > 0 ? [`الشحن: ${formatPrice(deliveryFee, store.currency)}`] : []),
     `الإجمالي: ${formatPrice(total, store.currency)}`,
     ``,
     `━━━━━━━━━━━━━━`,
@@ -75,7 +75,8 @@ export async function saveOrder(
 ): Promise<void> {
   const supabase = createClient()
   const subtotal = cart.reduce((sum, { product, quantity }) => sum + effectivePrice(product) * quantity, 0)
-  const total = subtotal + Number(store.delivery_fee || 0)
+  const discount = customer.discount?.amount ?? 0
+  const total = Math.max(0, subtotal - discount) + Number(store.delivery_fee || 0)
   const items = cart.map(({ product, quantity, selectedOptions }) => ({
     name: product.name,
     quantity,
@@ -90,6 +91,7 @@ export async function saveOrder(
     customer_phone: customer.phone,
     customer_address: customer.address?.trim() || null,
     notes: customer.notes?.trim() || null,
+    coupon_code: customer.discount?.code ?? null,
   })
   // Surface the failure to the caller so the UI can react.
   if (error) throw error

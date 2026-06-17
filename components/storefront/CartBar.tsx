@@ -7,6 +7,7 @@ import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
 import { effectivePrice } from '@/lib/price'
+import { createClient } from '@/lib/supabase/client'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle, Package } from 'lucide-react'
@@ -32,6 +33,41 @@ export default function CartBar({ store }: { store: Store }) {
   const [notes, setNotes] = useState('')
   const [error, setError] = useState('')
   const [ordering, setOrdering] = useState(false)
+  const [couponInput, setCouponInput] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: 'percent' | 'fixed'; value: number } | null>(null)
+  const [couponMsg, setCouponMsg] = useState('')
+  const [applyingCoupon, setApplyingCoupon] = useState(false)
+
+  const themeColor = store.theme_color ?? '#16a34a'
+  const onTheme = readableText(themeColor)
+  const curr = currencyLabel(store.currency)
+  const deliveryFee = Number(store.delivery_fee || 0)
+  const discount = Math.round(
+    appliedCoupon
+      ? appliedCoupon.type === 'percent'
+        ? (totalPrice * appliedCoupon.value) / 100
+        : Math.min(appliedCoupon.value, totalPrice)
+      : 0
+  )
+  const grandTotal = Math.max(0, totalPrice - discount) + deliveryFee
+
+  async function applyCoupon() {
+    const code = couponInput.trim()
+    if (!code) return
+    setApplyingCoupon(true)
+    setCouponMsg('')
+    const supabase = createClient()
+    const { data, error } = await supabase.rpc('get_coupon', { p_store_id: store.id, p_code: code })
+    setApplyingCoupon(false)
+    const row = Array.isArray(data) ? data[0] : data
+    if (error || !row) {
+      setAppliedCoupon(null)
+      setCouponMsg('كود غير صالح')
+      return
+    }
+    setAppliedCoupon({ code: code.toUpperCase(), type: row.type, value: Number(row.value) })
+    setCouponMsg('تم تطبيق الخصم ✓')
+  }
 
   function handleOpenChange(val: boolean) {
     setOpen(val)
@@ -64,6 +100,7 @@ export default function CartBar({ store }: { store: Store }) {
       phone: phoneDigits,
       address: customerAddress.trim(),
       notes: notes.trim(),
+      discount: appliedCoupon && discount > 0 ? { code: appliedCoupon.code, amount: discount } : undefined,
     }
     const url = buildWhatsAppOrderUrl(store, items, customer)
 
@@ -78,12 +115,6 @@ export default function CartBar({ store }: { store: Store }) {
     setOrdering(false)
     window.open(url, '_blank')
   }
-
-  const themeColor = store.theme_color ?? '#16a34a'
-  const onTheme = readableText(themeColor)
-  const curr = currencyLabel(store.currency)
-  const deliveryFee = Number(store.delivery_fee || 0)
-  const grandTotal = totalPrice + deliveryFee
 
   const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2'
 
@@ -139,17 +170,23 @@ export default function CartBar({ store }: { store: Store }) {
             </div>
             <div className="border-t pt-4 space-y-4">
               <div className="space-y-1.5">
+                {(deliveryFee > 0 || discount > 0) && (
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>المجموع الفرعي</span>
+                    <span>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
+                  </div>
+                )}
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>خصم ({appliedCoupon!.code})</span>
+                    <span>−{discount.toLocaleString('ar-EG')} {curr}</span>
+                  </div>
+                )}
                 {deliveryFee > 0 && (
-                  <>
-                    <div className="flex justify-between text-sm text-gray-500">
-                      <span>المجموع الفرعي</span>
-                      <span>{totalPrice.toLocaleString('ar-EG')} {curr}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-500">
-                      <span>الشحن</span>
-                      <span>{deliveryFee.toLocaleString('ar-EG')} {curr}</span>
-                    </div>
-                  </>
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>الشحن</span>
+                    <span>{deliveryFee.toLocaleString('ar-EG')} {curr}</span>
+                  </div>
                 )}
                 <div className="flex justify-between font-bold text-lg">
                   <span>الإجمالي</span>
@@ -204,6 +241,31 @@ export default function CartBar({ store }: { store: Store }) {
                 <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="أي تفاصيل إضافية للطلب" className={inputClass} />
               </div>
 
+              {/* Coupon */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700">كود الخصم (اختياري)</label>
+                <div className="flex gap-2">
+                  <input
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    placeholder="أدخل الكود"
+                    dir="ltr"
+                    disabled={!!appliedCoupon}
+                    className={`${inputClass} flex-1 disabled:opacity-60`}
+                  />
+                  {appliedCoupon ? (
+                    <button type="button" onClick={() => { setAppliedCoupon(null); setCouponInput(''); setCouponMsg('') }} className="px-4 rounded-xl bg-gray-100 text-gray-600 text-sm font-medium">
+                      إزالة
+                    </button>
+                  ) : (
+                    <button type="button" onClick={applyCoupon} disabled={applyingCoupon} className="px-4 rounded-xl text-sm font-medium" style={{ backgroundColor: themeColor, color: onTheme }}>
+                      {applyingCoupon ? '...' : 'تطبيق'}
+                    </button>
+                  )}
+                </div>
+                {couponMsg && <p className={`text-xs ${appliedCoupon ? 'text-green-600' : 'text-red-500'}`}>{couponMsg}</p>}
+              </div>
+
               <div className="bg-gray-50 rounded-xl p-3 space-y-1">
                 {items.map(({ product, quantity, selectedOptions, lineId }) => (
                   <div key={lineId} className="flex justify-between text-sm">
@@ -214,13 +276,21 @@ export default function CartBar({ store }: { store: Store }) {
                     <span className="font-medium">{(effectivePrice(product) * quantity).toLocaleString('ar-EG')} {curr}</span>
                   </div>
                 ))}
-                {deliveryFee > 0 && (
-                  <div className="flex justify-between text-sm pt-2 border-t border-gray-200 mt-2">
-                    <span className="text-gray-500">الشحن</span>
-                    <span className="font-medium">{deliveryFee.toLocaleString('ar-EG')} {curr}</span>
-                  </div>
-                )}
-                <div className={`flex justify-between font-bold text-sm ${deliveryFee > 0 ? 'pt-1' : 'pt-2 border-t border-gray-200 mt-2'}`}>
+                {(discount > 0 || deliveryFee > 0) && <div className="border-t border-gray-200 mt-2 pt-2 space-y-1">
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>خصم ({appliedCoupon!.code})</span>
+                      <span>−{discount.toLocaleString('ar-EG')} {curr}</span>
+                    </div>
+                  )}
+                  {deliveryFee > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">الشحن</span>
+                      <span className="font-medium">{deliveryFee.toLocaleString('ar-EG')} {curr}</span>
+                    </div>
+                  )}
+                </div>}
+                <div className="flex justify-between font-bold text-sm pt-2 border-t border-gray-200 mt-2">
                   <span>الإجمالي</span>
                   <span style={{ color: themeColor }}>{grandTotal.toLocaleString('ar-EG')} {curr}</span>
                 </div>
@@ -254,7 +324,7 @@ export default function CartBar({ store }: { store: Store }) {
               تم فتح واتساب مع تفاصيل طلبك. انتظر تأكيد البائع على الرقم المسجل.
             </p>
             <button
-              onClick={() => { setStep('cart'); setOpen(false); setCustomerName(''); setCustomerPhone(''); setCustomerAddress(''); setNotes('') }}
+              onClick={() => { setStep('cart'); setOpen(false); setCustomerName(''); setCustomerPhone(''); setCustomerAddress(''); setNotes(''); setAppliedCoupon(null); setCouponInput(''); setCouponMsg('') }}
               className="mt-2 text-sm font-medium px-6 py-2.5 rounded-xl transition-colors"
               style={{ backgroundColor: themeColor, color: onTheme }}
             >
