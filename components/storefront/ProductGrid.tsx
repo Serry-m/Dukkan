@@ -58,7 +58,7 @@ export default function ProductGrid({ products, store }: Props) {
     <>
       {/* Search */}
       {showSearch && (
-        <div className="relative mb-3">
+        <div className="relative mb-3 sm:max-w-md">
           <Search size={16} className="absolute top-1/2 -translate-y-1/2 right-3 text-gray-400 pointer-events-none" />
           <input
             type="text"
@@ -85,7 +85,7 @@ export default function ProductGrid({ products, store }: Props) {
           <p className="text-gray-400 text-sm">لا توجد منتجات مطابقة</p>
         </div>
       ) : (
-        <div className={`${store.layout === 'list' ? 'grid grid-cols-1 gap-2.5' : 'grid grid-cols-2 gap-3'} pb-32`}>
+        <div className={`${store.layout === 'list' ? 'grid grid-cols-1 md:grid-cols-2 gap-2.5' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4'} pb-32`}>
           {visible.map((product) => (
             <ProductCard
               key={product.id}

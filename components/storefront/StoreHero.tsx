@@ -5,9 +5,9 @@ import { StoreSocials } from './StoreSocials'
 
 export function StoreHero({ store, themeColor }: { store: Store; themeColor: string }) {
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
       {/* Cover */}
-      <div className="relative h-40 sm:h-48 w-full overflow-hidden">
+      <div className="relative h-40 sm:h-52 lg:h-60 w-full overflow-hidden sm:rounded-b-3xl">
         {store.banner_url ? (
           <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
         ) : (

@@ -45,14 +45,15 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pb-28 pt-3">
+    <div className="max-w-lg lg:max-w-5xl mx-auto px-4 pb-28 pt-3">
       {/* Back */}
       <Link href={`/store/${slug}`} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-3">
         <ChevronRight size={16} /> رجوع للمتجر
       </Link>
 
+      <div className="lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
       {/* Gallery */}
-      <div className="rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-[var(--shadow-soft)]">
+      <div className="rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-[var(--shadow-soft)] lg:sticky lg:top-24">
         <div className="aspect-square w-full bg-gray-50 relative">
           {photos.length ? (
             <img src={photos[photoIndex]} alt={product.name} className="w-full h-full object-cover" />
@@ -84,8 +85,10 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
         )}
       </div>
 
+      {/* Right column (info + options + qty + add) */}
+      <div className="lg:mt-0">
       {/* Info */}
-      <div className="mt-4">
+      <div className="mt-4 lg:mt-0">
         <div className="flex items-center gap-2">
           {product.category && (
             <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{product.category}</span>
@@ -177,6 +180,8 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
         {!outOfStock && !allChosen && options.length > 0 && (
           <p className="text-center text-xs text-gray-400 mt-2">اختر كل الخيارات لإضافة المنتج</p>
         )}
+      </div>
+      </div>
       </div>
 
       {/* Related */}

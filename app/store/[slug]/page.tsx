@@ -35,7 +35,7 @@ export default async function StorefrontPage({ params }: Props) {
       <ViewTracker slug={slug} />
       <StoreHero store={store} themeColor={store.theme_color ?? '#16a34a'} />
 
-      <main className="max-w-lg mx-auto px-3 py-4 pb-32">
+      <main className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-3 sm:px-5 py-4 pb-32">
         {/* Closed banner */}
         {!store.is_open && (
           <div className="mb-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
