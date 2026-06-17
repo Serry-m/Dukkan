@@ -150,3 +150,41 @@
 .grain-overlay {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+
+/* ── Landing motion ── */
+
+/* Horizontal marquee (category strip). Track is duplicated; -50% loops seamlessly. */
+@keyframes dukkan-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee { animation: dukkan-marquee 30s linear infinite; }
+
+/* Slow drifting aurora blobs behind the hero. */
+@keyframes aurora-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(36px, 22px) scale(1.12); }
+}
+@keyframes aurora-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-28px, 16px) scale(1.08); }
+}
+.aurora-1 { animation: aurora-1 15s ease-in-out infinite; }
+.aurora-2 { animation: aurora-2 19s ease-in-out infinite; }
+
+/* Light-sweep shimmer on a hovered CTA. */
+.btn-shimmer { position: relative; overflow: hidden; }
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.4) 50%, transparent 65%);
+  transform: translateX(-150%);
+}
+.btn-shimmer:hover::after { transform: translateX(150%); transition: transform 0.85s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee, .aurora-1, .aurora-2 { animation: none; }
+  .btn-shimmer::after { display: none; }
+}

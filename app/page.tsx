@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
-import { Reveal, SlideIn, Float, Stagger, StaggerItem } from '@/components/landing/Motion'
+import { Reveal, SlideIn, Stagger, StaggerItem } from '@/components/landing/Motion'
+import { OrderNotification, CategoryMarquee } from '@/components/landing/Effects'
 import Faq from '@/components/landing/Faq'
 import { BrandMark } from '@/components/BrandMark'
 import {
@@ -46,8 +47,9 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-white">
         {/* Soft animated background blobs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-20 left-1/3 w-[520px] h-[520px] bg-green-100 rounded-full opacity-50 blur-3xl" />
-          <div className="absolute top-10 -right-20 w-[360px] h-[360px] bg-emerald-50 rounded-full opacity-60 blur-3xl" />
+          <div className="absolute -top-20 left-1/3 w-[520px] h-[520px] bg-green-100 rounded-full opacity-50 blur-3xl aurora-1" />
+          <div className="absolute top-10 -right-20 w-[360px] h-[360px] bg-emerald-50 rounded-full opacity-60 blur-3xl aurora-2" />
+          <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-teal-50 rounded-full opacity-50 blur-3xl aurora-1" />
         </div>
 
         <div className="relative max-w-5xl mx-auto px-5 pt-16 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -72,7 +74,7 @@ export default function HomePage() {
               </StaggerItem>
               <StaggerItem>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <Link href="/signup" className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700 text-white font-bold px-7 h-12 text-base gap-2 shadow-lg shadow-green-200')}>
+                  <Link href="/signup" className={cn(buttonVariants(), 'btn-shimmer bg-green-600 hover:bg-green-700 text-white font-bold px-7 h-12 text-base gap-2 shadow-lg shadow-green-200')}>
                     أنشئ متجرك الآن
                     <ArrowLeft size={16} />
                   </Link>
@@ -130,18 +132,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Floating WhatsApp badge */}
-              <Float className="absolute -left-6 bottom-16">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 px-3 py-2.5 flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-[#25D366] flex items-center justify-center flex-shrink-0">
-                    <MessageCircle size={13} className="text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-800 leading-none">طلب جديد!</p>
-                    <p className="text-[9px] text-gray-400 mt-0.5">من: محمد أحمد</p>
-                  </div>
-                </div>
-              </Float>
+              {/* Animated cycling "new order" notification */}
+              <OrderNotification className="absolute -left-6 bottom-16" />
             </div>
           </SlideIn>
         </div>
@@ -163,6 +155,12 @@ export default function HomePage() {
             ))}
           </Stagger>
         </div>
+      </section>
+
+      {/* ── Category marquee ── */}
+      <section className="py-10 bg-white">
+        <p className="text-center text-sm text-gray-400 mb-4">بيع أي شيء — مهما كان مجالك</p>
+        <CategoryMarquee />
       </section>
 
       {/* ── Features bento ── */}
@@ -189,7 +187,7 @@ export default function HomePage() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4">
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green-200 hover:bg-white hover:shadow-[0_14px_30px_-12px_rgba(22,163,74,0.22)] flex items-start gap-4">
               <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
                 <Link2 size={18} className="text-green-700" />
               </div>
@@ -201,7 +199,7 @@ export default function HomePage() {
           </Reveal>
 
           <Reveal delay={0.2}>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-start gap-4">
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green-200 hover:bg-white hover:shadow-[0_14px_30px_-12px_rgba(22,163,74,0.22)] flex items-start gap-4">
               <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
                 <MessageCircle size={18} className="text-green-700" />
               </div>
@@ -220,7 +218,7 @@ export default function HomePage() {
             { icon: CheckCircle, title: 'بدون رسوم', desc: 'لا عمولات ولا اشتراك شهري — مجاني تماماً' },
           ].map(({ icon: Icon, title, desc }) => (
             <StaggerItem key={title}>
-              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 h-full">
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green-200 hover:bg-white hover:shadow-[0_14px_30px_-12px_rgba(22,163,74,0.22)] h-full">
                 <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center mb-3">
                   <Icon size={17} className="text-green-700" />
                 </div>
@@ -290,7 +288,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/signup"
-            className="inline-flex items-center gap-2 bg-white text-green-700 font-bold px-8 py-3.5 rounded-xl hover:bg-green-50 transition-colors text-base shadow-lg shadow-green-800/20"
+            className="btn-shimmer inline-flex items-center gap-2 bg-white text-green-700 font-bold px-8 py-3.5 rounded-xl hover:bg-green-50 transition-colors text-base shadow-lg shadow-green-800/20"
           >
             أنشئ متجرك مجاناً
             <ArrowLeft size={18} />

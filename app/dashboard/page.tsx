@@ -5,6 +5,7 @@ import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
 import { Package, Store, ShoppingBag, Eye, TrendingUp, Check, ArrowLeft, Crown } from 'lucide-react'
 import ShareButton from '@/components/dashboard/ShareButton'
+import { CountUp } from '@/components/landing/Effects'
 import { isPro, FREE_PRODUCT_LIMIT } from '@/lib/plan'
 import type { OrderItem } from '@/types'
 
@@ -166,7 +167,7 @@ export default async function DashboardPage() {
           </div>
           {pro ? (
             <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
-              {(store.view_count ?? 0).toLocaleString('ar-EG')}
+<CountUp to={store.view_count ?? 0} />
             </p>
           ) : (
             <Link href="/dashboard/upgrade" className="inline-flex items-center gap-1 text-sm font-bold text-green-700">
@@ -182,7 +183,7 @@ export default async function DashboardPage() {
             <ShoppingBag size={18} className="text-green-700" />
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
-            {(orderCount ?? 0).toLocaleString('ar-EG')}
+<CountUp to={orderCount ?? 0} />
           </p>
           <p className="text-xs text-gray-400 mt-1.5">الطلبات</p>
         </div>
@@ -193,7 +194,7 @@ export default async function DashboardPage() {
             <Package size={18} className="text-green-700" />
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
-            {(productCount ?? 0).toLocaleString('ar-EG')}
+            <CountUp to={productCount ?? 0} />
           </p>
           <p className="text-xs text-gray-400 mt-1.5">المنتجات</p>
         </div>
