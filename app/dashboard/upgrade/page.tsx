@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { isPro, PRO_PRICE_EGP, PRO_FEATURES } from '@/lib/plan'
-import UpgradeButton from '@/components/dashboard/UpgradeButton'
-import { Check, Crown, CheckCircle2 } from 'lucide-react'
+import { Check, Crown, CheckCircle2, MessageCircle } from 'lucide-react'
 
 export default async function UpgradePage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const { status } = await searchParams
@@ -9,7 +8,7 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
   const { data: { user } } = await supabase.auth.getUser()
   const { data: store } = await supabase
     .from('stores')
-    .select('plan, plan_expires_at')
+    .select('plan, plan_expires_at, name, slug')
     .eq('owner_id', user!.id)
     .single()
 
@@ -17,6 +16,16 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
   const expires = store?.plan_expires_at
     ? new Date(store.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
+
+  // Manual subscription: merchant contacts us on WhatsApp; we activate Pro.
+  // Set NEXT_PUBLIC_SUPPORT_WHATSAPP to your support number (e.g. 201001234567).
+  const support = process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || '201000000000'
+  const waText = encodeURIComponent(
+    pro
+      ? `مرحباً، أريد تجديد اشتراك Pro لمتجري "${store?.name ?? ''}" على دكان.`
+      : `مرحباً، أريد الاشتراك في خطة Pro (${PRO_PRICE_EGP} جنيه/شهر) لمتجري "${store?.name ?? ''}" على دكان.`
+  )
+  const waLink = `https://wa.me/${support}?text=${waText}`
 
   return (
     <div className="max-w-xl mx-auto">
@@ -70,11 +79,18 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
         </ul>
       </div>
 
-      {!pro && <UpgradeButton />}
-      {pro && <UpgradeButton label={`تجديد الاشتراك — ${PRO_PRICE_EGP} جنيه/شهر`} />}
+      <a
+        href={waLink}
+        target="_blank"
+        rel="noreferrer"
+        className="w-full h-12 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-base flex items-center justify-center gap-2 transition-colors"
+      >
+        <MessageCircle size={18} />
+        {pro ? 'تواصل معنا للتجديد' : 'تواصل معنا للاشتراك'}
+      </a>
 
       <p className="text-center text-xs text-gray-400 mt-4">
-        الدفع آمن عبر Paymob. يُجدَّد الاشتراك يدوياً كل شهر.
+        راسلنا على واتساب وسنفعّل خطة Pro لمتجرك خلال دقائق. الاشتراك شهري.
       </p>
     </div>
   )
