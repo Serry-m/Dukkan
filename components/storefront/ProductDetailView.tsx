@@ -6,6 +6,7 @@ import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
+import { effectivePrice, isOnSale, discountPercent, isNewProduct } from '@/lib/price'
 import { Package, Plus, Minus, ShoppingCart, Check, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -32,6 +33,8 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
   const options = product.options ?? []
   const allChosen = options.every((opt) => selected[opt.name])
   const canAdd = !outOfStock && allChosen
+  const onSale = isOnSale(product)
+  const eff = effectivePrice(product)
 
   function handleAdd() {
     if (!canAdd) return
@@ -83,15 +86,28 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
 
       {/* Info */}
       <div className="mt-4">
-        {product.category && (
-          <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{product.category}</span>
-        )}
+        <div className="flex items-center gap-2">
+          {product.category && (
+            <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{product.category}</span>
+          )}
+          {isNewProduct(product) && (
+            <span className="text-[11px] font-bold text-white px-2 py-0.5 rounded-full" style={{ backgroundColor: themeColor }}>جديد</span>
+          )}
+        </div>
         <h1 className="text-xl font-bold text-gray-900 mt-2 leading-snug">{product.name}</h1>
-        <div className="flex items-baseline gap-1 mt-1.5">
-          <span className="text-2xl font-extrabold tabular-nums" style={{ color: themeColor }}>
-            {product.price.toLocaleString('ar-EG')}
-          </span>
-          <span className="text-sm text-gray-400">{curr}</span>
+        <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-extrabold tabular-nums" style={{ color: themeColor }}>
+              {eff.toLocaleString('ar-EG')}
+            </span>
+            <span className="text-sm text-gray-400">{curr}</span>
+          </div>
+          {onSale && (
+            <>
+              <span className="text-base text-gray-400 line-through tabular-nums">{product.price.toLocaleString('ar-EG')}</span>
+              <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">خصم {discountPercent(product).toLocaleString('ar-EG')}٪</span>
+            </>
+          )}
         </div>
         {product.description && (
           <p className="text-sm text-gray-600 leading-relaxed mt-4 whitespace-pre-line">{product.description}</p>
@@ -152,7 +168,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
           ) : outOfStock ? (
             'غير متاح'
           ) : (
-            <><ShoppingCart size={18} /> أضف للسلة · {(product.price * qty).toLocaleString('ar-EG')} {curr}</>
+            <><ShoppingCart size={18} /> أضف للسلة · {(eff * qty).toLocaleString('ar-EG')} {curr}</>
           )}
         </button>
         {!outOfStock && !allChosen && options.length > 0 && (
@@ -177,7 +193,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
                   )}
                 </div>
                 <p className="text-xs font-medium text-gray-800 truncate mt-1.5">{r.name}</p>
-                <p className="text-xs font-bold tabular-nums" style={{ color: themeColor }}>{r.price.toLocaleString('ar-EG')} {curr}</p>
+                <p className="text-xs font-bold tabular-nums" style={{ color: themeColor }}>{effectivePrice(r).toLocaleString('ar-EG')} {curr}</p>
               </Link>
             ))}
           </div>

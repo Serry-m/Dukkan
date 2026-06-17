@@ -1,6 +1,7 @@
 import type { CartItem, Store } from '@/types'
 import { createClient } from '@/lib/supabase/client'
 import { formatPrice } from '@/lib/currency'
+import { effectivePrice } from '@/lib/price'
 
 function normalizeEgyptianNumber(number: string): string {
   const digits = number.replace(/\D/g, '')
@@ -16,7 +17,7 @@ function lineLabel(item: CartItem, currency: string): string {
   const opts = selectedOptions && Object.keys(selectedOptions).length
     ? ` (${Object.entries(selectedOptions).map(([k, v]) => `${k}: ${v}`).join('، ')})`
     : ''
-  return `• ${quantity}x ${product.name}${opts} — ${formatPrice(product.price * quantity, currency)}`
+  return `• ${quantity}x ${product.name}${opts} — ${formatPrice(effectivePrice(product) * quantity, currency)}`
 }
 
 type Customer = {
@@ -33,7 +34,7 @@ export function buildWhatsAppOrderUrl(
 ): string {
   const whatsappNumber = normalizeEgyptianNumber(store.whatsapp_number)
   const lines = cart.map((item) => lineLabel(item, store.currency))
-  const subtotal = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const subtotal = cart.reduce((sum, { product, quantity }) => sum + effectivePrice(product) * quantity, 0)
   const deliveryFee = Number(store.delivery_fee || 0)
   const total = subtotal + deliveryFee
 
@@ -73,12 +74,12 @@ export async function saveOrder(
   customer: Customer
 ): Promise<void> {
   const supabase = createClient()
-  const subtotal = cart.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0)
+  const subtotal = cart.reduce((sum, { product, quantity }) => sum + effectivePrice(product) * quantity, 0)
   const total = subtotal + Number(store.delivery_fee || 0)
   const items = cart.map(({ product, quantity, selectedOptions }) => ({
     name: product.name,
     quantity,
-    price: product.price,
+    price: effectivePrice(product),
     options: selectedOptions && Object.keys(selectedOptions).length ? selectedOptions : null,
   }))
   const { error } = await supabase.from('orders').insert({

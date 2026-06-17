@@ -8,6 +8,7 @@ import StockToggle from '@/components/dashboard/StockToggle'
 import ReorderButtons from '@/components/dashboard/ReorderButtons'
 import CategoriesManager from '@/components/dashboard/CategoriesManager'
 import { formatPrice } from '@/lib/currency'
+import { effectivePrice, isOnSale } from '@/lib/price'
 import { orderCategories } from '@/lib/categories'
 
 export default async function ProductsPage() {
@@ -104,7 +105,10 @@ export default async function ProductsPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 truncate">{product.name}</p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <p className="text-green-600 font-bold text-sm tabular-nums">{formatPrice(product.price, store.currency)}</p>
+                  <p className="text-green-600 font-bold text-sm tabular-nums">{formatPrice(effectivePrice(product), store.currency)}</p>
+                  {isOnSale(product) && (
+                    <span className="text-xs text-gray-400 line-through tabular-nums">{product.price.toLocaleString('ar-EG')}</span>
+                  )}
                   {product.category && (
                     <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full truncate max-w-[90px]">{product.category}</span>
                   )}

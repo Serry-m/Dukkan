@@ -10,6 +10,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { CartItem, Product } from '@/types'
+import { effectivePrice } from '@/lib/price'
 
 // Build a stable line id from a product + its selected options.
 function buildLineId(productId: string, selectedOptions?: Record<string, string>): string {
@@ -73,7 +74,7 @@ export const useCartStore = create<CartStore>()(
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 
       totalPrice: () =>
-        get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
+        get().items.reduce((sum, i) => sum + effectivePrice(i.product) * i.quantity, 0),
     }),
     {
       name: 'dukkan-cart',

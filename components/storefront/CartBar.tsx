@@ -6,6 +6,7 @@ import { useCartStore } from '@/lib/cart-store'
 import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
+import { effectivePrice } from '@/lib/price'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle, Package } from 'lucide-react'
@@ -125,10 +126,10 @@ export default function CartBar({ store }: { store: Store }) {
                     {optionsLabel(selectedOptions) && (
                       <p className="text-[11px] text-gray-400 truncate">{optionsLabel(selectedOptions)}</p>
                     )}
-                    <p className="text-xs text-gray-400">{quantity} × {product.price.toLocaleString('ar-EG')} {curr}</p>
+                    <p className="text-xs text-gray-400">{quantity} × {effectivePrice(product).toLocaleString('ar-EG')} {curr}</p>
                   </div>
                   <p className="font-bold text-sm flex-shrink-0" style={{ color: themeColor }}>
-                    {(product.price * quantity).toLocaleString('ar-EG')} {curr}
+                    {(effectivePrice(product) * quantity).toLocaleString('ar-EG')} {curr}
                   </p>
                   <button onClick={() => removeItem(lineId)} className="text-gray-300 hover:text-red-400 flex-shrink-0">
                     <Trash2 size={16} />
@@ -210,7 +211,7 @@ export default function CartBar({ store }: { store: Store }) {
                       {quantity}× {product.name}
                       {optionsLabel(selectedOptions) && <span className="text-gray-400"> ({optionsLabel(selectedOptions)})</span>}
                     </span>
-                    <span className="font-medium">{(product.price * quantity).toLocaleString('ar-EG')} {curr}</span>
+                    <span className="font-medium">{(effectivePrice(product) * quantity).toLocaleString('ar-EG')} {curr}</span>
                   </div>
                 ))}
                 {deliveryFee > 0 && (

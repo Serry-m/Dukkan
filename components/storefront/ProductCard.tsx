@@ -5,6 +5,8 @@ import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
+import { effectivePrice, isOnSale } from '@/lib/price'
+import { ProductBadges } from './ProductBadges'
 import { Plus, Minus, Package, SlidersHorizontal } from 'lucide-react'
 
 type Props = {
@@ -62,12 +64,17 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
     </div>
   )
 
+  const onSale = isOnSale(product)
+  const eff = effectivePrice(product)
   const priceBlock = (
-    <div className="flex items-baseline gap-1">
+    <div className="flex items-baseline gap-1.5 flex-wrap">
       <span className="font-bold text-base tabular-nums" style={{ color: outOfStock ? '#9ca3af' : themeColor }}>
-        {product.price.toLocaleString('ar-EG')}
+        {eff.toLocaleString('ar-EG')}
       </span>
       <span className="text-xs text-gray-400 font-normal">{currencyLabel(currency)}</span>
+      {onSale && (
+        <span className="text-xs text-gray-400 line-through tabular-nums">{product.price.toLocaleString('ar-EG')}</span>
+      )}
     </div>
   )
 
@@ -88,6 +95,9 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
               <SlidersHorizontal size={9} /> خيارات
             </span>
           )}
+          <div className="absolute top-1.5 left-1.5">
+            <ProductBadges product={product} themeColor={themeColor} />
+          </div>
         </Link>
         <div className="flex-1 p-3 flex flex-col gap-1.5 min-w-0">
           <Link href={href} className="text-right">
@@ -124,6 +134,9 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
             <SlidersHorizontal size={10} /> خيارات
           </span>
         )}
+        <div className="absolute top-2 right-2">
+          <ProductBadges product={product} themeColor={themeColor} />
+        </div>
       </Link>
 
       <div className="p-3 flex flex-col flex-1 gap-2">

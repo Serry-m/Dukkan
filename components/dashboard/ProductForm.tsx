@@ -30,6 +30,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
   const router = useRouter()
   const [name, setName] = useState(product?.name ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
+  const [salePrice, setSalePrice] = useState(product?.sale_price?.toString() ?? '')
   const [description, setDescription] = useState(product?.description ?? '')
   const [category, setCategory] = useState(product?.category ?? '')
   const [inStock, setInStock] = useState(product?.in_stock ?? true)
@@ -121,6 +122,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
       store_id: storeId,
       name,
       price: parseFloat(price),
+      sale_price: salePrice.trim() ? parseFloat(salePrice) : null,
       description: description || null,
       category: category.trim() || null,
       options: cleanOptions,
@@ -153,10 +155,19 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: سماعة بلوتوث" required />
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="price">السعر</Label>
-            <Input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="150" required dir="ltr" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="price">السعر</Label>
+              <Input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="150" required dir="ltr" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="salePrice">سعر التخفيض (اختياري)</Label>
+              <Input id="salePrice" type="number" min="0" step="0.01" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} placeholder="—" dir="ltr" />
+            </div>
           </div>
+          {salePrice.trim() && price.trim() && parseFloat(salePrice) >= parseFloat(price) && (
+            <p className="text-xs text-amber-600 -mt-3">سعر التخفيض يجب أن يكون أقل من السعر الأصلي ليظهر كخصم.</p>
+          )}
 
           {/* Category — Pro */}
           <div className="space-y-1">
