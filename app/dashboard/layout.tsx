@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { isAdminEmail } from '@/lib/admin'
 import DashboardSidebar from '@/components/dashboard/Sidebar'
 import MobileNav from '@/components/dashboard/MobileNav'
 
@@ -9,11 +10,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/login')
 
+  const admin = isAdminEmail(user.email)
+
   return (
     <div className="flex min-h-screen bg-gray-50" dir="rtl">
       {/* Sidebar — hidden on mobile, visible on lg+ */}
       <div className="hidden lg:block">
-        <DashboardSidebar userEmail={user.email ?? ''} />
+        <DashboardSidebar userEmail={user.email ?? ''} isAdmin={admin} />
       </div>
 
       {/* Main content — add bottom padding on mobile so content isn't hidden behind nav */}

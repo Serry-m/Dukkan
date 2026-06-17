@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Package, Store, LogOut, ShoppingBag, Crown } from 'lucide-react'
+import { LayoutDashboard, Package, Store, LogOut, ShoppingBag, Crown, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BrandMark } from '@/components/BrandMark'
 
@@ -16,7 +16,7 @@ const navItems = [
   { href: '/dashboard/upgrade', label: 'الترقية إلى Pro', icon: Crown },
 ]
 
-export default function DashboardSidebar({ userEmail }: { userEmail: string }) {
+export default function DashboardSidebar({ userEmail, isAdmin }: { userEmail: string; isAdmin?: boolean }) {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -54,6 +54,19 @@ export default function DashboardSidebar({ userEmail }: { userEmail: string }) {
             {label}
           </Link>
         ))}
+
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-2 border-t border-gray-100 pt-4',
+              pathname === '/admin' ? 'text-green-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            )}
+          >
+            <Shield size={18} />
+            لوحة الإدارة
+          </Link>
+        )}
       </nav>
 
       {/* User area at bottom */}
