@@ -7,30 +7,32 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
   return (
     <div className="max-w-lg mx-auto">
       {/* Cover */}
-      <div className="relative h-36 sm:h-44 w-full overflow-hidden">
+      <div className="relative h-40 sm:h-48 w-full overflow-hidden">
         {store.banner_url ? (
           <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
         ) : (
           <div
             className="w-full h-full"
-            style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}cc)` }}
+            style={{ background: `radial-gradient(120% 120% at 30% 0%, ${themeColor}, ${themeColor}b0 60%, ${themeColor}80)` }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white/0 via-transparent to-black/10" />
       </div>
 
       {/* Profile */}
-      <div className="px-4 -mt-12 relative">
+      <div className="px-4 -mt-14 relative">
         <div className="flex flex-col items-center text-center">
-          {/* Logo */}
-          <div className="w-24 h-24 rounded-2xl border-4 border-white bg-white shadow-lg overflow-hidden flex items-center justify-center">
-            {store.logo_url ? (
-              <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}15` }}>
-                <StoreIcon size={32} style={{ color: themeColor }} />
-              </div>
-            )}
+          {/* Logo — double-bezel (machined) */}
+          <div className="rounded-[1.6rem] bg-white p-1.5 shadow-[var(--shadow-lift)] ring-1 ring-gray-900/[0.06]" style={{ width: 104, height: 104 }}>
+            <div className="w-full h-full rounded-[1.2rem] overflow-hidden flex items-center justify-center bg-gray-50">
+              {store.logo_url ? (
+                <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}12` }}>
+                  <StoreIcon size={34} strokeWidth={1.5} style={{ color: themeColor }} />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Name + status */}

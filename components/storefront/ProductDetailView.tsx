@@ -158,21 +158,21 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
         </div>
       )}
 
-      {/* Add to cart */}
+      {/* Add to cart — button-in-button pill */}
       <div className="mt-6">
         <button
           onClick={handleAdd}
           disabled={!canAdd}
-          className="w-full h-12 rounded-2xl text-base font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40"
+          className="group/cta w-full h-14 rounded-full ps-2 pe-6 text-base font-bold flex items-center justify-between gap-2 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] disabled:opacity-40"
           style={{ backgroundColor: themeColor, color: onTheme }}
         >
-          {added ? (
-            <><Check size={18} /> تمت الإضافة</>
-          ) : outOfStock ? (
-            'غير متاح'
-          ) : (
-            <><ShoppingCart size={18} /> أضف للسلة · {(eff * qty).toLocaleString('ar-EG')} {curr}</>
-          )}
+          <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/15 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover/cta:scale-105">
+            {added ? <Check size={18} strokeWidth={2.2} /> : <ShoppingCart size={18} strokeWidth={1.8} />}
+          </span>
+          <span className="flex-1 text-center">
+            {added ? 'تمت الإضافة' : outOfStock ? 'غير متاح' : `أضف للسلة · ${(eff * qty).toLocaleString('ar-EG')} ${curr}`}
+          </span>
+          <span className="w-10" aria-hidden />
         </button>
         {!outOfStock && !allChosen && options.length > 0 && (
           <p className="text-center text-xs text-gray-400 mt-2">اختر كل الخيارات لإضافة المنتج</p>

@@ -81,13 +81,13 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
   // ── LIST layout: horizontal row ──
   if (layout === 'list') {
     return (
-      <div className={`group bg-white ${radius} overflow-hidden flex items-stretch border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
+      <div className={`group bg-white ${radius} overflow-hidden flex items-stretch ring-1 ring-gray-900/[0.05] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
         <Link href={href} className="w-24 flex-shrink-0 bg-gray-50 relative overflow-hidden">
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           ) : (
             <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
-              <Package size={24} style={{ color: '#cbd5e1' }} />
+              <Package size={24} strokeWidth={1.25} style={{ color: '#cbd5e1' }} />
             </div>
           )}
           {hasOptions && !outOfStock && (
@@ -115,13 +115,13 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
 
   // ── GRID layout: vertical card ──
   return (
-    <div className={`group bg-white ${radius} overflow-hidden flex flex-col border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
+    <div className={`group bg-white ${radius} overflow-hidden flex flex-col ring-1 ring-gray-900/[0.05] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
       <Link href={href} className="aspect-square bg-gray-50 relative overflow-hidden block w-full text-right">
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#f3f4f6' }}>
-            <Package size={32} style={{ color: '#cbd5e1' }} />
+            <Package size={32} strokeWidth={1.25} style={{ color: '#cbd5e1' }} />
           </div>
         )}
         {outOfStock && (
