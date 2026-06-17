@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import ProductGrid from '@/components/storefront/ProductGrid'
 import ViewTracker from '@/components/storefront/ViewTracker'
+import { StoreHero } from '@/components/storefront/StoreHero'
 import { Clock } from 'lucide-react'
 
 type Props = {
@@ -29,18 +30,21 @@ export default async function StorefrontPage({ params }: Props) {
     .order('sort_order', { ascending: true })
 
   return (
-    <main className="max-w-lg mx-auto px-3 py-4 pb-32">
+    <>
       <ViewTracker slug={slug} />
+      <StoreHero store={store} themeColor={store.theme_color ?? '#16a34a'} />
 
-      {/* Closed banner */}
-      {!store.is_open && (
-        <div className="mb-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
-          <Clock size={16} className="flex-shrink-0" />
-          <span>المتجر مغلق مؤقتاً — يمكنك التصفح والطلب لاحقاً</span>
-        </div>
-      )}
+      <main className="max-w-lg mx-auto px-3 py-4 pb-32">
+        {/* Closed banner */}
+        {!store.is_open && (
+          <div className="mb-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-sm">
+            <Clock size={16} className="flex-shrink-0" />
+            <span>المتجر مغلق مؤقتاً — يمكنك التصفح والطلب لاحقاً</span>
+          </div>
+        )}
 
-      <ProductGrid products={products ?? []} store={store} />
-    </main>
+        <ProductGrid products={products ?? []} store={store} />
+      </main>
+    </>
   )
 }

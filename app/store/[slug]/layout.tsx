@@ -3,10 +3,8 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareStoreButton from '@/components/storefront/ShareStoreButton'
 import CartBar from '@/components/storefront/CartBar'
-import { isPro } from '@/lib/plan'
+import { StoreFooter } from '@/components/storefront/StoreFooter'
 import { Store } from 'lucide-react'
-import Link from 'next/link'
-import { BrandMark } from '@/components/BrandMark'
 
 type Props = {
   children: React.ReactNode
@@ -79,13 +77,6 @@ export default async function StorefrontLayout({ children, params }: Props) {
       }}
     >
 
-      {/* Optional banner image */}
-      {store.banner_url && (
-        <div className="w-full max-w-lg mx-auto aspect-[3/1] overflow-hidden bg-gray-100">
-          <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
-        </div>
-      )}
-
       {/* Sticky header with colored top accent */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
         {/* Theme-colored accent stripe */}
@@ -108,12 +99,9 @@ export default async function StorefrontLayout({ children, params }: Props) {
             </div>
           )}
 
-          {/* Store info */}
+          {/* Store name (compact nav) */}
           <div className="min-w-0 flex-1">
             <h1 className="font-bold text-gray-900 text-[15px] leading-tight truncate">{store.name}</h1>
-            {store.description && (
-              <p className="text-xs text-gray-400 mt-0.5 truncate">{store.description}</p>
-            )}
           </div>
 
           <ShareStoreButton storeName={store.name} themeColor={themeColor} />
@@ -122,19 +110,8 @@ export default async function StorefrontLayout({ children, params }: Props) {
 
       {children}
 
-      {/* "Made with دكان" badge — free plan only */}
-      {!isPro(store) && (
-        <div className="max-w-lg mx-auto px-4 pb-8 pt-2 flex justify-center">
-          <Link
-            href="/"
-            target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <BrandMark size={16} className="rounded" />
-            صُنع بواسطة دكان
-          </Link>
-        </div>
-      )}
+      {/* Store footer — about, info, socials, contact, made-with */}
+      <StoreFooter store={store} themeColor={themeColor} />
 
       {/* Cart bar — visible across the storefront whenever the cart has items */}
       <CartBar store={store} />

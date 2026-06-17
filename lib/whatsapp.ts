@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/client'
 import { formatPrice } from '@/lib/currency'
 import { effectivePrice } from '@/lib/price'
 
-function normalizeEgyptianNumber(number: string): string {
+export function normalizeEgyptianNumber(number: string): string {
   const digits = number.replace(/\D/g, '')
   if (digits.startsWith('20')) return digits
   if (digits.startsWith('0')) return '20' + digits.slice(1)

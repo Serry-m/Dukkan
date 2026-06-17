@@ -37,6 +37,12 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [bannerFile, setBannerFile] = useState<File | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(store?.banner_url ?? null)
   const [layout, setLayout] = useState(store?.layout ?? 'grid')
+  const [about, setAbout] = useState(store?.about ?? '')
+  const [location, setLocation] = useState(store?.location ?? '')
+  const [workingHours, setWorkingHours] = useState(store?.working_hours ?? '')
+  const [instagram, setInstagram] = useState(store?.instagram ?? '')
+  const [facebook, setFacebook] = useState(store?.facebook ?? '')
+  const [tiktok, setTiktok] = useState(store?.tiktok ?? '')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -104,7 +110,17 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       }
     }
 
-    const payload = { name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl, theme_color: themeColor, currency, delivery_fee: parseFloat(deliveryFee) || 0, is_open: isOpen, message_template: messageTemplate.trim() || null, layout }
+    const payload = {
+      name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl,
+      theme_color: themeColor, currency, delivery_fee: parseFloat(deliveryFee) || 0, is_open: isOpen,
+      message_template: messageTemplate.trim() || null, layout,
+      about: about.trim() || null,
+      location: location.trim() || null,
+      working_hours: workingHours.trim() || null,
+      instagram: instagram.trim() || null,
+      facebook: facebook.trim() || null,
+      tiktok: tiktok.trim() || null,
+    }
 
     if (store) {
       const { error } = await supabase.from('stores').update(payload).eq('id', store.id)
@@ -325,6 +341,43 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
             />
             <p className="text-xs text-gray-400">أول سطر في رسالة الواتساب التي يرسلها العميل. اتركه فارغاً للرسالة الافتراضية.</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Section 4: Identity & contact ── */}
+      <Card>
+        <CardContent className="pt-6 space-y-5">
+          <h2 className="text-sm font-bold text-gray-900">هوية المتجر والتواصل</h2>
+
+          <div className="space-y-1">
+            <Label htmlFor="about">عن المتجر (اختياري)</Label>
+            <textarea
+              id="about"
+              value={about}
+              onChange={(e) => setAbout(e.target.value)}
+              placeholder="نبذة عن متجرك، قصتك، ما يميزك..."
+              rows={3}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="location">الموقع (اختياري)</Label>
+              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="القاهرة، مدينة نصر" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="hours">مواعيد العمل (اختياري)</Label>
+              <Input id="hours" value={workingHours} onChange={(e) => setWorkingHours(e.target.value)} placeholder="يومياً ١٠ص - ١٢م" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>روابط التواصل (اختياري)</Label>
+            <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="إنستجرام — اسم المستخدم أو الرابط" dir="ltr" />
+            <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="فيسبوك — اسم المستخدم أو الرابط" dir="ltr" />
+            <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="تيك توك — اسم المستخدم أو الرابط" dir="ltr" />
           </div>
         </CardContent>
       </Card>

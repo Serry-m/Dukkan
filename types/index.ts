@@ -16,6 +16,12 @@ export type Store = {
   message_template: string | null
   view_count: number
   delivery_fee: number
+  about: string | null
+  location: string | null
+  working_hours: string | null
+  instagram: string | null
+  facebook: string | null
+  tiktok: string | null
   plan: 'free' | 'pro'
   plan_expires_at: string | null
   category_order: string[]
