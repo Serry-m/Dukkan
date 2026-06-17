@@ -7,7 +7,7 @@ export type ThemeConfig = {
   name: string            // Arabic display name
   desc: string
   pro: boolean
-  font: 'cairo' | 'tajawal' | 'almarai'
+  font: 'cairo' | 'tajawal' | 'almarai' | 'amiri'
   pageBg: string          // base page background color
   cardRadius: string      // outer card corner
   innerRadius: string     // buttons / inner elements
@@ -51,9 +51,9 @@ export const THEMES: Record<string, ThemeConfig> = {
   elegant: {
     id: 'elegant',
     name: 'أنيق',
-    desc: 'خلفية دافئة وطباعة راقية — مظهر بوتيك فاخر',
+    desc: 'خط كلاسيكي وخلفية دافئة — مظهر بوتيك فاخر',
     pro: true,
-    font: 'tajawal',
+    font: 'amiri',
     pageBg: '#faf7f2',
     cardRadius: 'rounded-2xl',
     innerRadius: 'rounded-full',

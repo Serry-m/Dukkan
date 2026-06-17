@@ -65,6 +65,7 @@ export default async function StorefrontLayout({ children, params }: Props) {
     cairo: 'var(--font-cairo)',
     tajawal: 'var(--font-tajawal)',
     almarai: 'var(--font-almarai)',
+    amiri: 'var(--font-amiri)',
   }
   const fontFamily = fontVar[theme.font] ?? 'var(--font-cairo)'
 

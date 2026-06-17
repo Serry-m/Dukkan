@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Cairo, Tajawal, Almarai } from 'next/font/google'
+import { Cairo, Tajawal, Almarai, Amiri } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-// Three Arabic fonts the owner can choose from for their storefront.
+// Arabic fonts the storefront themes can use.
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
   variable: '--font-cairo',
@@ -17,6 +17,12 @@ const almarai = Almarai({
   subsets: ['arabic'],
   weight: ['400', '700', '800'],
   variable: '--font-almarai',
+})
+// Elegant serif-style naskh for the "أنيق" theme.
+const amiri = Amiri({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '700'],
+  variable: '--font-amiri',
 })
 
 export const metadata: Metadata = {
@@ -40,7 +46,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" className={`${cairo.variable} ${tajawal.variable} ${almarai.variable} h-full antialiased`}>
+    <html lang="ar" className={`${cairo.variable} ${tajawal.variable} ${almarai.variable} ${amiri.variable} h-full antialiased`}>
       <body className={`min-h-full flex flex-col font-[var(--font-cairo)]`}>
         {children}
         <Toaster position="top-center" dir="rtl" />
