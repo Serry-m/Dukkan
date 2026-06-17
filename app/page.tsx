@@ -33,7 +33,6 @@ export default function HomePage() {
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-20 left-1/3 w-[520px] h-[520px] bg-green-100 rounded-full opacity-50 blur-3xl aurora-1" />
           <div className="absolute top-10 -right-20 w-[360px] h-[360px] bg-emerald-50 rounded-full opacity-60 blur-3xl aurora-2" />
-          <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-teal-50 rounded-full opacity-50 blur-3xl aurora-1" />
         </div>
 
         <div className="relative max-w-5xl mx-auto px-5 pt-16 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
