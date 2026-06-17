@@ -71,6 +71,7 @@ export type Product = {
   images: string[]           // up to 3 photos shown in the detail carousel
   in_stock: boolean
   sort_order: number
+  featured: boolean
   category: string | null
   options: ProductOption[]
   created_at: string

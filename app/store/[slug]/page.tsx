@@ -27,6 +27,7 @@ export default async function StorefrontPage({ params }: Props) {
     .select('*')
     .eq('store_id', store.id)
     .order('in_stock', { ascending: false }) // in-stock first
+    .order('featured', { ascending: false }) // featured next
     .order('sort_order', { ascending: true })
 
   return (

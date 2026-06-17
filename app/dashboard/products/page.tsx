@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
-import { Plus, Pencil, Package } from 'lucide-react'
+import { Plus, Pencil, Package, Star } from 'lucide-react'
 import DeleteProductButton from '@/components/dashboard/DeleteProductButton'
 import StockToggle from '@/components/dashboard/StockToggle'
 import ReorderButtons from '@/components/dashboard/ReorderButtons'
@@ -103,7 +103,10 @@ export default async function ProductsPage() {
               )}
 
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate">{product.name}</p>
+                <div className="flex items-center gap-1.5">
+                  {product.featured && <Star size={13} className="text-amber-500 fill-amber-500 flex-shrink-0" />}
+                  <p className="font-semibold text-gray-900 truncate">{product.name}</p>
+                </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <p className="text-green-600 font-bold text-sm tabular-nums">{formatPrice(effectivePrice(product), store.currency)}</p>
                   {isOnSale(product) && (

@@ -34,6 +34,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
   const [description, setDescription] = useState(product?.description ?? '')
   const [category, setCategory] = useState(product?.category ?? '')
   const [inStock, setInStock] = useState(product?.in_stock ?? true)
+  const [featured, setFeatured] = useState(product?.featured ?? false)
   // Up to 3 photo slots. Each is either an already-saved url or a new file.
   const initialImages = product?.images?.length
     ? product.images
@@ -127,6 +128,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
       category: category.trim() || null,
       options: cleanOptions,
       in_stock: inStock,
+      featured: isPro ? featured : (product?.featured ?? false),
       image_url: imageUrl,
       images,
     }
@@ -309,6 +311,19 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
           <div className="flex items-center gap-3">
             <input id="inStock" type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="w-4 h-4 accent-green-600" />
             <Label htmlFor="inStock" className="cursor-pointer">متاح في المخزن</Label>
+          </div>
+
+          {/* Featured — Pro */}
+          <div className="space-y-1">
+            <Label className="flex items-center gap-2">منتج مميز {!isPro && <ProBadge />}</Label>
+            {isPro ? (
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="w-4 h-4 accent-green-600" />
+                <span className="text-sm text-gray-600">يظهر أولاً في المتجر مع شارة «مميز»</span>
+              </label>
+            ) : (
+              <ProUpsell feature="تمييز المنتجات" />
+            )}
           </div>
 
           <div className="flex gap-3">
