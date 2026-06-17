@@ -1,0 +1,189 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import type { Product } from '@/types'
+import { useCartStore } from '@/lib/cart-store'
+import { currencyLabel } from '@/lib/currency'
+import { readableText } from '@/lib/color'
+import { Package, Plus, Minus, ShoppingCart, Check, ChevronRight } from 'lucide-react'
+import { toast } from 'sonner'
+
+type Props = {
+  product: Product
+  slug: string
+  themeColor: string
+  currency: string
+  related: Product[]
+}
+
+export default function ProductDetailView({ product, slug, themeColor, currency, related }: Props) {
+  const addItem = useCartStore((s) => s.addItem)
+  const onTheme = readableText(themeColor)
+  const curr = currencyLabel(currency)
+  const outOfStock = !product.in_stock
+
+  const photos = product.images?.length ? product.images : product.image_url ? [product.image_url] : []
+  const [photoIndex, setPhotoIndex] = useState(0)
+  const [selected, setSelected] = useState<Record<string, string>>({})
+  const [qty, setQty] = useState(1)
+  const [added, setAdded] = useState(false)
+
+  const options = product.options ?? []
+  const allChosen = options.every((opt) => selected[opt.name])
+  const canAdd = !outOfStock && allChosen
+
+  function handleAdd() {
+    if (!canAdd) return
+    addItem(product, options.length ? selected : undefined, qty)
+    setAdded(true)
+    toast.success('تمت الإضافة إلى السلة')
+    setTimeout(() => setAdded(false), 1500)
+  }
+
+  return (
+    <div className="max-w-lg mx-auto px-4 pb-28 pt-3">
+      {/* Back */}
+      <Link href={`/store/${slug}`} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-3">
+        <ChevronRight size={16} /> رجوع للمتجر
+      </Link>
+
+      {/* Gallery */}
+      <div className="rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-[var(--shadow-soft)]">
+        <div className="aspect-square w-full bg-gray-50 relative">
+          {photos.length ? (
+            <img src={photos[photoIndex]} alt={product.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
+              <Package size={56} style={{ color: `${themeColor}60` }} />
+            </div>
+          )}
+          {outOfStock && (
+            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+              <span className="text-xs font-bold text-gray-600 bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm">نفد المخزون</span>
+            </div>
+          )}
+        </div>
+        {/* Thumbnails */}
+        {photos.length > 1 && (
+          <div className="flex gap-2 p-2.5 overflow-x-auto">
+            {photos.map((p, i) => (
+              <button
+                key={i}
+                onClick={() => setPhotoIndex(i)}
+                className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all"
+                style={{ borderColor: i === photoIndex ? themeColor : 'transparent' }}
+              >
+                <img src={p} alt="" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="mt-4">
+        {product.category && (
+          <span className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{product.category}</span>
+        )}
+        <h1 className="text-xl font-bold text-gray-900 mt-2 leading-snug">{product.name}</h1>
+        <div className="flex items-baseline gap-1 mt-1.5">
+          <span className="text-2xl font-extrabold tabular-nums" style={{ color: themeColor }}>
+            {product.price.toLocaleString('ar-EG')}
+          </span>
+          <span className="text-sm text-gray-400">{curr}</span>
+        </div>
+        {product.description && (
+          <p className="text-sm text-gray-600 leading-relaxed mt-4 whitespace-pre-line">{product.description}</p>
+        )}
+      </div>
+
+      {/* Options */}
+      {options.map((opt) => (
+        <div key={opt.name} className="mt-5">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-semibold text-gray-800">{opt.name}</p>
+            {!selected[opt.name] && <span className="text-[11px] text-gray-400">اختر واحداً</span>}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {opt.values.map((val) => {
+              const isSel = selected[opt.name] === val
+              return (
+                <button
+                  key={val}
+                  onClick={() => setSelected((prev) => ({ ...prev, [opt.name]: val }))}
+                  className="px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all active:scale-95"
+                  style={isSel ? { borderColor: themeColor, backgroundColor: `${themeColor}12`, color: themeColor } : { borderColor: '#e5e7eb', color: '#374151' }}
+                >
+                  {val}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+
+      {/* Quantity */}
+      {!outOfStock && (
+        <div className="mt-6 flex items-center justify-between">
+          <p className="text-sm font-semibold text-gray-800">الكمية</p>
+          <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-2 py-1.5">
+            <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm active:scale-90 transition-all">
+              <Minus size={15} className="text-gray-600" />
+            </button>
+            <span className="font-bold text-base tabular-nums w-6 text-center">{qty.toLocaleString('ar-EG')}</span>
+            <button onClick={() => setQty((q) => q + 1)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm active:scale-90 transition-all">
+              <Plus size={15} className="text-gray-600" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add to cart */}
+      <div className="mt-6">
+        <button
+          onClick={handleAdd}
+          disabled={!canAdd}
+          className="w-full h-12 rounded-2xl text-base font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40"
+          style={{ backgroundColor: themeColor, color: onTheme }}
+        >
+          {added ? (
+            <><Check size={18} /> تمت الإضافة</>
+          ) : outOfStock ? (
+            'غير متاح'
+          ) : (
+            <><ShoppingCart size={18} /> أضف للسلة · {(product.price * qty).toLocaleString('ar-EG')} {curr}</>
+          )}
+        </button>
+        {!outOfStock && !allChosen && options.length > 0 && (
+          <p className="text-center text-xs text-gray-400 mt-2">اختر كل الخيارات لإضافة المنتج</p>
+        )}
+      </div>
+
+      {/* Related */}
+      {related.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-base font-bold text-gray-900 mb-3">منتجات أخرى</h2>
+          <div className="flex gap-3 overflow-x-auto -mx-4 px-4 pb-2">
+            {related.map((r) => (
+              <Link key={r.id} href={`/store/${slug}/product/${r.id}`} className="w-28 flex-shrink-0">
+                <div className="aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+                  {r.image_url ? (
+                    <img src={r.image_url} alt={r.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
+                      <Package size={20} style={{ color: `${themeColor}60` }} />
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs font-medium text-gray-800 truncate mt-1.5">{r.name}</p>
+                <p className="text-xs font-bold tabular-nums" style={{ color: themeColor }}>{r.price.toLocaleString('ar-EG')} {curr}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  )
+}

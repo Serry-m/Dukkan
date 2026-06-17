@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareStoreButton from '@/components/storefront/ShareStoreButton'
+import CartBar from '@/components/storefront/CartBar'
 import { isPro } from '@/lib/plan'
 import { Store } from 'lucide-react'
 import Link from 'next/link'
@@ -134,6 +135,9 @@ export default async function StorefrontLayout({ children, params }: Props) {
           </Link>
         </div>
       )}
+
+      {/* Cart bar — visible across the storefront whenever the cart has items */}
+      <CartBar store={store} />
     </div>
   )
 }

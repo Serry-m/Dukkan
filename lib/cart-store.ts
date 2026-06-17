@@ -23,7 +23,7 @@ function buildLineId(productId: string, selectedOptions?: Record<string, string>
 
 type CartStore = {
   items: CartItem[]
-  addItem: (product: Product, selectedOptions?: Record<string, string>) => void
+  addItem: (product: Product, selectedOptions?: Record<string, string>, qty?: number) => void
   removeItem: (lineId: string) => void
   updateQuantity: (lineId: string, quantity: number) => void
   clearCart: () => void
@@ -36,18 +36,18 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
 
-      addItem: (product, selectedOptions) => {
+      addItem: (product, selectedOptions, qty = 1) => {
         const lineId = buildLineId(product.id, selectedOptions)
         const existing = get().items.find((i) => i.lineId === lineId)
         if (existing) {
           set((state) => ({
             items: state.items.map((i) =>
-              i.lineId === lineId ? { ...i, quantity: i.quantity + 1 } : i
+              i.lineId === lineId ? { ...i, quantity: i.quantity + qty } : i
             ),
           }))
         } else {
           set((state) => ({
-            items: [...state.items, { product, quantity: 1, selectedOptions, lineId }],
+            items: [...state.items, { product, quantity: qty, selectedOptions, lineId }],
           }))
         }
       },

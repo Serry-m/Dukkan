@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
@@ -8,14 +9,14 @@ import { Plus, Minus, Package, SlidersHorizontal } from 'lucide-react'
 
 type Props = {
   product: Product
+  slug: string
   themeColor: string
   currency: string
   layout?: 'grid' | 'list'
   cardStyle?: 'rounded' | 'sharp'
-  onSelectVariant: (product: Product) => void
 }
 
-export default function ProductCard({ product, themeColor, currency, layout = 'grid', cardStyle = 'rounded', onSelectVariant }: Props) {
+export default function ProductCard({ product, slug, themeColor, currency, layout = 'grid', cardStyle = 'rounded' }: Props) {
   const items = useCartStore((s) => s.items)
   const addItem = useCartStore((s) => s.addItem)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
@@ -24,22 +25,23 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
   const cartItem = items.find((i) => i.lineId === product.id)
   const quantity = cartItem?.quantity ?? 0
   const outOfStock = !product.in_stock
+  const href = `/store/${slug}/product/${product.id}`
 
   const radius = cardStyle === 'sharp' ? 'rounded-md' : 'rounded-2xl'
   const innerRadius = cardStyle === 'sharp' ? 'rounded-sm' : 'rounded-xl'
   const onTheme = readableText(themeColor)
 
-  // Shared add/quantity control.
+  // Add / quantity control. Products with options route to the detail page to choose.
   const addControl = outOfStock ? (
     <div className={`w-full bg-gray-100 text-gray-400 text-xs font-medium ${innerRadius} py-2.5 text-center`}>غير متاح</div>
   ) : hasOptions ? (
-    <button
-      onClick={() => onSelectVariant(product)}
-      className={`w-full text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95`}
+    <Link
+      href={href}
+      className={`block w-full text-center text-sm font-semibold ${innerRadius} py-2.5 transition-all active:scale-95`}
       style={{ backgroundColor: themeColor, color: onTheme }}
     >
       اختر الخيارات
-    </button>
+    </Link>
   ) : quantity === 0 ? (
     <button
       onClick={() => addItem(product)}
@@ -72,10 +74,10 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
   // ── LIST layout: horizontal row ──
   if (layout === 'list') {
     return (
-      <div className={`bg-white ${radius} overflow-hidden flex items-stretch border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
-        <button onClick={() => !outOfStock && onSelectVariant(product)} className="w-24 flex-shrink-0 bg-gray-50 relative" disabled={outOfStock}>
+      <div className={`group bg-white ${radius} overflow-hidden flex items-stretch border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
+        <Link href={href} className="w-24 flex-shrink-0 bg-gray-50 relative overflow-hidden">
           {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           ) : (
             <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}10` }}>
               <Package size={24} style={{ color: `${themeColor}60` }} />
@@ -86,12 +88,12 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
               <SlidersHorizontal size={9} /> خيارات
             </span>
           )}
-        </button>
+        </Link>
         <div className="flex-1 p-3 flex flex-col gap-1.5 min-w-0">
-          <button onClick={() => !outOfStock && onSelectVariant(product)} className="text-right" disabled={outOfStock}>
+          <Link href={href} className="text-right">
             <p className="font-semibold text-gray-900 text-sm leading-snug line-clamp-1">{product.name}</p>
             {product.description && <p className="text-[11px] text-gray-400 line-clamp-1">{product.description}</p>}
-          </button>
+          </Link>
           <div className="flex items-center justify-between gap-2 mt-auto">
             {priceBlock}
             <div className="w-32">{addControl}</div>
@@ -104,7 +106,7 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
   // ── GRID layout: vertical card ──
   return (
     <div className={`group bg-white ${radius} overflow-hidden flex flex-col border border-gray-100/80 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] transition-shadow duration-300 ${outOfStock ? 'opacity-60' : ''}`}>
-      <button onClick={() => !outOfStock && onSelectVariant(product)} className="aspect-square bg-gray-50 relative overflow-hidden block w-full text-right" disabled={outOfStock}>
+      <Link href={href} className="aspect-square bg-gray-50 relative overflow-hidden block w-full text-right">
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
@@ -122,13 +124,15 @@ export default function ProductCard({ product, themeColor, currency, layout = 'g
             <SlidersHorizontal size={10} /> خيارات
           </span>
         )}
-      </button>
+      </Link>
 
       <div className="p-3 flex flex-col flex-1 gap-2">
-        <button onClick={() => !outOfStock && onSelectVariant(product)} className="flex-1 text-right" disabled={outOfStock}>
+        <Link href={href} className="flex-1 text-right">
           <p className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2">{product.name}</p>
-          {product.description && <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1 leading-relaxed">{product.description}</p>}
-        </button>
+          {product.description && (
+            <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1 leading-relaxed">{product.description}</p>
+          )}
+        </Link>
         {priceBlock}
         {addControl}
       </div>

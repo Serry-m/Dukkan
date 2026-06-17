@@ -1,11 +1,8 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import type { Product, Store } from '@/types'
-import { useCartStore } from '@/lib/cart-store'
 import ProductCard from './ProductCard'
-import ProductDetailSheet from './ProductDetailSheet'
-import CartBar from './CartBar'
 import { orderCategories } from '@/lib/categories'
 import { ShoppingBag, Search } from 'lucide-react'
 
@@ -17,11 +14,8 @@ type Props = {
 const ALL = '__all__'
 
 export default function ProductGrid({ products, store }: Props) {
-  const totalItems = useCartStore((s) => s.totalItems())
   const themeColor = store.theme_color ?? '#16a34a'
 
-  const [detailProduct, setDetailProduct] = useState<Product | null>(null)
-  const [detailOpen, setDetailOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
   const [query, setQuery] = useState('')
 
@@ -45,24 +39,6 @@ export default function ProductGrid({ products, store }: Props) {
 
   // Only show the search box when there are enough products to warrant it.
   const showSearch = products.length >= 6
-
-  function openDetail(product: Product) {
-    setDetailProduct(product)
-    setDetailOpen(true)
-  }
-
-  // Defensive: when the variant sheet closes, make sure base-ui hasn't left
-  // the page locked with pointer-events:none (which would block checkout).
-  useEffect(() => {
-    if (!detailOpen) {
-      const t = setTimeout(() => {
-        if (document.body.style.pointerEvents === 'none') {
-          document.body.style.pointerEvents = ''
-        }
-      }, 100)
-      return () => clearTimeout(t)
-    }
-  }, [detailOpen])
 
   if (!products.length) {
     return (
@@ -112,26 +88,15 @@ export default function ProductGrid({ products, store }: Props) {
             <ProductCard
               key={product.id}
               product={product}
+              slug={store.slug}
               themeColor={themeColor}
               currency={store.currency}
               layout={store.layout ?? 'grid'}
               cardStyle={store.card_style ?? 'rounded'}
-              onSelectVariant={openDetail}
             />
           ))}
         </div>
       )}
-
-      <ProductDetailSheet
-        products={visible}
-        startProduct={detailProduct}
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-        themeColor={themeColor}
-        currency={store.currency}
-      />
-
-      {totalItems > 0 && <CartBar store={store} />}
     </>
   )
 }
