@@ -69,12 +69,15 @@ export default async function ProductPage({ params }: Props) {
   const url = host ? `${proto}://${host}/store/${store.slug}/product/${product.id}` : undefined
 
   const jsonLd = productJsonLd({ product, storeName: store.name, currency: store.currency, url })
+  // Escape `<` so merchant-controlled fields (e.g. a product name containing
+  // "</script>") can't break out of the JSON-LD script tag (stored XSS guard).
+  const jsonLdHtml = JSON.stringify(jsonLd).replace(/</g, '\\u003c')
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
       />
       <ProductDetailView
         product={product}
