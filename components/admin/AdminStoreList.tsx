@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import AdminPlanActions from './AdminPlanActions'
 import AdminDangerMenu from './AdminDangerMenu'
 import { Crown, Ban, ExternalLink, Search, AlertTriangle } from 'lucide-react'
@@ -126,10 +127,12 @@ export default function AdminStoreList({ stores }: { stores: StoreRow[] }) {
                 {filtered.map((s) => (
                   <tr key={s.id} className={`hover:bg-gray-50/40 transition-colors ${s.atRisk ? 'bg-amber-50/30' : ''}`}>
                     <td className="px-4 py-3">
-                      <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-bold text-gray-900 hover:text-green-700">
-                        <span className="truncate max-w-[150px]">{s.name}</span>
-                        <ExternalLink size={13} className="text-gray-300 flex-shrink-0" />
-                      </a>
+                      <div className="inline-flex items-center gap-1.5">
+                        <Link href={`/admin/store/${s.id}`} className="font-bold text-gray-900 hover:text-green-700 truncate max-w-[150px]">{s.name}</Link>
+                        <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" aria-label="عرض المتجر">
+                          <ExternalLink size={13} className="text-gray-300 hover:text-gray-500 flex-shrink-0" />
+                        </a>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[180px]">{s.email}</td>
                     <td className="px-4 py-3 tabular-nums text-gray-700">{s.products.toLocaleString('ar-EG')}</td>
@@ -156,7 +159,10 @@ export default function AdminStoreList({ stores }: { stores: StoreRow[] }) {
             {filtered.map((s) => (
               <div key={s.id} className={`bg-white rounded-xl ring-1 ring-foreground/[0.07] p-4 ${s.atRisk ? 'ring-amber-200' : ''}`}>
                 <div className="flex items-center gap-2 mb-1">
-                  <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="font-bold text-gray-900 truncate">{s.name}</a>
+                  <Link href={`/admin/store/${s.id}`} className="font-bold text-gray-900 truncate">{s.name}</Link>
+                  <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" aria-label="عرض المتجر">
+                    <ExternalLink size={12} className="text-gray-300 flex-shrink-0" />
+                  </a>
                 </div>
                 <div className="mb-2"><StatusBadges s={s} /></div>
                 <p className="text-xs text-gray-400 truncate">{s.email}</p>
