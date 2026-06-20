@@ -5,10 +5,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminEmail } from '@/lib/admin'
 import { isPro, PRO_PRICE_EGP } from '@/lib/plan'
 import { BrandMark } from '@/components/BrandMark'
-import AdminPlanActions from '@/components/admin/AdminPlanActions'
-import AdminDangerMenu from '@/components/admin/AdminDangerMenu'
+import AdminStoreList from '@/components/admin/AdminStoreList'
 import { formatPrice } from '@/lib/currency'
-import { Store, Crown, Wallet, ExternalLink, Ban } from 'lucide-react'
+import { Store, Crown, Wallet } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,7 +22,7 @@ export default async function AdminPage() {
   // All stores (bypasses RLS via service role).
   const { data: stores } = await admin
     .from('stores')
-    .select('id, name, slug, owner_id, plan, plan_expires_at, created_at, suspended')
+    .select('id, name, slug, owner_id, plan, plan_expires_at, created_at, suspended, whatsapp_number')
 
   // Owner emails.
   const { data: usersData } = await admin.auth.admin.listUsers()
@@ -34,12 +33,43 @@ export default async function AdminPage() {
   const productCount = new Map<string, number>()
   for (const r of productRows ?? []) productCount.set(r.store_id, (productCount.get(r.store_id) ?? 0) + 1)
 
-  const list = (stores ?? []).map((s) => ({
-    ...s,
-    email: emailById.get(s.owner_id) ?? '—',
-    products: productCount.get(s.id) ?? 0,
-    pro: isPro(s),
-  }))
+  // Order activity per store (total, last-30-days, last order date).
+  const { data: orderRows } = await admin.from('orders').select('store_id, created_at')
+  const now = Date.now()
+  const THIRTY_DAYS = 30 * 86_400_000
+  const ordersTotal = new Map<string, number>()
+  const orders30 = new Map<string, number>()
+  const lastOrderAt = new Map<string, number>()
+  for (const r of orderRows ?? []) {
+    ordersTotal.set(r.store_id, (ordersTotal.get(r.store_id) ?? 0) + 1)
+    const t = new Date(r.created_at).getTime()
+    if (now - t <= THIRTY_DAYS) orders30.set(r.store_id, (orders30.get(r.store_id) ?? 0) + 1)
+    if (t > (lastOrderAt.get(r.store_id) ?? 0)) lastOrderAt.set(r.store_id, t)
+  }
+
+  const list = (stores ?? []).map((s) => {
+    const pro = isPro(s)
+    const o30 = orders30.get(s.id) ?? 0
+    const products = productCount.get(s.id) ?? 0
+    return {
+      id: s.id,
+      name: s.name,
+      slug: s.slug,
+      plan_expires_at: s.plan_expires_at,
+      suspended: s.suspended,
+      created_at: s.created_at,
+      email: emailById.get(s.owner_id) ?? '—',
+      products,
+      pro,
+      orders30: o30,
+      ordersTotal: ordersTotal.get(s.id) ?? 0,
+      lastOrderAt: lastOrderAt.get(s.id) ?? null,
+      // Activated = ready to sell: has WhatsApp + at least one product.
+      activated: !!s.whatsapp_number?.trim() && products > 0,
+      // At risk = paying but no orders in the last 30 days.
+      atRisk: pro && o30 === 0,
+    }
+  })
 
   // Sort: active Pro first (soonest expiry on top), then the rest by newest.
   list.sort((a, b) => {
@@ -106,86 +136,7 @@ export default async function AdminPage() {
             لا توجد متاجر بعد
           </div>
         ) : (
-          <>
-            {/* Desktop table */}
-            <div className="hidden md:block bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] overflow-hidden">
-              <table className="w-full text-sm text-right">
-                <thead>
-                  <tr className="bg-gray-50/70 text-[11px] font-bold text-gray-400 border-b border-gray-100">
-                    <th className="px-4 py-3 font-bold">المتجر</th>
-                    <th className="px-4 py-3 font-bold">المالك</th>
-                    <th className="px-4 py-3 font-bold">المنتجات</th>
-                    <th className="px-4 py-3 font-bold">الحالة</th>
-                    <th className="px-4 py-3 font-bold text-left">إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {list.map((s) => (
-                    <tr key={s.id} className="hover:bg-gray-50/40 transition-colors">
-                      <td className="px-4 py-3">
-                        <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-bold text-gray-900 hover:text-green-700">
-                          <span className="truncate max-w-[160px]">{s.name}</span>
-                          <ExternalLink size={13} className="text-gray-300 flex-shrink-0" />
-                        </a>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[200px]">{s.email}</td>
-                      <td className="px-4 py-3 tabular-nums text-gray-700">{s.products.toLocaleString('ar-EG')}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-col gap-0.5">
-                          {s.pro ? (
-                            <>
-                              <span className="w-fit text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
-                              {s.plan_expires_at && (
-                                <span className="text-[10px] text-gray-400">حتى {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}</span>
-                              )}
-                            </>
-                          ) : (
-                            <span className="w-fit text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
-                          )}
-                          {s.suspended && (
-                            <span className="w-fit text-[10px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Ban size={9} /> معلّق</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <AdminPlanActions storeId={s.id} isPro={s.pro} />
-                          <AdminDangerMenu storeId={s.id} storeName={s.name} suspended={s.suspended} />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile cards */}
-            <div className="md:hidden space-y-2">
-              {list.map((s) => (
-                <div key={s.id} className="bg-white rounded-xl ring-1 ring-foreground/[0.07] p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" className="font-bold text-gray-900 truncate">{s.name}</a>
-                    {s.pro ? (
-                      <span className="text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
-                    ) : (
-                      <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
-                    )}
-                    {s.suspended && (
-                      <span className="text-[10px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Ban size={9} /> معلّق</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-400 truncate">{s.email} · {s.products.toLocaleString('ar-EG')} منتج</p>
-                  {s.pro && s.plan_expires_at && (
-                    <p className="text-[11px] text-gray-400 mt-0.5">ينتهي: {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                  )}
-                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-end gap-1">
-                    <AdminPlanActions storeId={s.id} isPro={s.pro} />
-                    <AdminDangerMenu storeId={s.id} storeName={s.name} suspended={s.suspended} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
+          <AdminStoreList stores={list} />
         )}
 
         {/* Audit log — recent admin actions */}
