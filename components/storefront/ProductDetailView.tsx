@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
@@ -57,7 +58,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
       <div className="rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-[var(--shadow-soft)] lg:sticky lg:top-24">
         <div className="aspect-square w-full bg-gray-50 relative">
           {photos.length ? (
-            <img src={photos[photoIndex]} alt={product.name} className="w-full h-full object-cover" />
+            <Image src={photos[photoIndex]} alt={product.name} fill priority sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
           ) : (
             <ImagePlaceholder size={48} label />
           )}
@@ -77,7 +78,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
                 className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all"
                 style={{ borderColor: i === photoIndex ? themeColor : 'transparent' }}
               >
-                <img src={p} alt="" className="w-full h-full object-cover" />
+                <img src={p} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
@@ -192,7 +193,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
               <Link key={r.id} href={`/store/${slug}/product/${r.id}`} className="w-28 flex-shrink-0">
                 <div className="aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
                   {r.image_url ? (
-                    <img src={r.image_url} alt={r.name} className="w-full h-full object-cover" />
+                    <img src={r.image_url} alt={r.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   ) : (
                     <ImagePlaceholder size={18} />
                   )}

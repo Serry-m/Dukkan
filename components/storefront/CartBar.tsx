@@ -154,7 +154,7 @@ export default function CartBar({ store }: { store: Store }) {
               {items.map(({ product, quantity, selectedOptions, lineId }) => (
                 <div key={lineId} className="flex items-center gap-3">
                   {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                    <img src={product.image_url} alt={product.name} loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                       <Package size={18} className="text-gray-300" />

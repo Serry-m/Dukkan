@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
@@ -86,7 +87,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
       <div className={`group bg-white ${radius} overflow-hidden flex items-stretch ${theme.cardSurface} transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
         <Link href={href} className="w-24 flex-shrink-0 bg-gray-50 relative overflow-hidden">
           {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <img src={product.image_url} alt={product.name} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
           ) : (
             <ImagePlaceholder size={22} />
           )}
@@ -118,7 +119,13 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
     <div className={`group bg-white ${radius} overflow-hidden flex flex-col ${theme.cardSurface} transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
       <Link href={href} className="aspect-[4/5] bg-gray-50 relative overflow-hidden block w-full text-right">
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <Image
+            src={product.image_url}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
         ) : (
           <ImagePlaceholder size={30} />
         )}
