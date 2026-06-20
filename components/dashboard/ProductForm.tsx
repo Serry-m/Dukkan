@@ -35,7 +35,9 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
   const [description, setDescription] = useState(product?.description ?? '')
   const [category, setCategory] = useState(product?.category ?? '')
   const [inStock, setInStock] = useState(product?.in_stock ?? true)
+  const [stockQty, setStockQty] = useState(product?.stock_quantity != null ? String(product.stock_quantity) : '')
   const [featured, setFeatured] = useState(product?.featured ?? false)
+  const trackingQty = stockQty.trim() !== ''
   // Up to 3 photo slots. Each is either an already-saved url or a new file.
   const initialImages = product?.images?.length
     ? product.images
@@ -144,6 +146,11 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
       }))
       .filter((o) => o.name && o.values.length > 0)
 
+    // If the merchant tracks a quantity, it drives availability; otherwise the
+    // simple in/out toggle governs.
+    const qty = trackingQty ? Math.max(0, parseInt(stockQty, 10) || 0) : null
+    const inStockFinal = qty != null ? qty > 0 : inStock
+
     const payload = {
       store_id: storeId,
       name,
@@ -152,7 +159,8 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
       description: description || null,
       category: category.trim() || null,
       options: cleanOptions,
-      in_stock: inStock,
+      in_stock: inStockFinal,
+      stock_quantity: qty,
       featured: isPro ? featured : (product?.featured ?? false),
       image_url: imageUrl,
       images,
@@ -347,16 +355,38 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setInStock((v) => !v)}
-              aria-label="متاح في المخزن"
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${inStock ? 'bg-green-500' : 'bg-gray-300'}`}
-            >
-              <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${inStock ? 'right-1' : 'right-6'}`} />
-            </button>
-            <span className="text-sm font-medium text-gray-700">{inStock ? 'متاح في المخزن' : 'غير متاح حالياً'}</span>
+          <div className="space-y-2.5">
+            <div className={`flex items-center gap-3 ${trackingQty ? 'opacity-50' : ''}`}>
+              <button
+                type="button"
+                onClick={() => !trackingQty && setInStock((v) => !v)}
+                disabled={trackingQty}
+                aria-label="متاح في المخزن"
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${inStock ? 'bg-green-500' : 'bg-gray-300'} ${trackingQty ? 'cursor-not-allowed' : ''}`}
+              >
+                <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${inStock ? 'right-1' : 'right-6'}`} />
+              </button>
+              <span className="text-sm font-medium text-gray-700">{inStock ? 'متاح في المخزن' : 'غير متاح حالياً'}</span>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="stockQty">الكمية المتاحة (اختياري)</Label>
+              <Input
+                id="stockQty"
+                type="number"
+                min="0"
+                step="1"
+                value={stockQty}
+                onChange={(e) => setStockQty(e.target.value.replace(/[^\d]/g, ''))}
+                placeholder="مثال: 5"
+                dir="ltr"
+                className="max-w-[160px]"
+              />
+              <p className="text-xs text-gray-400">
+                {trackingQty
+                  ? 'يُضبط التوفّر تلقائياً من الكمية، ويظهر «متبقّي ٣» للعميل عند قرب النفاد.'
+                  : 'اتركها فارغة لاستخدام مفتاح التوفّر فقط.'}
+              </p>
+            </div>
           </div>
 
           {/* Featured — Pro */}

@@ -7,7 +7,7 @@ import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
-import { effectivePrice, isOnSale, discountPercent, isNewProduct } from '@/lib/price'
+import { effectivePrice, isOnSale, discountPercent, isNewProduct, isLowStock } from '@/lib/price'
 import { Plus, Minus, ShoppingCart, Check, ChevronRight } from 'lucide-react'
 import { ImagePlaceholder } from './ImagePlaceholder'
 import { toast } from 'sonner'
@@ -113,6 +113,9 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
               <span className="text-base text-gray-400 line-through tabular-nums">{product.price.toLocaleString('ar-EG')}</span>
               <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">خصم {discountPercent(product).toLocaleString('ar-EG')}٪</span>
             </>
+          )}
+          {isLowStock(product) && !outOfStock && (
+            <span className="text-sm font-bold text-amber-600">متبقّي {product.stock_quantity!.toLocaleString('ar-EG')} فقط</span>
           )}
         </div>
         {product.description && (

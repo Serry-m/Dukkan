@@ -23,3 +23,9 @@ export function isNewProduct(p: Pick<Product, 'created_at'>, days = 14): boolean
   if (!p.created_at) return false
   return Date.now() - new Date(p.created_at).getTime() < days * 86_400_000
 }
+
+// Low-stock urgency: only when the merchant is tracking a quantity and it's
+// down to `threshold` or fewer (but not zero). Drives the "متبقّي N" cue.
+export function isLowStock(p: Pick<Product, 'stock_quantity'>, threshold = 3): boolean {
+  return p.stock_quantity != null && p.stock_quantity > 0 && p.stock_quantity <= threshold
+}

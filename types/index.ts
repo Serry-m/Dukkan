@@ -86,6 +86,7 @@ export type Product = {
   image_url: string | null   // primary image (= images[0]); used for cards/thumbnails
   images: string[]           // up to 3 photos shown in the detail carousel
   in_stock: boolean
+  stock_quantity: number | null  // optional inventory count; null = use in_stock toggle only
   sort_order: number
   featured: boolean
   category: string | null

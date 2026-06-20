@@ -5,7 +5,7 @@ import Image from 'next/image'
 import type { Product } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { currencyLabel } from '@/lib/currency'
-import { effectivePrice, isOnSale } from '@/lib/price'
+import { effectivePrice, isOnSale, isLowStock } from '@/lib/price'
 import { ProductBadges } from './ProductBadges'
 import type { ThemeConfig } from '@/lib/themes'
 import { Plus, Minus, SlidersHorizontal } from 'lucide-react'
@@ -81,6 +81,11 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
     </div>
   )
 
+  const lowStock = isLowStock(product) && !outOfStock
+  const lowStockTag = lowStock ? (
+    <span className="text-[11px] font-bold text-amber-600">متبقّي {product.stock_quantity!.toLocaleString('ar-EG')}</span>
+  ) : null
+
   // ── LIST layout: horizontal row ──
   if (layout === 'list') {
     return (
@@ -105,6 +110,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
             <p className={`${theme.nameClass} leading-snug line-clamp-1`}>{product.name}</p>
             {product.description && <p className="text-[11px] text-gray-400 line-clamp-1">{product.description}</p>}
           </Link>
+          {lowStockTag && <div className="-mt-0.5">{lowStockTag}</div>}
           <div className="flex items-center justify-between gap-2 mt-auto">
             {priceBlock}
             <div className="w-32">{addControl}</div>
@@ -152,6 +158,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
           )}
         </Link>
         {priceBlock}
+        {lowStockTag}
         {addControl}
       </div>
     </div>
