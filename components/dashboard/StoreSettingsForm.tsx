@@ -187,6 +187,11 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               />
             </div>
             <p className="text-xs text-gray-400">أحرف إنجليزية وأرقام وشرطة فقط</p>
+            {store && slug !== store.slug && (
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                ⚠️ تغيير الرابط سيُعطّل الروابط التي شاركتها سابقاً مع عملائك.
+              </p>
+            )}
           </div>
 
           <div className="space-y-1">
@@ -218,10 +223,28 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                       selected ? 'border-green-500' : 'border-gray-200 hover:border-gray-300'
                     } ${locked ? 'opacity-60 cursor-not-allowed' : ''}`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="w-8 h-8 rounded-lg border border-gray-200" style={{ backgroundColor: t.swatch }} />
-                      {selected && <Check size={16} className="text-green-600" />}
-                      {locked && <Lock size={13} className="text-gray-400" />}
+                    {/* Mini preview: the theme's surface, corner radius and
+                        button shape on its page background — so the templates
+                        are visually distinguishable, not near-white squares. */}
+                    <div
+                      className="relative mb-2 h-16 rounded-lg overflow-hidden flex items-center justify-center"
+                      style={{ backgroundColor: t.pageBg }}
+                    >
+                      <div className={`w-12 bg-white ${t.cardRadius} ${t.cardSurface} p-1.5 flex flex-col gap-1`}>
+                        <div className="h-6 rounded bg-gray-100" />
+                        <div className="h-1 w-7 rounded-full bg-gray-300" />
+                        <div className={`h-2 ${t.innerRadius} border border-gray-300`} />
+                      </div>
+                      {selected && (
+                        <span className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
+                          <Check size={13} className="text-white" />
+                        </span>
+                      )}
+                      {locked && (
+                        <span className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-white/90 border border-gray-200 flex items-center justify-center">
+                          <Lock size={11} className="text-gray-400" />
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
                       {t.name} {t.pro && <ProBadge />}
@@ -434,8 +457,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
         </CardContent>
       </Card>
 
-      {/* Sticky save bar */}
-      <div className="sticky bottom-0 -mx-4 px-4 py-3 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent lg:static lg:mx-0 lg:px-0 lg:bg-none lg:py-0">
+      {/* Sticky save bar — stays reachable on every screen size so the user
+          never has to scroll the long form to save. */}
+      <div className="sticky bottom-0 -mx-4 px-4 lg:-mx-8 lg:px-8 py-3 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent">
         <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
           {loading ? 'جاري الحفظ...' : store ? 'حفظ التغييرات' : 'إنشاء المتجر'}
         </Button>
