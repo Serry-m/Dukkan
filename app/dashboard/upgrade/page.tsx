@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { isPro, PRO_PRICE_EGP, PRO_FEATURES } from '@/lib/plan'
+import { isPro, PRO_PRICE_EGP, PRO_FEATURES, FREE_PRODUCT_LIMIT } from '@/lib/plan'
 import { Check, Crown, CheckCircle2, MessageCircle } from 'lucide-react'
 
 export default async function UpgradePage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
@@ -44,6 +44,27 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
           <span className="text-sm font-bold">خطة Pro نشطة</span>
           {expires && <span className="text-xs text-green-100 mr-auto">حتى {expires}</span>}
         </div>
+      )}
+
+      {/* Value hook + current-plan contrast — only for free users (prospects).
+          Pro users land here to renew and already have the banner above. */}
+      {!pro && (
+        <>
+          <div className="mb-5 text-center">
+            <h1 className="text-2xl font-extrabold text-gray-900">طوّر متجرك إلى الاحتراف</h1>
+            <p className="mt-1.5 text-sm text-gray-500">كل أدوات البيع المتقدمة لمتجرك في خطة واحدة.</p>
+          </div>
+
+          <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-gray-600">خطتك الحالية: المجانية</span>
+              <span className="text-xs text-gray-400">مجاناً</span>
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-gray-400">
+              حتى {FREE_PRODUCT_LIMIT.toLocaleString('ar-EG')} منتجات · شعار «صُنع بواسطة دكان» ظاهر · مميزات أساسية فقط
+            </p>
+          </div>
+        </>
       )}
 
       {/* Premium pricing card */}
