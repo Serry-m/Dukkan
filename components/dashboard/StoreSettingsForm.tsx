@@ -37,8 +37,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(store?.logo_url ?? null)
+  const [logoCleared, setLogoCleared] = useState(false)
   const [bannerFile, setBannerFile] = useState<File | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(store?.banner_url ?? null)
+  const [bannerCleared, setBannerCleared] = useState(false)
   const [layout, setLayout] = useState(store?.layout ?? 'grid')
   const [theme, setTheme] = useState(store?.theme ?? 'modern')
   const [about, setAbout] = useState(store?.about ?? '')
@@ -66,6 +68,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     if (!file) return
     setLogoFile(file)
     setLogoPreview(URL.createObjectURL(file))
+    setLogoCleared(false)
   }
 
   function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -73,6 +76,19 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     if (!file) return
     setBannerFile(file)
     setBannerPreview(URL.createObjectURL(file))
+    setBannerCleared(false)
+  }
+
+  function clearLogo() {
+    setLogoFile(null)
+    setLogoPreview(null)
+    setLogoCleared(true)
+  }
+
+  function clearBanner() {
+    setBannerFile(null)
+    setBannerPreview(null)
+    setBannerCleared(true)
   }
 
   async function uploadImage(file: File, folder: string): Promise<string | null> {
@@ -107,6 +123,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
         setLoading(false)
         return
       }
+    } else if (logoCleared) {
+      logoUrl = null
     }
 
     if (bannerFile) {
@@ -116,6 +134,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
         setLoading(false)
         return
       }
+    } else if (bannerCleared) {
+      bannerUrl = null
     }
 
     const payload = {
@@ -151,6 +171,27 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     router.refresh()
   }
 
+  // Has the user changed anything since load? Drives the unsaved-changes hint.
+  const dirty = !store || (
+    name !== (store.name ?? '') ||
+    slug !== (store.slug ?? '') ||
+    whatsapp !== (store.whatsapp_number ?? '') ||
+    description !== (store.description ?? '') ||
+    themeColor !== (store.theme_color ?? '#16a34a') ||
+    deliveryFee !== (store.delivery_fee?.toString() ?? '0') ||
+    isOpen !== (store.is_open ?? true) ||
+    messageTemplate !== (store.message_template ?? '') ||
+    layout !== (store.layout ?? 'grid') ||
+    theme !== (store.theme ?? 'modern') ||
+    about !== (store.about ?? '') ||
+    location !== (store.location ?? '') ||
+    workingHours !== (store.working_hours ?? '') ||
+    instagram !== (store.instagram ?? '') ||
+    facebook !== (store.facebook ?? '') ||
+    tiktok !== (store.tiktok ?? '') ||
+    logoFile !== null || bannerFile !== null || logoCleared || bannerCleared
+  )
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
@@ -168,7 +209,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           <div className="space-y-1">
             <Label htmlFor="whatsapp">رقم واتساب</Label>
             <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))} placeholder="01012345678" required dir="ltr" maxLength={15} />
-            <p className="text-xs text-gray-400">أدخل رقمك المصري — كود الدولة يُضاف تلقائياً</p>
+            <p className="text-xs text-gray-400">الرقم الذي يستقبل طلبات عملائك على واتساب</p>
           </div>
 
           <div className="space-y-1">
@@ -278,9 +319,16 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               </div>
               <div>
                 <input id="logo" type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
-                <label htmlFor="logo" className="text-sm text-green-600 hover:underline cursor-pointer font-medium">
-                  اختر صورة
-                </label>
+                <div className="flex items-center gap-3">
+                  <label htmlFor="logo" className="text-sm text-green-600 hover:underline cursor-pointer font-medium">
+                    {logoPreview ? 'تغيير الصورة' : 'اختر صورة'}
+                  </label>
+                  {logoPreview && (
+                    <button type="button" onClick={clearLogo} className="text-sm text-gray-400 hover:text-red-500 transition-colors">
+                      إزالة
+                    </button>
+                  )}
+                </div>
                 <p className="text-xs text-gray-400 mt-1">PNG أو JPG — يُفضل مربع الشكل</p>
               </div>
             </div>
@@ -326,9 +374,16 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                   </div>
                 )}
                 <input id="banner" type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
-                <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
-                  {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
-                </label>
+                <div className="flex items-center gap-3">
+                  <label htmlFor="banner" className="inline-block text-sm text-green-600 hover:underline cursor-pointer font-medium">
+                    {bannerPreview ? 'تغيير صورة الغلاف' : 'رفع صورة غلاف'}
+                  </label>
+                  {bannerPreview && (
+                    <button type="button" onClick={clearBanner} className="text-sm text-gray-400 hover:text-red-500 transition-colors">
+                      إزالة
+                    </button>
+                  )}
+                </div>
               </>
             ) : (
               <ProUpsell feature="صورة الغلاف" />
@@ -460,6 +515,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       {/* Sticky save bar — stays reachable on every screen size so the user
           never has to scroll the long form to save. */}
       <div className="sticky bottom-0 -mx-4 px-4 lg:-mx-8 lg:px-8 py-3 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent">
+        {store && dirty && (
+          <p className="mb-2 text-center text-xs text-amber-600">● لديك تغييرات غير محفوظة</p>
+        )}
         <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
           {loading ? 'جاري الحفظ...' : store ? 'حفظ التغييرات' : 'إنشاء المتجر'}
         </Button>

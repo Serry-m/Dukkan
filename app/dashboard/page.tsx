@@ -175,25 +175,8 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Stats — refined metric cards */}
+      {/* Stats — orders first (the metric that matters most), then products, then visits */}
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        {/* Visits */}
-        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
-          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
-            <Eye size={18} className="text-green-700" />
-          </div>
-          {pro ? (
-            <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
-<CountUp to={store.view_count ?? 0} />
-            </p>
-          ) : (
-            <Link href="/dashboard/upgrade" className="inline-flex items-center gap-1 text-sm font-bold text-green-700">
-              <Crown size={14} /> Pro
-            </Link>
-          )}
-          <p className="text-xs text-gray-400 mt-1.5">الزيارات</p>
-        </div>
-
         {/* Orders — links to the orders page */}
         <Link
           href="/dashboard/orders"
@@ -221,7 +204,32 @@ export default async function DashboardPage() {
           </p>
           <p className="text-xs text-gray-400 mt-1.5">المنتجات</p>
         </Link>
+
+        {/* Visits — Pro only */}
+        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
+          <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
+            <Eye size={18} className="text-green-700" />
+          </div>
+          {pro ? (
+            <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
+              <CountUp to={store.view_count ?? 0} />
+            </p>
+          ) : (
+            <Link href="/dashboard/upgrade" className="inline-flex items-center gap-1 text-sm font-bold text-green-700">
+              <Crown size={14} /> Pro
+            </Link>
+          )}
+          <p className="text-xs text-gray-400 mt-1.5">الزيارات</p>
+        </div>
       </div>
+
+      {/* Zero-orders nudge — once the store is set up but no orders yet */}
+      {setupComplete && (orderCount ?? 0) === 0 && (
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-green-100 bg-green-50/60 px-4 py-3 text-sm text-green-800">
+          <ShoppingBag size={16} className="flex-shrink-0 text-green-600" />
+          شارك رابط متجرك مع عملائك لاستقبال أول طلب 🚀
+        </div>
+      )}
 
       {/* Top products — Pro only */}
       {topProducts.length > 0 && pro && (
@@ -238,8 +246,7 @@ export default async function DashboardPage() {
                   {(i + 1).toLocaleString('ar-EG')}
                 </span>
                 <span className="flex-1 text-sm text-gray-700 truncate">{productName}</span>
-                <span className="text-sm font-bold text-gray-900">{qty.toLocaleString('ar-EG')}</span>
-                <span className="text-xs text-gray-400">مرة</span>
+                <span className="text-sm font-bold text-gray-900 tabular-nums" dir="ltr">×{qty.toLocaleString('ar-EG')}</span>
               </div>
             ))}
           </CardContent>
