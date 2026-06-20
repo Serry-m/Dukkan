@@ -17,9 +17,16 @@ export default async function CouponsPage() {
   const pro = isPro(store)
 
   let coupons: Coupon[] = []
+  const usageByCode: Record<string, number> = {}
   if (store && pro) {
     const { data } = await supabase.from('coupons').select('*').eq('store_id', store.id).order('created_at', { ascending: false })
     coupons = (data ?? []) as Coupon[]
+
+    // Tally how many orders used each code.
+    const { data: usedCodes } = await supabase.from('orders').select('coupon_code').eq('store_id', store.id)
+    for (const o of usedCodes ?? []) {
+      if (o.coupon_code) usageByCode[o.coupon_code] = (usageByCode[o.coupon_code] ?? 0) + 1
+    }
   }
 
   return (
@@ -32,7 +39,7 @@ export default async function CouponsPage() {
       {!pro ? (
         <ProUpsell feature="أكواد الخصم" />
       ) : store ? (
-        <CouponsManager storeId={store.id} currency={store.currency} coupons={coupons} />
+        <CouponsManager storeId={store.id} currency={store.currency} coupons={coupons} usage={usageByCode} />
       ) : (
         <p className="text-sm text-gray-400">أنشئ متجرك أولاً.</p>
       )}

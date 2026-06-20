@@ -11,9 +11,9 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Trash2, Plus, Ticket } from 'lucide-react'
 import { toast } from 'sonner'
 
-type Props = { storeId: string; currency: string; coupons: Coupon[] }
+type Props = { storeId: string; currency: string; coupons: Coupon[]; usage?: Record<string, number> }
 
-export default function CouponsManager({ storeId, currency, coupons: initial }: Props) {
+export default function CouponsManager({ storeId, currency, coupons: initial, usage = {} }: Props) {
   const [coupons, setCoupons] = useState(initial)
   const [code, setCode] = useState('')
   const [type, setType] = useState<'percent' | 'fixed'>('percent')
@@ -97,6 +97,7 @@ export default function CouponsManager({ storeId, currency, coupons: initial }: 
                 <p className="font-bold text-gray-900 tracking-wide" dir="ltr">{cp.code}</p>
                 <p className="text-xs text-gray-400">
                   خصم {cp.type === 'percent' ? `${cp.value.toLocaleString('ar-EG')}٪` : `${cp.value.toLocaleString('ar-EG')} ${curr}`}
+                  {(usage[cp.code] ?? 0) > 0 && ` · استُخدم ${(usage[cp.code]).toLocaleString('ar-EG')}×`}
                 </p>
               </div>
               <span className={`text-xs font-medium hidden sm:inline flex-shrink-0 ${cp.active ? 'text-green-600' : 'text-gray-400'}`}>

@@ -71,6 +71,17 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
     setImageSlots((prev) => prev.filter((_, idx) => idx !== i))
   }
 
+  // Promote a photo to first slot (= the main image shown in listings).
+  function makeMain(i: number) {
+    setImageSlots((prev) => {
+      if (i <= 0 || i >= prev.length) return prev
+      const next = [...prev]
+      const [picked] = next.splice(i, 1)
+      next.unshift(picked)
+      return next
+    })
+  }
+
   function addOption() {
     setOptions((prev) => [...prev, { name: '', valuesRaw: '' }])
   }
@@ -232,8 +243,16 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
               {imageSlots.map((slot, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-200 group">
                   <img src={slot.preview} alt={`صورة ${i + 1}`} className="w-full h-full object-cover" />
-                  {i === 0 && (
+                  {i === 0 ? (
                     <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full">رئيسية</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => makeMain(i)}
+                      className="absolute bottom-1 right-1 left-1 bg-black/55 text-white text-[9px] py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-green-600"
+                    >
+                      اجعلها رئيسية
+                    </button>
                   )}
                   <button
                     type="button"
@@ -255,7 +274,11 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
               )}
             </div>
             <input id="image" type="file" accept="image/*" className="hidden" onChange={handleAddImage} />
-            <p className="text-xs text-gray-400">الصورة الأولى هي الرئيسية التي تظهر في قائمة المنتجات</p>
+            {imageSlots.length === 0 ? (
+              <p className="text-xs text-amber-600">📷 أضف صورة واضحة — المنتجات بصور تحصل على طلبات أكثر بكثير.</p>
+            ) : (
+              <p className="text-xs text-gray-400">الصورة الأولى هي الرئيسية التي تظهر في قائمة المنتجات</p>
+            )}
             {!isPro && <ProUpsell feature="إضافة حتى ٣ صور للمنتج" />}
           </div>
 
@@ -325,8 +348,15 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
           </div>
 
           <div className="flex items-center gap-3">
-            <input id="inStock" type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="w-4 h-4 accent-green-600" />
-            <Label htmlFor="inStock" className="cursor-pointer">متاح في المخزن</Label>
+            <button
+              type="button"
+              onClick={() => setInStock((v) => !v)}
+              aria-label="متاح في المخزن"
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${inStock ? 'bg-green-500' : 'bg-gray-300'}`}
+            >
+              <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${inStock ? 'right-1' : 'right-6'}`} />
+            </button>
+            <span className="text-sm font-medium text-gray-700">{inStock ? 'متاح في المخزن' : 'غير متاح حالياً'}</span>
           </div>
 
           {/* Featured — Pro */}
