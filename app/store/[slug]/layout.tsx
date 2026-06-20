@@ -5,6 +5,7 @@ import ShareStoreButton from '@/components/storefront/ShareStoreButton'
 import CartBar from '@/components/storefront/CartBar'
 import { StoreFooter } from '@/components/storefront/StoreFooter'
 import { getTheme } from '@/lib/themes'
+import { applyPlanToStore } from '@/lib/storefront'
 import { Store } from 'lucide-react'
 
 type Props = {
@@ -49,16 +50,16 @@ export default async function StorefrontLayout({ children, params }: Props) {
   const { slug } = await params
   const supabase = await createClient()
 
-  const { data: store } = await supabase
+  const { data: rawStore } = await supabase
     .from('stores')
     .select('*')
     .eq('slug', slug)
     .single()
 
-  if (!store) notFound()
+  if (!rawStore) notFound()
 
   // Suspended by an admin — hide the storefront entirely (data preserved).
-  if (store.suspended) {
+  if (rawStore.suspended) {
     return (
       <div dir="rtl" className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
         <div className="text-center">
@@ -68,6 +69,9 @@ export default async function StorefrontLayout({ children, params }: Props) {
       </div>
     )
   }
+
+  // Enforce plan limits for the public view (lapsed Pro → free presentation).
+  const store = applyPlanToStore(rawStore)
 
   const themeColor = store.theme_color ?? '#16a34a'
   const theme = getTheme(store.theme)

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import ProductGrid from '@/components/storefront/ProductGrid'
 import ViewTracker from '@/components/storefront/ViewTracker'
 import { StoreHero } from '@/components/storefront/StoreHero'
+import { applyPlanToStore, limitProducts } from '@/lib/storefront'
 import { Clock } from 'lucide-react'
 
 type Props = {
@@ -13,13 +14,16 @@ export default async function StorefrontPage({ params }: Props) {
   const { slug } = await params
   const supabase = await createClient()
 
-  const { data: store } = await supabase
+  const { data: rawStore } = await supabase
     .from('stores')
     .select('*')
     .eq('slug', slug)
     .single()
 
-  if (!store) notFound()
+  if (!rawStore) notFound()
+
+  // Enforce plan limits for the public view (lapsed Pro → free presentation).
+  const store = applyPlanToStore(rawStore)
 
   // Fetch all products — out-of-stock ones are shown with a "نفد" badge
   const { data: products } = await supabase
@@ -44,7 +48,7 @@ export default async function StorefrontPage({ params }: Props) {
           </div>
         )}
 
-        <ProductGrid products={products ?? []} store={store} />
+        <ProductGrid products={limitProducts(products ?? [], store)} store={store} />
       </main>
     </>
   )

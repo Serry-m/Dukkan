@@ -5,6 +5,8 @@ import type { Metadata } from 'next'
 import type { Product } from '@/types'
 import ProductDetailView from '@/components/storefront/ProductDetailView'
 import { productJsonLd } from '@/lib/structured-data'
+import { isPro } from '@/lib/plan'
+import { limitProducts } from '@/lib/storefront'
 
 type Props = { params: Promise<{ slug: string; id: string }> }
 
@@ -37,8 +39,9 @@ export default async function ProductPage({ params }: Props) {
   const { slug, id } = await params
   const supabase = await createClient()
 
-  const { data: store } = await supabase.from('stores').select('id, slug, name, theme_color, currency').eq('slug', slug).single()
+  const { data: store } = await supabase.from('stores').select('id, slug, name, theme_color, currency, plan, plan_expires_at').eq('slug', slug).single()
   if (!store) notFound()
+  const pro = isPro(store)
 
   const { data: product } = await supabase
     .from('products')
@@ -60,7 +63,13 @@ export default async function ProductPage({ params }: Props) {
 
   const all = (others ?? []) as Product[]
   const sameCat = product.category ? all.filter((p) => p.category === product.category) : []
-  const related = [...sameCat, ...all.filter((p) => !sameCat.includes(p))].slice(0, 8)
+  const relatedRaw = [...sameCat, ...all.filter((p) => !sameCat.includes(p))].slice(0, 8)
+
+  // Free/lapsed stores: strip Pro-only presentation (featured, category, extra photos).
+  const viewProduct: Product = pro
+    ? product
+    : { ...product, featured: false, category: null, images: product.image_url ? [product.image_url] : [] }
+  const related = pro ? relatedRaw : limitProducts(relatedRaw, store)
 
   // Absolute URL for this product page (rich-result canonical).
   const h = await headers()
@@ -80,7 +89,7 @@ export default async function ProductPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
       />
       <ProductDetailView
-        product={product}
+        product={viewProduct}
         slug={store.slug}
         themeColor={store.theme_color ?? '#16a34a'}
         currency={store.currency}
