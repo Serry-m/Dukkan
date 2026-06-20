@@ -99,6 +99,9 @@ export default function CouponsManager({ storeId, currency, coupons: initial }: 
                   خصم {cp.type === 'percent' ? `${cp.value.toLocaleString('ar-EG')}٪` : `${cp.value.toLocaleString('ar-EG')} ${curr}`}
                 </p>
               </div>
+              <span className={`text-xs font-medium hidden sm:inline flex-shrink-0 ${cp.active ? 'text-green-600' : 'text-gray-400'}`}>
+                {cp.active ? 'مفعّل' : 'موقوف'}
+              </span>
               <button
                 onClick={() => toggle(cp)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${cp.active ? 'bg-green-500' : 'bg-gray-300'}`}
