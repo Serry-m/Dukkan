@@ -1,9 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 import ProductGrid from '@/components/storefront/ProductGrid'
 import ViewTracker from '@/components/storefront/ViewTracker'
 import { StoreHero } from '@/components/storefront/StoreHero'
 import { applyPlanToStore, limitProducts } from '@/lib/storefront'
+import { storeJsonLd, storeSocialLinks } from '@/lib/structured-data'
+import { isPro } from '@/lib/plan'
 import { Clock } from 'lucide-react'
 
 type Props = {
@@ -34,8 +37,21 @@ export default async function StorefrontPage({ params }: Props) {
     .order('featured', { ascending: false }) // featured next
     .order('sort_order', { ascending: true })
 
+  // Store JSON-LD (socials only when Pro, since they're hidden on free storefronts).
+  const h = await headers()
+  const host = h.get('host')
+  const proto = h.get('x-forwarded-proto') ?? 'https'
+  const storeUrl = host ? `${proto}://${host}/store/${store.slug}` : undefined
+  const jsonLd = storeJsonLd({
+    store,
+    url: storeUrl,
+    sameAs: isPro(store) ? storeSocialLinks(store) : [],
+  })
+  const jsonLdHtml = JSON.stringify(jsonLd).replace(/</g, '\\u003c')
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml }} />
       <ViewTracker slug={slug} />
       <StoreHero store={store} themeColor={store.theme_color ?? '#16a34a'} />
 
