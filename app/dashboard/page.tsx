@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
+import { headers } from 'next/headers'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link'
-import { Package, Store, ShoppingBag, Eye, TrendingUp, Check, ArrowLeft, Crown } from 'lucide-react'
+import { Package, Store, ShoppingBag, Eye, TrendingUp, Check, ArrowLeft, Crown, Plus } from 'lucide-react'
 import ShareButton from '@/components/dashboard/ShareButton'
 import { CountUp } from '@/components/landing/Effects'
 import { isPro, FREE_PRODUCT_LIMIT } from '@/lib/plan'
@@ -73,9 +74,25 @@ export default async function DashboardPage() {
 
   const pro = isPro(store)
 
+  // Full, human-readable store URL (host + path) so the merchant sees the
+  // real shareable link, not a bare path.
+  const h = await headers()
+  const host = h.get('host') ?? ''
+  const displayUrl = `${host}/store/${store.slug}`
+
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">مرحباً</h1>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 truncate min-w-0">
+          مرحباً، {store.name}
+        </h1>
+        <Link
+          href="/dashboard/products/new"
+          className={cn(buttonVariants(), 'bg-green-600 hover:bg-green-700 gap-1.5 flex-shrink-0 whitespace-nowrap')}
+        >
+          <Plus size={16} /> أضف منتج
+        </Link>
+      </div>
 
       {/* Plan banner */}
       {pro ? (
@@ -142,8 +159,8 @@ export default async function DashboardPage() {
         <CardContent className="pt-5">
           <p className="text-sm text-green-700 mb-2">رابط متجرك</p>
           <div className="flex items-center gap-2 flex-wrap">
-            <code className="flex-1 text-sm font-mono text-green-900 bg-white rounded px-3 py-2 border border-green-200 truncate min-w-0">
-              /store/{store.slug}
+            <code dir="ltr" className="flex-1 text-sm font-mono text-green-900 bg-white rounded px-3 py-2 border border-green-200 truncate min-w-0 text-left">
+              {displayUrl}
             </code>
             <ShareButton slug={store.slug} />
             <a
@@ -177,19 +194,25 @@ export default async function DashboardPage() {
           <p className="text-xs text-gray-400 mt-1.5">الزيارات</p>
         </div>
 
-        {/* Orders */}
-        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
+        {/* Orders — links to the orders page */}
+        <Link
+          href="/dashboard/orders"
+          className="block bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5 transition-all hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5"
+        >
           <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
             <ShoppingBag size={18} className="text-green-700" />
           </div>
           <p className="text-2xl sm:text-3xl font-extrabold text-gray-900 tabular-nums leading-none">
-<CountUp to={orderCount ?? 0} />
+            <CountUp to={orderCount ?? 0} />
           </p>
           <p className="text-xs text-gray-400 mt-1.5">الطلبات</p>
-        </div>
+        </Link>
 
-        {/* Products */}
-        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5">
+        {/* Products — links to the products page */}
+        <Link
+          href="/dashboard/products"
+          className="block bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] p-4 sm:p-5 transition-all hover:shadow-[var(--shadow-lift)] hover:-translate-y-0.5"
+        >
           <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
             <Package size={18} className="text-green-700" />
           </div>
@@ -197,7 +220,7 @@ export default async function DashboardPage() {
             <CountUp to={productCount ?? 0} />
           </p>
           <p className="text-xs text-gray-400 mt-1.5">المنتجات</p>
-        </div>
+        </Link>
       </div>
 
       {/* Top products — Pro only */}
