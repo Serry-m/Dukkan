@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { validateImageFile, safeImageExt } from '@/lib/upload'
 import type { Product, ProductOption } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -76,9 +77,13 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
   }
 
   async function uploadImage(file: File): Promise<string | null> {
+    const invalid = validateImageFile(file)
+    if (invalid) {
+      setError(invalid)
+      return null
+    }
     const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `products/${storeId}/${Date.now()}.${ext}`
+    const path = `products/${storeId}/${Date.now()}.${safeImageExt(file)}`
     const { error } = await supabase.storage.from('store_assets').upload(path, file, { upsert: true })
     if (error) {
       setError(`فشل رفع الصورة: ${error.message}`)
@@ -154,7 +159,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
 
           <div className="space-y-1">
             <Label htmlFor="name">اسم المنتج</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: سماعة بلوتوث" required />
+            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: سماعة بلوتوث" required maxLength={80} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -182,6 +187,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="مثال: أقراط، سلاسل، خواتم"
+                  maxLength={40}
                 />
                 <datalist id="category-list">
                   {categories.map((c) => <option key={c} value={c} />)}
@@ -201,6 +207,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
               onChange={(e) => setDescription(e.target.value)}
               placeholder="وصف مختصر للمنتج — اللون، المقاس، المواصفات..."
               rows={3}
+              maxLength={500}
               className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
             />
           </div>

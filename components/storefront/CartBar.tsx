@@ -212,7 +212,7 @@ export default function CartBar({ store }: { store: Store }) {
               {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">الاسم</label>
-                <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="محمد أحمد" className={inputClass} />
+                <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="محمد أحمد" maxLength={60} className={inputClass} />
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">رقم الهاتف</label>
@@ -233,12 +233,13 @@ export default function CartBar({ store }: { store: Store }) {
                   onChange={(e) => setCustomerAddress(e.target.value)}
                   placeholder="المدينة، الحي، الشارع، رقم المبنى/الشقة"
                   rows={2}
+                  maxLength={300}
                   className={`${inputClass} resize-none`}
                 />
               </div>
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">ملاحظات (اختياري)</label>
-                <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="أي تفاصيل إضافية للطلب" className={inputClass} />
+                <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="أي تفاصيل إضافية للطلب" maxLength={200} className={inputClass} />
               </div>
 
               {/* Coupon */}
@@ -250,6 +251,7 @@ export default function CartBar({ store }: { store: Store }) {
                     onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
                     placeholder="أدخل الكود"
                     dir="ltr"
+                    maxLength={30}
                     disabled={!!appliedCoupon}
                     className={`${inputClass} flex-1 disabled:opacity-60`}
                   />

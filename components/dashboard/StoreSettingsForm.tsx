@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { validateImageFile, safeImageExt } from '@/lib/upload'
 import type { Store } from '@/types'
 import { isLightColor } from '@/lib/color'
 import { isPro } from '@/lib/plan'
@@ -75,9 +76,13 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   }
 
   async function uploadImage(file: File, folder: string): Promise<string | null> {
+    const invalid = validateImageFile(file)
+    if (invalid) {
+      setError(invalid)
+      return null
+    }
     const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${folder}/${userId}/${Date.now()}.${ext}`
+    const path = `${folder}/${userId}/${Date.now()}.${safeImageExt(file)}`
     const { error } = await supabase.storage
       .from('store_assets')
       .upload(path, file, { upsert: true })
@@ -157,12 +162,12 @@ export default function StoreSettingsForm({ store, userId }: Props) {
 
           <div className="space-y-1">
             <Label htmlFor="name">اسم المتجر</Label>
-            <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="مثال: متجر محمود للإكسسوارات" required />
+            <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="مثال: متجر محمود للإكسسوارات" required maxLength={60} />
           </div>
 
           <div className="space-y-1">
             <Label htmlFor="whatsapp">رقم واتساب</Label>
-            <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))} placeholder="01012345678" required dir="ltr" />
+            <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))} placeholder="01012345678" required dir="ltr" maxLength={15} />
             <p className="text-xs text-gray-400">أدخل رقمك المصري — كود الدولة يُضاف تلقائياً</p>
           </div>
 
@@ -177,6 +182,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 placeholder="mahmoud-shop"
                 required
                 dir="ltr"
+                maxLength={40}
                 className="flex-1"
               />
             </div>
@@ -185,7 +191,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
 
           <div className="space-y-1">
             <Label htmlFor="description">وصف المتجر (اختياري)</Label>
-            <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="مثال: أفضل الإكسسوارات بأسعار منافسة" />
+            <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="مثال: أفضل الإكسسوارات بأسعار منافسة" maxLength={200} />
           </div>
         </CardContent>
       </Card>
@@ -376,6 +382,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               onChange={(e) => setMessageTemplate(e.target.value)}
               placeholder="مثال: أهلاً! حابب أطلب من متجرك 🛍️"
               rows={2}
+              maxLength={300}
               className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
             />
             <p className="text-xs text-gray-400">أول سطر في رسالة الواتساب التي يرسلها العميل. اتركه فارغاً للرسالة الافتراضية.</p>
@@ -396,6 +403,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               onChange={(e) => setAbout(e.target.value)}
               placeholder="نبذة عن متجرك، قصتك، ما يميزك..."
               rows={3}
+              maxLength={500}
               className="w-full border border-input rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring/50"
             />
           </div>
@@ -403,19 +411,19 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="location">الموقع (اختياري)</Label>
-              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="القاهرة، مدينة نصر" />
+              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="القاهرة، مدينة نصر" maxLength={120} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="hours">مواعيد العمل (اختياري)</Label>
-              <Input id="hours" value={workingHours} onChange={(e) => setWorkingHours(e.target.value)} placeholder="يومياً ١٠ص - ١٢م" />
+              <Input id="hours" value={workingHours} onChange={(e) => setWorkingHours(e.target.value)} placeholder="يومياً ١٠ص - ١٢م" maxLength={120} />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>روابط التواصل (اختياري)</Label>
-            <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="إنستجرام — اسم المستخدم أو الرابط" dir="ltr" />
-            <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="فيسبوك — اسم المستخدم أو الرابط" dir="ltr" />
-            <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="تيك توك — اسم المستخدم أو الرابط" dir="ltr" />
+            <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="إنستجرام — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
+            <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="فيسبوك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
+            <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="تيك توك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
           </div>
         </CardContent>
       </Card>
