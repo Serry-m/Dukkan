@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { ShoppingBag, Phone, User, MapPin, StickyNote, Wallet, CheckCircle2, Clock } from 'lucide-react'
+import { ShoppingBag, Phone, User, MapPin, StickyNote, Wallet, CheckCircle2, Clock, MessageCircle } from 'lucide-react'
 import { formatPrice } from '@/lib/currency'
+import { normalizeEgyptianNumber } from '@/lib/whatsapp'
 import OrderActions from '@/components/dashboard/OrderActions'
+import CopyAddressButton from '@/components/dashboard/CopyAddressButton'
 import type { OrderStatus, OrderItem } from '@/types'
 
 const STATUS_FILTERS: { key: string; label: string }[] = [
@@ -21,7 +23,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   const { data: store } = await supabase
     .from('stores')
-    .select('id, currency')
+    .select('id, currency, name')
     .eq('owner_id', user!.id)
     .single()
 
@@ -104,6 +106,12 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
           {visibleOrders.map((order) => {
             const date = new Date(order.created_at)
             const items = order.items as OrderItem[]
+            // One-tap WhatsApp reply to the customer — the core merchant action.
+            const waReply = order.customer_phone
+              ? `https://wa.me/${normalizeEgyptianNumber(order.customer_phone)}?text=${encodeURIComponent(
+                  `مرحباً ${order.customer_name ?? ''}، بخصوص طلبك من ${store?.name ?? ''} 🛍️`
+                )}`
+              : null
             return (
               <div key={order.id} className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] overflow-hidden">
                 {/* Header: date + total */}
@@ -154,6 +162,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                             <MapPin size={14} className="text-green-700" />
                           </span>
                           <span className="text-sm text-gray-700 leading-relaxed">{order.customer_address}</span>
+                          <CopyAddressButton text={order.customer_address} />
                         </div>
                       )}
                       {order.notes && (
@@ -163,6 +172,18 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
                           </span>
                           <span className="text-sm text-gray-500 leading-relaxed">{order.notes}</span>
                         </div>
+                      )}
+
+                      {/* Primary action: reply to the customer on WhatsApp */}
+                      {waReply && (
+                        <a
+                          href={waReply}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg py-2.5 transition-colors"
+                        >
+                          <MessageCircle size={15} /> رد عبر واتساب
+                        </a>
                       )}
                     </div>
                   )}
