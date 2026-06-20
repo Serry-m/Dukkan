@@ -53,6 +53,11 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
 
   const MAX_IMAGES = isPro ? 3 : 1
 
+  // Sale price must be below the original price, or the "discount" silently
+  // does nothing on the storefront. Block the save instead of confusing the merchant.
+  const saleInvalid =
+    salePrice.trim() !== '' && price.trim() !== '' && parseFloat(salePrice) >= parseFloat(price)
+
   function handleAddImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -96,6 +101,10 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    if (saleInvalid) {
+      setError('سعر التخفيض يجب أن يكون أقل من السعر الأصلي.')
+      return
+    }
     setLoading(true)
 
     const supabase = createClient()
@@ -172,7 +181,7 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
               <Input id="salePrice" type="number" min="0" step="0.01" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} placeholder="—" dir="ltr" />
             </div>
           </div>
-          {salePrice.trim() && price.trim() && parseFloat(salePrice) >= parseFloat(price) && (
+          {saleInvalid && (
             <p className="text-xs text-amber-600 -mt-3">سعر التخفيض يجب أن يكون أقل من السعر الأصلي ليظهر كخصم.</p>
           )}
 
@@ -334,12 +343,12 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
           </div>
 
           <div className="flex gap-3">
-            <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700" disabled={loading}>
+            <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700" disabled={loading || saleInvalid}>
               {loading ? 'جاري الحفظ...' : product ? 'حفظ التعديلات' : 'إضافة المنتج'}
             </Button>
-            <button type="button" onClick={() => router.back()} className="flex-1 h-8 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted transition-colors">
+            <Button type="button" variant="outline" className="flex-1" onClick={() => router.back()}>
               إلغاء
-            </button>
+            </Button>
           </div>
         </form>
       </CardContent>
