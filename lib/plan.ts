@@ -1,7 +1,7 @@
 import type { Store } from '@/types'
 
 // ── Plan configuration ──
-export const PRO_PRICE_EGP = 149          // monthly Pro price
+export const PRO_PRICE_EGP = 199          // monthly Pro price
 export const FREE_PRODUCT_LIMIT = 5       // max products on the free plan (personal/trial-feel; brands upgrade)
 export const PRO_DURATION_DAYS = 30       // days of Pro granted per payment
 
@@ -21,4 +21,5 @@ export const PRO_FEATURES = [
   'خيارات المنتج (مقاسات وألوان)',
   'حتى ٣ صور لكل منتج',
   'التصنيفات ورسوم التوصيل وصورة الغلاف',
+  'روابط التواصل الاجتماعي (إنستجرام، فيسبوك، تيك توك)',
 ]

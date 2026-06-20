@@ -420,10 +420,16 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
 
           <div className="space-y-2">
-            <Label>روابط التواصل (اختياري)</Label>
-            <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="إنستجرام — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
-            <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="فيسبوك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
-            <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="تيك توك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
+            <Label className="flex items-center gap-2">روابط التواصل (اختياري) {!pro && <ProBadge />}</Label>
+            {pro ? (
+              <>
+                <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="إنستجرام — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
+                <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="فيسبوك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
+                <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="تيك توك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
+              </>
+            ) : (
+              <ProUpsell feature="روابط التواصل الاجتماعي" />
+            )}
           </div>
         </CardContent>
       </Card>
