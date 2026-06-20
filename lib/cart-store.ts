@@ -24,6 +24,8 @@ function buildLineId(productId: string, selectedOptions?: Record<string, string>
 
 type CartStore = {
   items: CartItem[]
+  storeId: string | null
+  setStore: (storeId: string) => void
   addItem: (product: Product, selectedOptions?: Record<string, string>, qty?: number) => void
   removeItem: (lineId: string) => void
   updateQuantity: (lineId: string, quantity: number) => void
@@ -36,6 +38,15 @@ export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      storeId: null,
+
+      // The cart belongs to exactly one store. Opening a different store
+      // resets it, so items can never carry over (or be checked out) across stores.
+      setStore: (storeId) => {
+        if (get().storeId !== storeId) {
+          set({ storeId, items: [] })
+        }
+      },
 
       addItem: (product, selectedOptions, qty = 1) => {
         const lineId = buildLineId(product.id, selectedOptions)
@@ -78,8 +89,8 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'dukkan-cart',
-      // Only persist the items array.
-      partialize: (state) => ({ items: state.items }),
+      // Persist the items + which store they belong to.
+      partialize: (state) => ({ items: state.items, storeId: state.storeId }),
     }
   )
 )

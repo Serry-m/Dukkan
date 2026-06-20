@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Store } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
 import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
@@ -25,6 +25,13 @@ export default function CartBar({ store }: { store: Store }) {
   const totalPrice = useCartStore((s) => s.totalPrice())
   const removeItem = useCartStore((s) => s.removeItem)
   const clearCart = useCartStore((s) => s.clearCart)
+  const setStore = useCartStore((s) => s.setStore)
+
+  // Scope the cart to this store — clears any cart left over from another store.
+  useEffect(() => {
+    setStore(store.id)
+  }, [store.id, setStore])
+
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<Step>('cart')
   const [customerName, setCustomerName] = useState('')
