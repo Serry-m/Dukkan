@@ -33,6 +33,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   // Currency is locked to EGP for now (matches the Egyptian phone validation).
   const currency = store?.currency ?? 'EGP'
   const [deliveryFee, setDeliveryFee] = useState(store?.delivery_fee?.toString() ?? '0')
+  const [payInstapay, setPayInstapay] = useState(store?.payment_instapay ?? '')
+  const [payVodafone, setPayVodafone] = useState(store?.payment_vodafone ?? '')
+  const [payCod, setPayCod] = useState(store?.payment_cod ?? false)
   const [isOpen, setIsOpen] = useState(store?.is_open ?? true)
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -141,6 +144,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     const payload = {
       name, slug, whatsapp_number: whatsapp, description, logo_url: logoUrl, banner_url: bannerUrl,
       theme_color: themeColor, currency, delivery_fee: parseFloat(deliveryFee) || 0, is_open: isOpen,
+      payment_instapay: payInstapay.trim() || null,
+      payment_vodafone: payVodafone.trim() || null,
+      payment_cod: payCod,
       message_template: messageTemplate.trim() || null, layout, theme,
       about: about.trim() || null,
       location: location.trim() || null,
@@ -179,6 +185,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     description !== (store.description ?? '') ||
     themeColor !== (store.theme_color ?? '#16a34a') ||
     deliveryFee !== (store.delivery_fee?.toString() ?? '0') ||
+    payInstapay !== (store.payment_instapay ?? '') ||
+    payVodafone !== (store.payment_vodafone ?? '') ||
+    payCod !== (store.payment_cod ?? false) ||
     isOpen !== (store.is_open ?? true) ||
     messageTemplate !== (store.message_template ?? '') ||
     layout !== (store.layout ?? 'grid') ||
@@ -434,6 +443,33 @@ export default function StoreSettingsForm({ store, userId }: Props) {
             ) : (
               <ProUpsell feature="رسوم التوصيل" />
             )}
+          </div>
+
+          {/* Payment methods — display only (Dukkan never processes money) */}
+          <div className="space-y-2.5">
+            <div>
+              <Label>طرق الدفع المقبولة</Label>
+              <p className="text-xs text-gray-400 mt-0.5">تظهر للعميل عند الطلب ليعرف كيف يدفع لك. دكان لا يتقاضى أي عمولة.</p>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">إنستاباي (رقم أو اسم مستخدم)</label>
+              <Input value={payInstapay} onChange={(e) => setPayInstapay(e.target.value)} placeholder="01012345678 أو username@instapay" dir="ltr" maxLength={60} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-600">فودافون كاش (رقم)</label>
+              <Input value={payVodafone} onChange={(e) => setPayVodafone(e.target.value.replace(/[^\d]/g, ''))} placeholder="01012345678" dir="ltr" maxLength={15} />
+            </div>
+            <label className="flex items-center gap-3 cursor-pointer pt-1">
+              <button
+                type="button"
+                onClick={() => setPayCod((v) => !v)}
+                aria-label="الدفع عند الاستلام"
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${payCod ? 'bg-green-500' : 'bg-gray-300'}`}
+              >
+                <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${payCod ? 'right-1' : 'right-6'}`} />
+              </button>
+              <span className="text-sm text-gray-700">الدفع عند الاستلام (كاش)</span>
+            </label>
           </div>
 
           {/* Store open/closed */}

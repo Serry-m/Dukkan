@@ -8,6 +8,7 @@ import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
 import { effectivePrice } from '@/lib/price'
 import { createClient } from '@/lib/supabase/client'
+import { PaymentMethods } from './PaymentMethods'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Trash2, MessageCircle, ArrowRight, CheckCircle, Package } from 'lucide-react'
@@ -274,6 +275,9 @@ export default function CartBar({ store }: { store: Store }) {
                 </div>
                 {couponMsg && <p className={`text-xs ${appliedCoupon ? 'text-green-600' : 'text-red-500'}`}>{couponMsg}</p>}
               </div>
+
+              {/* How the customer can pay the merchant */}
+              <PaymentMethods store={store} />
 
               <div className="bg-gray-50 rounded-xl p-3 space-y-1">
                 {items.map(({ product, quantity, selectedOptions, lineId }) => (

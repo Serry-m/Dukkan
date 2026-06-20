@@ -46,6 +46,13 @@ export function buildWhatsAppOrderUrl(
     ? store.message_template.trim()
     : `مرحباً! أريد أن أطلب من ${store.name} 🛒`
 
+  // Payment methods the merchant accepts (so the customer knows how to pay).
+  const payList: string[] = []
+  if (store.payment_instapay) payList.push(`• إنستاباي: ${store.payment_instapay}`)
+  if (store.payment_vodafone) payList.push(`• فودافون كاش: ${store.payment_vodafone}`)
+  if (store.payment_cod) payList.push(`• الدفع عند الاستلام`)
+  const paymentLines = payList.length ? [`💳 طرق الدفع:`, ...payList, ``, `━━━━━━━━━━━━━━`] : []
+
   const message = [
     greeting,
     ``,
@@ -62,6 +69,7 @@ export function buildWhatsAppOrderUrl(
     ...(customer.address?.trim() ? [`📍 العنوان: ${customer.address.trim()}`] : []),
     ...(customer.notes?.trim() ? [`📝 ملاحظات: ${customer.notes.trim()}`] : []),
     `━━━━━━━━━━━━━━`,
+    ...paymentLines,
     `من فضلك تأكد طلبي. شكراً!`,
   ].join('\n')
 

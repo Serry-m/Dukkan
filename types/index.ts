@@ -30,6 +30,10 @@ export type Store = {
   font: 'cairo' | 'tajawal' | 'almarai'
   banner_url: string | null
   card_style: 'rounded' | 'sharp'
+  // Payment methods the merchant accepts (display-only — Dukkan never processes money).
+  payment_instapay: string | null
+  payment_vodafone: string | null
+  payment_cod: boolean
   created_at: string
 }
 
