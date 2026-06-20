@@ -6,8 +6,9 @@ import { isAdminEmail } from '@/lib/admin'
 import { isPro, PRO_PRICE_EGP } from '@/lib/plan'
 import { BrandMark } from '@/components/BrandMark'
 import AdminPlanActions from '@/components/admin/AdminPlanActions'
+import AdminDangerMenu from '@/components/admin/AdminDangerMenu'
 import { formatPrice } from '@/lib/currency'
-import { Store, Crown, Wallet, ExternalLink } from 'lucide-react'
+import { Store, Crown, Wallet, ExternalLink, Ban } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,7 +23,7 @@ export default async function AdminPage() {
   // All stores (bypasses RLS via service role).
   const { data: stores } = await admin
     .from('stores')
-    .select('id, name, slug, owner_id, plan, plan_expires_at, created_at')
+    .select('id, name, slug, owner_id, plan, plan_expires_at, created_at, suspended')
 
   // Owner emails.
   const { data: usersData } = await admin.auth.admin.listUsers()
@@ -50,6 +51,23 @@ export default async function AdminPage() {
 
   const proCount = list.filter((s) => s.pro).length
   const mrr = proCount * PRO_PRICE_EGP
+
+  // Recent admin actions (audit trail).
+  const { data: auditLog } = await admin
+    .from('admin_actions')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(15)
+
+  const ACTION_LABELS: Record<string, string> = {
+    grant: 'تفعيل Pro',
+    extend: 'تمديد Pro',
+    revoke: 'إلغاء Pro',
+    suspend: 'تعليق متجر',
+    unsuspend: 'إلغاء تعليق',
+    delete_store: 'حذف متجر',
+    delete_account: 'حذف حساب',
+  }
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#f7f8fa]">
@@ -113,19 +131,27 @@ export default async function AdminPage() {
                       <td className="px-4 py-3 text-xs text-gray-500 truncate max-w-[200px]">{s.email}</td>
                       <td className="px-4 py-3 tabular-nums text-gray-700">{s.products.toLocaleString('ar-EG')}</td>
                       <td className="px-4 py-3">
-                        {s.pro ? (
-                          <div className="flex flex-col gap-0.5">
-                            <span className="w-fit text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
-                            {s.plan_expires_at && (
-                              <span className="text-[10px] text-gray-400">حتى {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}</span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
-                        )}
+                        <div className="flex flex-col gap-0.5">
+                          {s.pro ? (
+                            <>
+                              <span className="w-fit text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Crown size={9} /> Pro</span>
+                              {s.plan_expires_at && (
+                                <span className="text-[10px] text-gray-400">حتى {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}</span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="w-fit text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
+                          )}
+                          {s.suspended && (
+                            <span className="w-fit text-[10px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Ban size={9} /> معلّق</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex justify-end"><AdminPlanActions storeId={s.id} isPro={s.pro} /></div>
+                        <div className="flex items-center justify-end gap-1">
+                          <AdminPlanActions storeId={s.id} isPro={s.pro} />
+                          <AdminDangerMenu storeId={s.id} storeName={s.name} suspended={s.suspended} />
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -144,18 +170,42 @@ export default async function AdminPage() {
                     ) : (
                       <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">مجاني</span>
                     )}
+                    {s.suspended && (
+                      <span className="text-[10px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded flex items-center gap-0.5"><Ban size={9} /> معلّق</span>
+                    )}
                   </div>
                   <p className="text-xs text-gray-400 truncate">{s.email} · {s.products.toLocaleString('ar-EG')} منتج</p>
                   {s.pro && s.plan_expires_at && (
                     <p className="text-[11px] text-gray-400 mt-0.5">ينتهي: {new Date(s.plan_expires_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                   )}
-                  <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-end gap-1">
                     <AdminPlanActions storeId={s.id} isPro={s.pro} />
+                    <AdminDangerMenu storeId={s.id} storeName={s.name} suspended={s.suspended} />
                   </div>
                 </div>
               ))}
             </div>
           </>
+        )}
+
+        {/* Audit log — recent admin actions */}
+        {(auditLog?.length ?? 0) > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold text-gray-700 mb-3">سجل الإجراءات</h2>
+            <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] divide-y divide-gray-100">
+              {auditLog!.map((a) => (
+                <div key={a.id} className="px-4 py-2.5 flex items-center gap-3 text-xs">
+                  <span className="font-medium text-gray-700 flex-shrink-0">{ACTION_LABELS[a.action] ?? a.action}</span>
+                  <span className="text-gray-500 truncate flex-1">
+                    {a.detail ? `${a.detail} · ` : ''}{a.target_email ?? ''}
+                  </span>
+                  <span className="text-gray-300 flex-shrink-0 tabular-nums">
+                    {new Date(a.created_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </main>
     </div>

@@ -57,6 +57,18 @@ export default async function StorefrontLayout({ children, params }: Props) {
 
   if (!store) notFound()
 
+  // Suspended by an admin — hide the storefront entirely (data preserved).
+  if (store.suspended) {
+    return (
+      <div dir="rtl" className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">هذا المتجر غير متاح حالياً</h1>
+          <p className="text-sm text-gray-500">يرجى المحاولة لاحقاً.</p>
+        </div>
+      </div>
+    )
+  }
+
   const themeColor = store.theme_color ?? '#16a34a'
   const theme = getTheme(store.theme)
 

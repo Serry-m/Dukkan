@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { isAdminEmail } from '@/lib/admin'
+import { isAdminEmail, logAdminAction } from '@/lib/admin'
 import { PRO_DURATION_DAYS } from '@/lib/plan'
 
 export async function POST(request: NextRequest) {
@@ -18,9 +18,11 @@ export async function POST(request: NextRequest) {
   }
 
   const admin = createAdminClient()
+  const adminEmail = user!.email!
 
   if (action === 'revoke') {
     await admin.from('stores').update({ plan: 'free', plan_expires_at: null }).eq('id', storeId)
+    await logAdminAction(admin, { adminEmail, action: 'revoke', targetStoreId: storeId })
     return NextResponse.json({ ok: true })
   }
 
@@ -35,5 +37,6 @@ export async function POST(request: NextRequest) {
   base.setDate(base.getDate() + PRO_DURATION_DAYS)
 
   await admin.from('stores').update({ plan: 'pro', plan_expires_at: base.toISOString() }).eq('id', storeId)
+  await logAdminAction(admin, { adminEmail, action, targetStoreId: storeId, detail: `حتى ${base.toLocaleDateString('ar-EG')}` })
   return NextResponse.json({ ok: true })
 }
