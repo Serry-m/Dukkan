@@ -6,6 +6,7 @@ import CartBar from '@/components/storefront/CartBar'
 import { StoreFooter } from '@/components/storefront/StoreFooter'
 import { getTheme } from '@/lib/themes'
 import { applyPlanToStore } from '@/lib/storefront'
+import { readableText } from '@/lib/color'
 import { Store } from 'lucide-react'
 
 type Props = {
@@ -95,6 +96,16 @@ export default async function StorefrontLayout({ children, params }: Props) {
         background: `radial-gradient(125% 55% at 50% 0%, ${themeColor}0d, transparent 58%), ${theme.pageBg}`,
       }}
     >
+
+      {/* Announcement bar (Pro, merchant-controlled) — scrolls away above the header */}
+      {store.announcement_enabled && store.announcement_text && (
+        <div
+          className="text-center text-xs font-medium py-2 px-3"
+          style={{ backgroundColor: themeColor, color: readableText(themeColor) }}
+        >
+          {store.announcement_text}
+        </div>
+      )}
 
       {/* Sticky header with colored top accent */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">

@@ -15,6 +15,8 @@ export function applyPlanToStore(store: Store): Store {
     theme: themeIsPro ? 'modern' : store.theme, // premium theme → free default
     banner_url: null,                            // cover image is Pro
     delivery_fee: 0,                             // delivery fee is Pro
+    announcement_enabled: false,                 // home sections are Pro
+    show_collection_tiles: false,
   }
 }
 

@@ -8,7 +8,7 @@ import { orderCategories } from '@/lib/categories'
 import { getTheme } from '@/lib/themes'
 import { isNewProduct, effectivePrice } from '@/lib/price'
 import { useCartStore } from '@/lib/cart-store'
-import { ShoppingBag, Search, ChevronDown } from 'lucide-react'
+import { ShoppingBag, Search, ChevronDown, ArrowLeft, Package } from 'lucide-react'
 
 type SortKey = 'default' | 'newest' | 'price-asc' | 'price-desc'
 
@@ -118,6 +118,34 @@ export default function ProductGrid({ products, store }: Props) {
             <CategoryChip key={cat} label={cat} active={activeCategory === cat} onClick={() => setActiveCategory(cat)} />
           ))}
         </div>
+      )}
+
+      {/* Collection tiles (Pro, merchant-controlled) — visual category browse on the unfiltered home */}
+      {store.show_collection_tiles && categories.length > 0 && activeCategory === ALL && !query.trim() && (
+        <section className="mb-7">
+          <SectionHeading title="تصفّح حسب الفئة" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {categories.map((cat) => {
+              const cover = products.find((p) => p.category?.trim() === cat && p.image_url)?.image_url
+              return (
+                <button key={cat} onClick={() => setActiveCategory(cat)} className="group text-right">
+                  <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative">
+                    {cover ? (
+                      <img src={cover} alt={cat} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                        <Package size={24} strokeWidth={1.25} className="text-gray-300" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 text-sm font-semibold text-gray-800 flex items-center gap-1">
+                    {cat} <ArrowLeft size={13} className="text-gray-400" />
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </section>
       )}
 
       {showSections ? (

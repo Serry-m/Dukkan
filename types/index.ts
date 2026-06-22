@@ -34,6 +34,11 @@ export type Store = {
   payment_instapay: string | null
   payment_vodafone: string | null
   payment_cod: boolean
+  // Home sections (merchant-controlled storefront blocks).
+  store_type: string | null
+  announcement_enabled: boolean
+  announcement_text: string | null
+  show_collection_tiles: boolean
   created_at: string
 }
 

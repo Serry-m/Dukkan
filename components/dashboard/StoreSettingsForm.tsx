@@ -22,6 +22,14 @@ type Props = {
   userId: string
 }
 
+const STORE_TYPES = [
+  { id: 'fashion', label: 'أزياء وإكسسوار' },
+  { id: 'food', label: 'طعام' },
+  { id: 'electronics', label: 'إلكترونيات' },
+  { id: 'home', label: 'منزل' },
+  { id: 'other', label: 'أخرى' },
+]
+
 export default function StoreSettingsForm({ store, userId }: Props) {
   const router = useRouter()
   const pro = isPro(store)
@@ -36,6 +44,11 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [payInstapay, setPayInstapay] = useState(store?.payment_instapay ?? '')
   const [payVodafone, setPayVodafone] = useState(store?.payment_vodafone ?? '')
   const [payCod, setPayCod] = useState(store?.payment_cod ?? false)
+  // Home sections (merchant-controlled storefront blocks)
+  const [storeType, setStoreType] = useState(store?.store_type ?? '')
+  const [announceOn, setAnnounceOn] = useState(store?.announcement_enabled ?? false)
+  const [announceText, setAnnounceText] = useState(store?.announcement_text ?? '')
+  const [showTiles, setShowTiles] = useState(store?.show_collection_tiles ?? false)
   const [isOpen, setIsOpen] = useState(store?.is_open ?? true)
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -94,6 +107,12 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     setBannerCleared(true)
   }
 
+  // Picking a store type pre-sets sensible section defaults (the merchant can override).
+  function pickStoreType(id: string) {
+    setStoreType(id)
+    setShowTiles(id !== 'other')
+  }
+
   async function uploadImage(file: File, folder: string): Promise<string | null> {
     const invalid = validateImageFile(file)
     if (invalid) {
@@ -147,6 +166,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       payment_instapay: payInstapay.trim() || null,
       payment_vodafone: payVodafone.trim() || null,
       payment_cod: payCod,
+      store_type: storeType || null,
+      announcement_enabled: announceOn,
+      announcement_text: announceText.trim() || null,
+      show_collection_tiles: showTiles,
       message_template: messageTemplate.trim() || null, layout, theme,
       about: about.trim() || null,
       location: location.trim() || null,
@@ -188,6 +211,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     payInstapay !== (store.payment_instapay ?? '') ||
     payVodafone !== (store.payment_vodafone ?? '') ||
     payCod !== (store.payment_cod ?? false) ||
+    storeType !== (store.store_type ?? '') ||
+    announceOn !== (store.announcement_enabled ?? false) ||
+    announceText !== (store.announcement_text ?? '') ||
+    showTiles !== (store.show_collection_tiles ?? false) ||
     isOpen !== (store.is_open ?? true) ||
     messageTemplate !== (store.message_template ?? '') ||
     layout !== (store.layout ?? 'grid') ||
@@ -414,6 +441,81 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Home sections (merchant-controlled storefront blocks) ── */}
+      <Card>
+        <CardContent className="pt-6 space-y-5">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900">أقسام الصفحة الرئيسية</h2>
+            <p className="text-xs text-gray-400 mt-0.5">فعّل ما يناسب متجرك فقط — كل شيء اختياري.</p>
+          </div>
+
+          {/* Store type — sets sensible defaults */}
+          <div className="space-y-2">
+            <Label>نوع المتجر</Label>
+            <div className="flex flex-wrap gap-2">
+              {STORE_TYPES.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => pickStoreType(t.id)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    storeType === t.id ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400">نضبط لك الأقسام المقترحة — وتقدر تغيّرها بالأسفل.</p>
+          </div>
+
+          {/* Announcement bar — Pro */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">شريط الإعلان {!pro && <ProBadge />}</Label>
+            {pro ? (
+              <>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => setAnnounceOn((v) => !v)}
+                    aria-label="شريط الإعلان"
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${announceOn ? 'bg-green-500' : 'bg-gray-300'}`}
+                  >
+                    <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${announceOn ? 'right-1' : 'right-6'}`} />
+                  </button>
+                  <span className="text-sm text-gray-600">رسالة تظهر أعلى المتجر (شحن، عرض…)</span>
+                </label>
+                {announceOn && (
+                  <Input value={announceText} onChange={(e) => setAnnounceText(e.target.value)} placeholder="شحن مجاني للطلبات فوق ٥٠٠ جنيه" maxLength={120} />
+                )}
+              </>
+            ) : (
+              <ProUpsell feature="شريط الإعلان" />
+            )}
+          </div>
+
+          {/* Collection tiles — Pro */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">تصفّح حسب الفئة {!pro && <ProBadge />}</Label>
+            {pro ? (
+              <label className="flex items-center gap-3 cursor-pointer">
+                <button
+                  type="button"
+                  onClick={() => setShowTiles((v) => !v)}
+                  aria-label="تصفّح حسب الفئة"
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${showTiles ? 'bg-green-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${showTiles ? 'right-1' : 'right-6'}`} />
+                </button>
+                <span className="text-sm text-gray-600">بطاقات بصور لكل فئة (تُؤخذ تلقائياً من صور المنتجات)</span>
+              </label>
+            ) : (
+              <ProUpsell feature="تصفّح حسب الفئة" />
+            )}
           </div>
         </CardContent>
       </Card>
