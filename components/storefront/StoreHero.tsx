@@ -16,6 +16,19 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-white/0 via-transparent to-black/10" />
+
+        {/* Promo overlay (Pro, merchant-controlled) */}
+        {store.promo_enabled && store.promo_title && (
+          <div className="absolute inset-0 flex flex-col items-start justify-center gap-1.5 px-6 sm:px-10 bg-gradient-to-l from-black/50 via-black/15 to-transparent">
+            {store.promo_subtitle && (
+              <span className="text-white/90 text-xs sm:text-sm tracking-wide">{store.promo_subtitle}</span>
+            )}
+            <span className="text-white text-2xl sm:text-4xl font-extrabold leading-tight max-w-[65%]">{store.promo_title}</span>
+            <a href="#products" className="mt-1 inline-block bg-white text-gray-900 text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full hover:bg-gray-100 transition-colors">
+              تسوّقي الآن
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Profile */}

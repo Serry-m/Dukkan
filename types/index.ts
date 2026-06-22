@@ -39,6 +39,9 @@ export type Store = {
   announcement_enabled: boolean
   announcement_text: string | null
   show_collection_tiles: boolean
+  promo_enabled: boolean
+  promo_title: string | null
+  promo_subtitle: string | null
   created_at: string
 }
 

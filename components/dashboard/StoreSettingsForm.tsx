@@ -49,6 +49,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [announceOn, setAnnounceOn] = useState(store?.announcement_enabled ?? false)
   const [announceText, setAnnounceText] = useState(store?.announcement_text ?? '')
   const [showTiles, setShowTiles] = useState(store?.show_collection_tiles ?? false)
+  const [promoOn, setPromoOn] = useState(store?.promo_enabled ?? false)
+  const [promoTitle, setPromoTitle] = useState(store?.promo_title ?? '')
+  const [promoSubtitle, setPromoSubtitle] = useState(store?.promo_subtitle ?? '')
   const [isOpen, setIsOpen] = useState(store?.is_open ?? true)
   const [messageTemplate, setMessageTemplate] = useState(store?.message_template ?? '')
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -170,6 +173,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       announcement_enabled: announceOn,
       announcement_text: announceText.trim() || null,
       show_collection_tiles: showTiles,
+      promo_enabled: promoOn,
+      promo_title: promoTitle.trim() || null,
+      promo_subtitle: promoSubtitle.trim() || null,
       message_template: messageTemplate.trim() || null, layout, theme,
       about: about.trim() || null,
       location: location.trim() || null,
@@ -215,6 +221,9 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     announceOn !== (store.announcement_enabled ?? false) ||
     announceText !== (store.announcement_text ?? '') ||
     showTiles !== (store.show_collection_tiles ?? false) ||
+    promoOn !== (store.promo_enabled ?? false) ||
+    promoTitle !== (store.promo_title ?? '') ||
+    promoSubtitle !== (store.promo_subtitle ?? '') ||
     isOpen !== (store.is_open ?? true) ||
     messageTemplate !== (store.message_template ?? '') ||
     layout !== (store.layout ?? 'grid') ||
@@ -515,6 +524,34 @@ export default function StoreSettingsForm({ store, userId }: Props) {
               </label>
             ) : (
               <ProUpsell feature="تصفّح حسب الفئة" />
+            )}
+          </div>
+
+          {/* Promo hero overlay — Pro */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">لافتة العروض على الغلاف {!pro && <ProBadge />}</Label>
+            {pro ? (
+              <>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => setPromoOn((v) => !v)}
+                    aria-label="لافتة العروض"
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors ${promoOn ? 'bg-green-500' : 'bg-gray-300'}`}
+                  >
+                    <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-all ${promoOn ? 'right-1' : 'right-6'}`} />
+                  </button>
+                  <span className="text-sm text-gray-600">عنوان وزر على صورة الغلاف</span>
+                </label>
+                {promoOn && (
+                  <div className="space-y-2">
+                    <Input value={promoTitle} onChange={(e) => setPromoTitle(e.target.value)} placeholder="العنوان — مثال: تخفيضات الصيف ٢٥٪" maxLength={60} />
+                    <Input value={promoSubtitle} onChange={(e) => setPromoSubtitle(e.target.value)} placeholder="سطر صغير (اختياري) — مثال: على كل القطع" maxLength={80} />
+                  </div>
+                )}
+              </>
+            ) : (
+              <ProUpsell feature="لافتة العروض" />
             )}
           </div>
         </CardContent>

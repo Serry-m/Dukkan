@@ -17,6 +17,7 @@ export function applyPlanToStore(store: Store): Store {
     delivery_fee: 0,                             // delivery fee is Pro
     announcement_enabled: false,                 // home sections are Pro
     show_collection_tiles: false,
+    promo_enabled: false,
   }
 }
 

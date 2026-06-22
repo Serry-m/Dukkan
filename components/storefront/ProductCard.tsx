@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Product } from '@/types'
@@ -8,7 +9,7 @@ import { currencyLabel } from '@/lib/currency'
 import { effectivePrice, isOnSale, isLowStock } from '@/lib/price'
 import { ProductBadges } from './ProductBadges'
 import type { ThemeConfig } from '@/lib/themes'
-import { Plus, Minus, SlidersHorizontal } from 'lucide-react'
+import { Plus, Check, SlidersHorizontal } from 'lucide-react'
 import { ImagePlaceholder } from './ImagePlaceholder'
 
 type Props = {
@@ -21,22 +22,26 @@ type Props = {
 }
 
 export default function ProductCard({ product, slug, themeColor, currency, layout = 'grid', theme }: Props) {
-  const items = useCartStore((s) => s.items)
   const addItem = useCartStore((s) => s.addItem)
-  const updateQuantity = useCartStore((s) => s.updateQuantity)
+  const [added, setAdded] = useState(false)
 
   const hasOptions = (product.options?.length ?? 0) > 0
-  const cartItem = items.find((i) => i.lineId === product.id)
-  const quantity = cartItem?.quantity ?? 0
   const outOfStock = !product.in_stock
   const href = `/store/${slug}/product/${product.id}`
 
   const radius = theme.cardRadius
   const innerRadius = theme.innerRadius
 
-  // Add / quantity control. Outlined (quiet) on cards — the solid accent is
-  // reserved for the cart bar + the product detail page. Variant products
-  // route to the detail page to choose options.
+  function quickAdd(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem(product)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1200)
+  }
+
+  // Simplified add control — used by the LIST layout. Variant products route to
+  // the detail page to choose options; the grid layout uses an on-image quick-add.
   const addControl = outOfStock ? (
     <div className={`w-full bg-gray-100 text-gray-400 text-xs font-medium ${innerRadius} py-2.5 text-center`}>غير متاح</div>
   ) : hasOptions ? (
@@ -47,7 +52,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
     >
       اختر الخيارات
     </Link>
-  ) : quantity === 0 ? (
+  ) : (
     <button
       onClick={() => addItem(product)}
       className={`w-full text-sm font-semibold ${innerRadius} py-2.5 border-[1.5px] transition-all active:scale-95`}
@@ -55,16 +60,6 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
     >
       أضف للسلة
     </button>
-  ) : (
-    <div className={`flex items-center justify-between ${innerRadius} px-1 py-1.5`} style={{ backgroundColor: `${themeColor}15` }}>
-      <button onClick={() => updateQuantity(product.id, quantity - 1)} className="w-8 h-8 flex items-center justify-center rounded-lg transition-all active:scale-90">
-        <Minus size={14} style={{ color: themeColor }} />
-      </button>
-      <span className="font-bold text-sm tabular-nums w-6 text-center" style={{ color: themeColor }}>{quantity}</span>
-      <button onClick={() => addItem(product)} className="w-8 h-8 flex items-center justify-center rounded-lg transition-all active:scale-90">
-        <Plus size={14} style={{ color: themeColor }} />
-      </button>
-    </div>
   )
 
   const onSale = isOnSale(product)
@@ -120,7 +115,7 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
     )
   }
 
-  // ── GRID layout: vertical card ──
+  // ── GRID layout: vertical card with on-image quick-add ──
   return (
     <div className={`group bg-white ${radius} overflow-hidden flex flex-col ${theme.cardSurface} transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
       <Link href={href} className="aspect-[4/5] bg-gray-50 relative overflow-hidden block w-full text-right">
@@ -148,9 +143,20 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
         <div className="absolute top-2 right-2">
           <ProductBadges product={product} themeColor={themeColor} />
         </div>
+
+        {/* On-image quick-add — simple in-stock products add directly (one tap = +1) */}
+        {!outOfStock && !hasOptions && (
+          <button
+            onClick={quickAdd}
+            aria-label="أضف للسلة"
+            className="absolute bottom-2 left-2 w-9 h-9 rounded-full bg-white shadow-md ring-1 ring-black/5 flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
+          >
+            {added ? <Check size={17} style={{ color: themeColor }} strokeWidth={2.4} /> : <Plus size={18} style={{ color: themeColor }} />}
+          </button>
+        )}
       </Link>
 
-      <div className="p-3 flex flex-col flex-1 gap-2">
+      <div className="p-3 flex flex-col flex-1 gap-1.5">
         <Link href={href} className="flex-1 text-right">
           <p className={`${theme.nameClass} leading-snug line-clamp-2`}>{product.name}</p>
           {product.description && (
@@ -159,7 +165,6 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
         </Link>
         {priceBlock}
         {lowStockTag}
-        {addControl}
       </div>
     </div>
   )
