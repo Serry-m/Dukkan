@@ -6,9 +6,25 @@ import type { ThemeConfig } from '@/lib/themes'
 import ProductCard from './ProductCard'
 import { orderCategories } from '@/lib/categories'
 import { getTheme } from '@/lib/themes'
-import { isNewProduct } from '@/lib/price'
+import { isNewProduct, effectivePrice } from '@/lib/price'
 import { useCartStore } from '@/lib/cart-store'
-import { ShoppingBag, Search } from 'lucide-react'
+import { ShoppingBag, Search, ChevronDown } from 'lucide-react'
+
+type SortKey = 'default' | 'newest' | 'price-asc' | 'price-desc'
+
+// Universal: client-side sort for the product grid. 'default' keeps the
+// merchant's own arrangement (in-stock first, then sort_order).
+function sortProducts(list: Product[], key: SortKey): Product[] {
+  if (key === 'default') return list
+  const arr = [...list]
+  if (key === 'newest') arr.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  else if (key === 'price-asc') arr.sort((a, b) => effectivePrice(a) - effectivePrice(b))
+  else if (key === 'price-desc') arr.sort((a, b) => effectivePrice(b) - effectivePrice(a))
+  return arr
+}
+
+// Only worth showing the sort control once a catalog is big enough to browse.
+const SORT_MIN = 8
 
 type Props = {
   products: Product[]
@@ -24,6 +40,7 @@ export default function ProductGrid({ products, store }: Props) {
 
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
   const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<SortKey>('default')
 
   // Distinct categories, ordered by the owner's saved order.
   const categories = useMemo(() => {
@@ -109,7 +126,8 @@ export default function ProductGrid({ products, store }: Props) {
           {showNewRow && <ProductRow title="وصل حديثاً" products={newArrivals} cardProps={cardProps} />}
           <section>
             <SectionHeading title="كل المنتجات" />
-            <Grid products={products} layout={layout} cardProps={cardProps} />
+            {products.length >= SORT_MIN && <SortBar count={products.length} sort={sort} onSort={setSort} />}
+            <Grid products={sortProducts(products, sort)} layout={layout} cardProps={cardProps} />
           </section>
         </div>
       ) : visible.length === 0 ? (
@@ -118,7 +136,8 @@ export default function ProductGrid({ products, store }: Props) {
         </div>
       ) : (
         <div className="pb-32">
-          <Grid products={visible} layout={layout} cardProps={cardProps} />
+          {products.length >= SORT_MIN && <SortBar count={visible.length} sort={sort} onSort={setSort} />}
+          <Grid products={sortProducts(visible, sort)} layout={layout} cardProps={cardProps} />
         </div>
       )}
     </>
@@ -155,8 +174,32 @@ function ProductRow({ title, products, cardProps }: { title: string; products: P
 function SectionHeading({ title }: { title: string }) {
   return (
     <div className="flex items-center gap-3 mb-3">
-      <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">{title}</h2>
+      <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">{title}</h2>
       <div className="flex-1 h-px bg-gray-100" />
+    </div>
+  )
+}
+
+// Universal product-count + sort control (Shopify-style). Plain <select> so it
+// works natively on mobile.
+function SortBar({ count, sort, onSort }: { count: number; sort: SortKey; onSort: (s: SortKey) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3 mb-3">
+      <span className="text-sm text-gray-500 tabular-nums">{count.toLocaleString('ar-EG')} منتج</span>
+      <div className="relative">
+        <select
+          value={sort}
+          onChange={(e) => onSort(e.target.value as SortKey)}
+          aria-label="ترتيب المنتجات"
+          className="appearance-none bg-white border border-gray-200 rounded-full text-sm text-gray-700 ps-4 pe-9 py-1.5 focus:outline-none focus:ring-2 focus:ring-gray-200"
+        >
+          <option value="default">الأكثر صلة</option>
+          <option value="newest">الأحدث</option>
+          <option value="price-asc">السعر: الأقل أولاً</option>
+          <option value="price-desc">السعر: الأعلى أولاً</option>
+        </select>
+        <ChevronDown size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      </div>
     </div>
   )
 }
