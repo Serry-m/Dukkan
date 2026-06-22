@@ -47,7 +47,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
   }
 
   return (
-    <div className="max-w-lg lg:max-w-5xl mx-auto px-4 pb-28 pt-3">
+    <div className="max-w-lg lg:max-w-5xl mx-auto px-4 pb-32 pt-3">
       {/* Back */}
       <Link href={`/store/${slug}`} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-3">
         <ChevronRight size={16} /> رجوع للمتجر
@@ -115,7 +115,7 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
             </>
           )}
           {isLowStock(product) && !outOfStock && (
-            <span className="text-sm font-bold text-amber-600">متبقّي {product.stock_quantity!.toLocaleString('ar-EG')} فقط</span>
+            <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">متبقّي {product.stock_quantity!.toLocaleString('ar-EG')} فقط</span>
           )}
         </div>
         {product.description && (

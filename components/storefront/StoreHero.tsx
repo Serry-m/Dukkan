@@ -1,6 +1,5 @@
 import type { Store } from '@/types'
 import { Store as StoreIcon, MapPin, Clock } from 'lucide-react'
-import ShareStoreButton from './ShareStoreButton'
 import { StoreSocials } from './StoreSocials'
 
 export function StoreHero({ store, themeColor }: { store: Store; themeColor: string }) {
@@ -20,11 +19,11 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
       </div>
 
       {/* Profile */}
-      <div className="px-4 -mt-14 relative">
+      <div className="px-4 -mt-12 sm:-mt-14 relative">
         <div className="flex flex-col items-center text-center">
-          {/* Logo — double-bezel (machined) */}
-          <div className="rounded-[1.6rem] bg-white p-1.5 shadow-[var(--shadow-lift)] ring-1 ring-gray-900/[0.06]" style={{ width: 104, height: 104 }}>
-            <div className="w-full h-full rounded-[1.2rem] overflow-hidden flex items-center justify-center bg-gray-50">
+          {/* Logo — double-bezel (machined). Smaller on mobile so products surface sooner. */}
+          <div className="w-[84px] h-[84px] sm:w-[104px] sm:h-[104px] rounded-[1.4rem] sm:rounded-[1.6rem] bg-white p-1.5 shadow-[var(--shadow-lift)] ring-1 ring-gray-900/[0.06]">
+            <div className="w-full h-full rounded-[1.1rem] sm:rounded-[1.2rem] overflow-hidden flex items-center justify-center bg-gray-50">
               {store.logo_url ? (
                 <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
               ) : (
@@ -36,8 +35,8 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
           </div>
 
           {/* Name + status */}
-          <div className="mt-3 flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">{store.name}</h1>
+          <div className="mt-2.5 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">{store.name}</h1>
             <span
               className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${
                 store.is_open ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
@@ -49,12 +48,12 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
           </div>
 
           {store.description && (
-            <p className="text-sm text-gray-500 mt-2 max-w-sm leading-relaxed">{store.description}</p>
+            <p className="text-sm text-gray-500 mt-1.5 max-w-sm leading-relaxed">{store.description}</p>
           )}
 
           {/* Info chips */}
           {(store.location || store.working_hours) && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
               {store.location && (
                 <span className="inline-flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full">
                   <MapPin size={13} style={{ color: themeColor }} /> {store.location}
@@ -68,10 +67,10 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
             </div>
           )}
 
-          {/* Socials + share */}
-          <div className="flex items-center gap-3 mt-4">
+          {/* Socials (share lives in the sticky header — no duplicate here).
+              empty:hidden keeps free stores (no socials) from leaving a gap. */}
+          <div className="flex items-center justify-center gap-3 mt-3 empty:hidden">
             <StoreSocials store={store} />
-            <ShareStoreButton storeName={store.name} themeColor={themeColor} />
           </div>
         </div>
       </div>
