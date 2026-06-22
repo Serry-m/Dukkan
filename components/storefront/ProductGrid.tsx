@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { Product, Store } from '@/types'
 import type { ThemeConfig } from '@/lib/themes'
 import ProductCard from './ProductCard'
 import { orderCategories } from '@/lib/categories'
 import { getTheme } from '@/lib/themes'
 import { isNewProduct } from '@/lib/price'
+import { useCartStore } from '@/lib/cart-store'
 import { ShoppingBag, Search } from 'lucide-react'
 
 type Props = {
@@ -42,12 +43,25 @@ export default function ProductGrid({ products, store }: Props) {
     })
   }, [products, activeCategory, query])
 
+  // Keep the customer's persisted cart in sync with current prices/stock so a
+  // price edit always wins over a stale snapshot in their browser.
+  const syncProducts = useCartStore((s) => s.syncProducts)
+  useEffect(() => { syncProducts(products) }, [products, syncProducts])
+
   const featured = useMemo(() => products.filter((p) => p.featured), [products])
-  const newArrivals = useMemo(() => products.filter((p) => isNewProduct(p)), [products])
+  // New-arrivals excludes featured so the same item never sits in both rows.
+  const newArrivals = useMemo(() => products.filter((p) => isNewProduct(p) && !p.featured), [products])
+
+  // A curated row only earns its place when it's a genuine *highlight* — a
+  // minority of the catalog. If (nearly) everything is featured/new, the row
+  // would just duplicate the grid, so we hide it and show one clean grid.
+  const half = Math.max(2, Math.ceil(products.length / 2))
+  const showFeaturedRow = featured.length >= 2 && featured.length <= half
+  const showNewRow = newArrivals.length >= 2 && newArrivals.length <= half
 
   const showSearch = products.length >= 6
-  // Curated homepage (rows + full grid) only on the unfiltered view of a stocked store.
-  const showSections = activeCategory === ALL && !query.trim() && products.length >= 6
+  const showSections =
+    activeCategory === ALL && !query.trim() && products.length >= 6 && (showFeaturedRow || showNewRow)
 
   const cardProps = { slug: store.slug, themeColor, currency: store.currency, layout, theme }
 
@@ -91,8 +105,8 @@ export default function ProductGrid({ products, store }: Props) {
 
       {showSections ? (
         <div className="pb-32 space-y-8">
-          {featured.length > 0 && <ProductRow title="مميز" products={featured} cardProps={cardProps} />}
-          {newArrivals.length > 0 && <ProductRow title="وصل حديثاً" products={newArrivals} cardProps={cardProps} />}
+          {showFeaturedRow && <ProductRow title="مميز" products={featured} cardProps={cardProps} />}
+          {showNewRow && <ProductRow title="وصل حديثاً" products={newArrivals} cardProps={cardProps} />}
           <section>
             <SectionHeading title="كل المنتجات" />
             <Grid products={products} layout={layout} cardProps={cardProps} />

@@ -30,6 +30,7 @@ type CartStore = {
   removeItem: (lineId: string) => void
   updateQuantity: (lineId: string, quantity: number) => void
   clearCart: () => void
+  syncProducts: (products: Product[]) => void
   totalItems: () => number
   totalPrice: () => number
 }
@@ -81,6 +82,30 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => set({ items: [] }),
+
+      // Refresh cart snapshots against the current catalog so a price/stock/name
+      // change always wins over the stale copy persisted in the browser. Only
+      // updates items found in `products` (so a partial list never drops items).
+      syncProducts: (products) => {
+        const byId = new Map(products.map((p) => [p.id, p]))
+        set((state) => ({
+          items: state.items.map((i) => {
+            const cur = byId.get(i.product.id)
+            if (!cur) return i
+            return {
+              ...i,
+              product: {
+                ...i.product,
+                price: cur.price,
+                sale_price: cur.sale_price,
+                name: cur.name,
+                image_url: cur.image_url,
+                in_stock: cur.in_stock,
+              },
+            }
+          }),
+        }))
+      },
 
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 

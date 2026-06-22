@@ -128,19 +128,22 @@ export default function CartBar({ store }: { store: Store }) {
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetTrigger
-        className="fixed bottom-4 left-4 right-4 max-w-2xl mx-auto z-50 w-[calc(100%-2rem)] rounded-2xl px-5 py-3.5 flex items-center justify-between shadow-xl active:scale-[0.98] transition-all"
-        style={{ backgroundColor: themeColor, color: onTheme }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="bg-white/20 rounded-lg px-2 py-0.5 text-sm font-bold">{totalItems}</div>
-          <span className="text-sm font-medium">عرض السلة</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="font-bold">{totalPrice.toLocaleString('ar-EG')} {curr}</span>
-          <ShoppingCart size={18} />
-        </div>
-      </SheetTrigger>
+      {/* Floating cart bar — only when the cart actually has something in it. */}
+      {totalItems > 0 && (
+        <SheetTrigger
+          className="fixed bottom-4 left-4 right-4 max-w-2xl mx-auto z-50 w-[calc(100%-2rem)] rounded-2xl px-5 py-3.5 flex items-center justify-between shadow-xl active:scale-[0.98] transition-all"
+          style={{ backgroundColor: themeColor, color: onTheme }}
+        >
+          <div className="flex items-center gap-2">
+            <div className="bg-white/20 rounded-lg px-2 py-0.5 text-sm font-bold">{totalItems}</div>
+            <span className="text-sm font-medium">عرض السلة</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="font-bold">{totalPrice.toLocaleString('ar-EG')} {curr}</span>
+            <ShoppingCart size={18} />
+          </div>
+        </SheetTrigger>
+      )}
 
       <SheetContent side="bottom" className="rounded-t-2xl max-h-[88vh] overflow-auto px-4 pb-8 max-w-lg mx-auto" dir="rtl">
 

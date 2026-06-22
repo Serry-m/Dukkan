@@ -176,7 +176,13 @@ export default function ProductDetailView({ product, slug, themeColor, currency,
             {added ? <Check size={18} strokeWidth={2.2} /> : <ShoppingCart size={18} strokeWidth={1.8} />}
           </span>
           <span className="flex-1 text-center">
-            {added ? 'تمت الإضافة' : outOfStock ? 'غير متاح' : `أضف للسلة · ${(eff * qty).toLocaleString('ar-EG')} ${curr}`}
+            {added
+              ? 'تمت الإضافة'
+              : outOfStock
+                ? 'غير متاح'
+                : !allChosen && options.length > 0
+                  ? 'اختر الخيارات أولاً'
+                  : `أضف للسلة · ${(eff * qty).toLocaleString('ar-EG')} ${curr}`}
           </span>
           <span className="w-10" aria-hidden />
         </button>
