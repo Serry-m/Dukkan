@@ -48,7 +48,7 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
           </div>
 
           {/* Name + status */}
-          <div className="mt-2.5 flex items-center gap-2">
+          <div className="mt-2 flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">{store.name}</h1>
             <span
               className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${
@@ -61,12 +61,12 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
           </div>
 
           {store.description && (
-            <p className="text-sm text-gray-500 mt-1.5 max-w-sm leading-relaxed">{store.description}</p>
+            <p className="text-sm text-gray-500 mt-1 max-w-sm leading-relaxed">{store.description}</p>
           )}
 
           {/* Info chips */}
           {(store.location || store.working_hours) && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
               {store.location && (
                 <span className="inline-flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full">
                   <MapPin size={13} style={{ color: themeColor }} /> {store.location}
@@ -82,7 +82,7 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
 
           {/* Socials (share lives in the sticky header — no duplicate here).
               empty:hidden keeps free stores (no socials) from leaving a gap. */}
-          <div className="flex items-center justify-center gap-3 mt-3 empty:hidden">
+          <div className="flex items-center justify-center gap-3 mt-2.5 empty:hidden">
             <StoreSocials store={store} />
           </div>
         </div>

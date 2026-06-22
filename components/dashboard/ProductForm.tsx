@@ -285,8 +285,11 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
             {imageSlots.length === 0 ? (
               <p className="text-xs text-amber-600">📷 أضف صورة واضحة — المنتجات بصور تحصل على طلبات أكثر بكثير.</p>
             ) : (
-              <p className="text-xs text-gray-400">الصورة الأولى هي الرئيسية التي تظهر في قائمة المنتجات</p>
+              <p className="text-xs text-gray-400">الصورة الأولى هي الرئيسية التي تظهر في قائمة المنتجات.</p>
             )}
+            <p className="text-[11px] text-gray-400 leading-relaxed">
+              💡 لمظهر احترافي: صوّر كل منتجاتك بنفس الخلفية البسيطة والإضاءة — التناسق يجعل متجرك يبدو كعلامة تجارية.
+            </p>
             {!isPro && <ProUpsell feature="إضافة حتى ٣ صور للمنتج" />}
           </div>
 
@@ -393,10 +396,13 @@ export default function ProductForm({ storeId, product, categories = [], isPro =
           <div className="space-y-1">
             <Label className="flex items-center gap-2">منتج مميز {!isPro && <ProBadge />}</Label>
             {isPro ? (
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="w-4 h-4 accent-green-600" />
-                <span className="text-sm text-gray-600">يظهر أولاً في المتجر مع شارة «مميز»</span>
-              </label>
+              <>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="w-4 h-4 accent-green-600" />
+                  <span className="text-sm text-gray-600">يظهر أولاً في المتجر مع شارة «مميز»</span>
+                </label>
+                <p className="text-[11px] text-gray-400">ميّز أفضل منتجاتك فقط — تمييز كل المنتجات يُفقد الميزة قيمتها.</p>
+              </>
             ) : (
               <ProUpsell feature="تمييز المنتجات" />
             )}
