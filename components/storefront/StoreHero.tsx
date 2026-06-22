@@ -6,7 +6,7 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
   return (
     <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
       {/* Cover */}
-      <div className="relative h-40 sm:h-52 lg:h-60 w-full overflow-hidden sm:rounded-b-3xl">
+      <div className="relative h-32 sm:h-48 lg:h-56 w-full overflow-hidden sm:rounded-b-3xl">
         {store.banner_url ? (
           <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
         ) : (
@@ -32,10 +32,10 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
       </div>
 
       {/* Profile */}
-      <div className="px-4 -mt-12 sm:-mt-14 relative">
+      <div className="px-4 -mt-11 sm:-mt-14 relative">
         <div className="flex flex-col items-center text-center">
           {/* Logo — double-bezel (machined). Smaller on mobile so products surface sooner. */}
-          <div className="w-[84px] h-[84px] sm:w-[104px] sm:h-[104px] rounded-[1.4rem] sm:rounded-[1.6rem] bg-white p-1.5 shadow-[var(--shadow-lift)] ring-1 ring-gray-900/[0.06]">
+          <div className="w-[74px] h-[74px] sm:w-[104px] sm:h-[104px] rounded-[1.3rem] sm:rounded-[1.6rem] bg-white p-1.5 shadow-[var(--shadow-lift)] ring-1 ring-gray-900/[0.06]">
             <div className="w-full h-full rounded-[1.1rem] sm:rounded-[1.2rem] overflow-hidden flex items-center justify-center bg-gray-50">
               {store.logo_url ? (
                 <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />

@@ -28,6 +28,7 @@ export type Store = {
   category_order: string[]
   layout: 'grid' | 'list'
   font: 'cairo' | 'tajawal' | 'almarai'
+  font_override: string | null
   banner_url: string | null
   card_style: 'rounded' | 'sharp'
   // Payment methods the merchant accepts (display-only — Dukkan never processes money).

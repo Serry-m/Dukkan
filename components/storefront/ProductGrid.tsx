@@ -35,7 +35,11 @@ const ALL = '__all__'
 
 export default function ProductGrid({ products, store }: Props) {
   const themeColor = store.theme_color ?? '#16a34a'
-  const theme = getTheme(store.theme)
+  const baseTheme = getTheme(store.theme)
+  // Card-shape override (merchant customization): sharp = square corners.
+  const theme = store.card_style === 'sharp'
+    ? { ...baseTheme, cardRadius: 'rounded-none', innerRadius: 'rounded-none' }
+    : baseTheme
   const layout = store.layout ?? 'grid'
 
   const [activeCategory, setActiveCategory] = useState<string>(ALL)
@@ -110,8 +114,10 @@ export default function ProductGrid({ products, store }: Props) {
         </div>
       )}
 
-      {/* Category filter */}
-      {categories.length > 0 && (
+      {/* Category filter — hidden on the unfiltered home when collection tiles
+          are on (the tiles handle browsing); shown once filtered so the
+          customer can switch or clear. */}
+      {categories.length > 0 && !(store.show_collection_tiles && activeCategory === ALL && !query.trim()) && (
         <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1 scrollbar-none">
           <CategoryChip label="الكل" active={activeCategory === ALL} onClick={() => setActiveCategory(ALL)} />
           {categories.map((cat) => (

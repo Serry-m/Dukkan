@@ -62,6 +62,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [bannerCleared, setBannerCleared] = useState(false)
   const [layout, setLayout] = useState(store?.layout ?? 'grid')
   const [theme, setTheme] = useState(store?.theme ?? 'modern')
+  const [fontOverride, setFontOverride] = useState(store?.font_override ?? '')
+  const [cardStyle, setCardStyle] = useState(store?.card_style ?? 'rounded')
   const [about, setAbout] = useState(store?.about ?? '')
   const [location, setLocation] = useState(store?.location ?? '')
   const [workingHours, setWorkingHours] = useState(store?.working_hours ?? '')
@@ -177,6 +179,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
       promo_title: promoTitle.trim() || null,
       promo_subtitle: promoSubtitle.trim() || null,
       message_template: messageTemplate.trim() || null, layout, theme,
+      font_override: fontOverride || null,
+      card_style: cardStyle,
       about: about.trim() || null,
       location: location.trim() || null,
       working_hours: workingHours.trim() || null,
@@ -228,6 +232,8 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     messageTemplate !== (store.message_template ?? '') ||
     layout !== (store.layout ?? 'grid') ||
     theme !== (store.theme ?? 'modern') ||
+    fontOverride !== (store.font_override ?? '') ||
+    cardStyle !== (store.card_style ?? 'rounded') ||
     about !== (store.about ?? '') ||
     location !== (store.location ?? '') ||
     workingHours !== (store.working_hours ?? '') ||
@@ -390,7 +396,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5"
               />
               <div className="flex gap-2">
-                {['#16a34a','#2563eb','#9333ea','#dc2626','#ea580c','#0891b2'].map((color) => (
+                {['#16a34a','#2563eb','#7c3aed','#e11d48','#db2777','#a16207','#c2410c','#1f2937'].map((color) => (
                   <button
                     key={color}
                     type="button"
@@ -450,6 +456,40 @@ export default function StoreSettingsForm({ store, userId }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Card shape */}
+          <div className="space-y-1.5">
+            <Label>شكل البطاقات</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {([['rounded', 'دائري'], ['sharp', 'حاد']] as const).map(([val, label]) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => setCardStyle(val)}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${cardStyle === val ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 text-gray-600'}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Font */}
+          <div className="space-y-1.5">
+            <Label htmlFor="font">الخط</Label>
+            <select
+              id="font"
+              value={fontOverride}
+              onChange={(e) => setFontOverride(e.target.value)}
+              className="w-full h-9 border border-input rounded-lg px-3 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring/50"
+            >
+              <option value="">حسب القالب</option>
+              <option value="cairo">القاهرة</option>
+              <option value="tajawal">تجوال</option>
+              <option value="almarai">المراعي</option>
+              <option value="amiri">أميري (كلاسيكي)</option>
+            </select>
           </div>
         </CardContent>
       </Card>

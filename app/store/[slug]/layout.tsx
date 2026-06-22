@@ -84,7 +84,8 @@ export default async function StorefrontLayout({ children, params }: Props) {
     almarai: 'var(--font-almarai)',
     amiri: 'var(--font-amiri)',
   }
-  const fontFamily = fontVar[theme.font] ?? 'var(--font-cairo)'
+  // Merchant font override (customization) falls back to the theme's font.
+  const fontFamily = (store.font_override && fontVar[store.font_override]) || fontVar[theme.font] || 'var(--font-cairo)'
 
   return (
     <div
@@ -129,9 +130,12 @@ export default async function StorefrontLayout({ children, params }: Props) {
             </div>
           )}
 
-          {/* Store name (compact nav) */}
+          {/* Store name — only when there's no logo (the logo already carries
+              the brand, so this avoids repeating the name). */}
           <div className="min-w-0 flex-1">
-            <h1 className="font-bold text-gray-900 text-[15px] leading-tight truncate">{store.name}</h1>
+            {!store.logo_url && (
+              <h1 className="font-bold text-gray-900 text-[15px] leading-tight truncate">{store.name}</h1>
+            )}
           </div>
 
           <ShareStoreButton storeName={store.name} themeColor={themeColor} />
