@@ -41,6 +41,7 @@ export default function CartBar({ store }: { store: Store }) {
   const [notes, setNotes] = useState('')
   const [error, setError] = useState('')
   const [ordering, setOrdering] = useState(false)
+  const [orderUrl, setOrderUrl] = useState('')
   const [couponInput, setCouponInput] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; type: 'percent' | 'fixed'; value: number } | null>(null)
   const [couponMsg, setCouponMsg] = useState('')
@@ -111,6 +112,7 @@ export default function CartBar({ store }: { store: Store }) {
       discount: appliedCoupon && discount > 0 ? { code: appliedCoupon.code, amount: discount } : undefined,
     }
     const url = buildWhatsAppOrderUrl(store, items, customer)
+    setOrderUrl(url)
 
     try {
       await saveOrder(store, items, customer)
@@ -331,18 +333,28 @@ export default function CartBar({ store }: { store: Store }) {
 
         {/* ── Step 3: Order placed ── */}
         {step === 'done' && (
-          <div className="py-10 flex flex-col items-center text-center gap-4">
+          <div className="py-8 flex flex-col items-center text-center gap-3">
             <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: `${themeColor}15` }}>
               <CheckCircle size={36} style={{ color: themeColor }} />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">تم إرسال طلبك</h3>
-            <p className="text-sm text-gray-500 max-w-xs">
-              تم فتح واتساب مع تفاصيل طلبك. انتظر تأكيد البائع على الرقم المسجل.
+            <h3 className="text-xl font-bold text-gray-900">طلبك جاهز — خطوة أخيرة</h3>
+            <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
+              افتح واتساب واضغط <span className="font-bold text-gray-700">إرسال</span> لإتمام طلبك مع البائع. لن يصل الطلب قبل الإرسال.
             </p>
+            {orderUrl && (
+              <a
+                href={orderUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 flex items-center justify-center gap-2 w-full max-w-xs text-base font-bold px-6 py-3 rounded-xl transition-colors"
+                style={{ backgroundColor: themeColor, color: onTheme }}
+              >
+                <MessageCircle size={18} /> افتح واتساب وأرسل الطلب
+              </a>
+            )}
             <button
               onClick={() => { setStep('cart'); setOpen(false); setCustomerName(''); setCustomerPhone(''); setCustomerAddress(''); setNotes(''); setAppliedCoupon(null); setCouponInput(''); setCouponMsg('') }}
-              className="mt-2 text-sm font-medium px-6 py-2.5 rounded-xl transition-colors"
-              style={{ backgroundColor: themeColor, color: onTheme }}
+              className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors"
             >
               العودة للمتجر
             </button>

@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { ShoppingBag, Wallet, CheckCircle2, Clock } from 'lucide-react'
 import { formatPrice } from '@/lib/currency'
 import OrdersList from '@/components/dashboard/OrdersList'
+import OrderExport from '@/components/dashboard/OrderExport'
+import type { Order } from '@/types'
 
 const STATUS_FILTERS: { key: string; label: string }[] = [
   { key: 'all', label: 'الكل' },
@@ -43,9 +45,12 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="max-w-3xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">الطلبات</h1>
-        <p className="text-sm text-gray-500">{allOrders.length.toLocaleString('ar-EG')} طلب</p>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">الطلبات</h1>
+          <p className="text-sm text-gray-500">{allOrders.length.toLocaleString('ar-EG')} طلب</p>
+        </div>
+        {allOrders.length > 0 && <OrderExport orders={allOrders as Order[]} storeName={store?.name ?? 'store'} />}
       </div>
 
       {/* Revenue dashboard */}
