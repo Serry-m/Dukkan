@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Package, Store, LogOut, ShoppingBag, Crown, Shield, Ticket } from 'lucide-react'
+import { LayoutDashboard, Package, Store, LogOut, ShoppingBag, Crown, Shield, Ticket, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { BrandMark } from '@/components/BrandMark'
 
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/dashboard/store', label: 'إعدادات المتجر', icon: Store },
   { href: '/dashboard/products', label: 'المنتجات', icon: Package },
   { href: '/dashboard/orders', label: 'الطلبات', icon: ShoppingBag },
+  { href: '/dashboard/customers', label: 'العملاء', icon: Users },
   { href: '/dashboard/coupons', label: 'أكواد الخصم', icon: Ticket },
   { href: '/dashboard/upgrade', label: 'الترقية إلى Pro', icon: Crown },
 ]

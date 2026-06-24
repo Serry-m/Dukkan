@@ -5,14 +5,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, Store, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, Package, Store, ShoppingBag, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/dashboard', label: 'الرئيسية', icon: LayoutDashboard },
-  { href: '/dashboard/store', label: 'المتجر', icon: Store },
   { href: '/dashboard/products', label: 'المنتجات', icon: Package },
   { href: '/dashboard/orders', label: 'الطلبات', icon: ShoppingBag },
+  { href: '/dashboard/customers', label: 'العملاء', icon: Users },
+  { href: '/dashboard/store', label: 'المتجر', icon: Store },
 ]
 
 export default function MobileNav() {
