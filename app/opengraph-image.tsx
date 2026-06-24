@@ -25,22 +25,15 @@ export default async function Image() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          <div
-            style={{
-              width: 130,
-              height: 130,
-              background: '#ffffff',
-              borderRadius: 32,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#16a34a',
-              fontSize: 88,
-              fontWeight: 700,
-            }}
-          >
-            د
-          </div>
+          <svg width="130" height="130" viewBox="0 0 48 48">
+            <rect width="48" height="48" rx="11" fill="#ffffff" />
+            <rect x="11" y="20" width="26" height="23" rx="3" fill="#15803d" />
+            <path d="M20 43 V30 a4 4 0 0 1 8 0 V43 Z" fill="#ffffff" />
+            <path
+              d="M6 12 a3 3 0 0 1 3 -3 H39 a3 3 0 0 1 3 3 V18 q-3.6 4 -7.2 0 q-3.6 4 -7.2 0 q-3.6 4 -7.2 0 q-3.6 4 -7.2 0 q-3.6 4 -7.2 0 Z"
+              fill="#16a34a"
+            />
+          </svg>
           <div style={{ color: '#ffffff', fontSize: 104, fontWeight: 700 }}>دكان</div>
         </div>
         <div style={{ color: '#dcfce7', fontSize: 42, marginTop: 36 }}>
