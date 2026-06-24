@@ -22,6 +22,14 @@ type Props = {
   userId: string
 }
 
+const SETTINGS_TABS = [
+  { id: 'basic', label: 'الأساسية' },
+  { id: 'appearance', label: 'المظهر' },
+  { id: 'home', label: 'الصفحة الرئيسية' },
+  { id: 'selling', label: 'البيع' },
+  { id: 'identity', label: 'الهوية' },
+] as const
+
 const STORE_TYPES = [
   { id: 'fashion', label: 'أزياء وإكسسوار' },
   { id: 'food', label: 'طعام' },
@@ -72,6 +80,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   const [tiktok, setTiktok] = useState(store?.tiktok ?? '')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [tab, setTab] = useState<'basic' | 'appearance' | 'home' | 'selling' | 'identity'>('basic')
 
   function handleNameChange(value: string) {
     setName(value)
@@ -137,6 +146,12 @@ export default function StoreSettingsForm({ store, userId }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    // Required basic fields may live on a different tab — validate in JS.
+    if (!name.trim() || !slug.trim() || !whatsapp.trim()) {
+      setError('أكمل المعلومات الأساسية: الاسم والرقم والرابط')
+      setTab('basic')
+      return
+    }
     setLoading(true)
 
     const supabase = createClient()
@@ -247,7 +262,24 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>}
 
+      {/* Tab navigation — keeps the settings short instead of one long scroll */}
+      <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+        {SETTINGS_TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              tab === t.id ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
       {/* ── Section 1: Basic info ── */}
+      {tab === 'basic' && (
       <Card>
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">المعلومات الأساسية</h2>
@@ -292,8 +324,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* ── Section 2: Appearance ── */}
+      {tab === 'appearance' && (
       <Card>
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">مظهر المتجر</h2>
@@ -493,8 +527,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* ── Home sections (merchant-controlled storefront blocks) ── */}
+      {tab === 'home' && (
       <Card>
         <CardContent className="pt-6 space-y-5">
           <div>
@@ -596,8 +632,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* ── Section 3: Selling & delivery ── */}
+      {tab === 'selling' && (
       <Card>
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">البيع والتوصيل</h2>
@@ -682,8 +720,10 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* ── Section 4: Identity & contact ── */}
+      {tab === 'identity' && (
       <Card>
         <CardContent className="pt-6 space-y-5">
           <h2 className="text-sm font-bold text-gray-900">هوية المتجر والتواصل</h2>
@@ -726,6 +766,7 @@ export default function StoreSettingsForm({ store, userId }: Props) {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* Sticky save bar — stays reachable on every screen size so the user
           never has to scroll the long form to save. */}
