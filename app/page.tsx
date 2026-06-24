@@ -17,6 +17,7 @@ import {
   Check,
   Wallet,
   LayoutGrid,
+  Gem,
 } from 'lucide-react'
 
 const FREE_FEATURES = [
@@ -50,7 +51,7 @@ export default function HomePage() {
           <div className="absolute top-10 -right-24 w-[360px] h-[360px] bg-emerald-50 rounded-full opacity-60 blur-3xl aurora-2" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-14 sm:pt-20 pb-16 sm:pb-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-14 sm:pt-20 pb-16 sm:pb-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-14 items-center">
           {/* Text */}
           <div className="order-2 lg:order-1 text-center lg:text-right">
             <Stagger>
@@ -85,7 +86,7 @@ export default function HomePage() {
           </div>
 
           {/* Storefront preview */}
-          <SlideIn from="left" delay={0.15} className="order-1 lg:order-2 flex justify-center lg:justify-start">
+          <SlideIn from="left" delay={0.15} className="order-1 lg:order-2 flex justify-center">
             <div className="relative w-60 sm:w-72">
               <div className="bg-gray-900 rounded-[2.6rem] p-2 shadow-2xl shadow-gray-300/60 transition-transform duration-500 hover:-translate-y-1">
                 <div className="bg-[#faf7f2] rounded-[2.1rem] overflow-hidden">
@@ -107,7 +108,8 @@ export default function HomePage() {
                       { n: 'حلق أنيق', p: '٣٠٠' },
                     ].map((it) => (
                       <div key={it.n} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                        <div className="aspect-[4/5] bg-gradient-to-br from-gray-50 to-gray-100 relative">
+                        <div className="aspect-[4/5] bg-gradient-to-br from-gray-50 to-gray-100 relative flex items-center justify-center">
+                          <Gem size={20} className="text-gray-300" strokeWidth={1.5} />
                           <span className="absolute bottom-1.5 left-1.5 w-6 h-6 rounded-full bg-white shadow flex items-center justify-center text-green-600 text-sm font-bold">+</span>
                         </div>
                         <div className="p-1.5">
