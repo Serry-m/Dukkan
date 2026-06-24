@@ -83,7 +83,10 @@ export function CountUp({
 }
 
 // ── Seamless category marquee strip ──
-const CATEGORIES = ['إكسسوارات', 'ملابس', 'أكل بيتي', 'إلكترونيات', 'هدايا', 'مستحضرات تجميل', 'أحذية', 'ألعاب أطفال']
+const CATEGORIES = ['إكسسوارات', 'ملابس', 'أكل بيتي', 'إلكترونيات', 'هدايا', 'مستحضرات تجميل', 'أحذية', 'ألعاب أطفال', 'عطور', 'منتجات يدوية']
+// Each animated half = the list twice, so even on very wide / zoomed-out screens one half
+// exceeds the viewport and the -50% loop never reveals empty space behind the track.
+const HALF = [...CATEGORIES, ...CATEGORIES]
 
 export function CategoryMarquee() {
   return (
@@ -91,11 +94,12 @@ export function CategoryMarquee() {
       {/* edge fades */}
       <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10" />
-      <div className="flex w-max animate-marquee gap-3">
-        {[...CATEGORIES, ...CATEGORIES].map((c, i) => (
+      {/* Per-pill right margin (not flex gap) so spacing across the loop seam matches the internal spacing. */}
+      <div className="flex w-max animate-marquee">
+        {[...HALF, ...HALF].map((c, i) => (
           <span
             key={i}
-            className="flex-shrink-0 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-600 shadow-[var(--shadow-soft)]"
+            className="flex-shrink-0 mr-3 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-600 shadow-[var(--shadow-soft)]"
           >
             {c}
           </span>
