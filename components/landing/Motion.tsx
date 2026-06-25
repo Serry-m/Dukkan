@@ -4,7 +4,7 @@
 // Each honours prefers-reduced-motion and is an isolated client leaf.
 
 import { motion, useReducedMotion } from 'motion/react'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
@@ -14,16 +14,19 @@ export function Reveal({
   delay = 0,
   y = 24,
   className,
+  style,
 }: {
   children: ReactNode
   delay?: number
   y?: number
   className?: string
+  style?: CSSProperties
 }) {
   const reduce = useReducedMotion()
   return (
     <motion.div
       className={className}
+      style={style}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
@@ -40,17 +43,20 @@ export function SlideIn({
   from = 'left',
   delay = 0,
   className,
+  style,
 }: {
   children: ReactNode
   from?: 'left' | 'right'
   delay?: number
   className?: string
+  style?: CSSProperties
 }) {
   const reduce = useReducedMotion()
   const x = from === 'left' ? -40 : 40
   return (
     <motion.div
       className={className}
+      style={style}
       initial={reduce ? false : { opacity: 0, x }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -77,11 +83,12 @@ export function Float({ children, className }: { children: ReactNode; className?
 }
 
 // Staggered container — children with `StaggerItem` animate in sequence.
-export function Stagger({ children, className }: { children: ReactNode; className?: string }) {
+export function Stagger({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
   const reduce = useReducedMotion()
   return (
     <motion.div
       className={className}
+      style={style}
       initial={reduce ? false : 'hidden'}
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
@@ -92,10 +99,11 @@ export function Stagger({ children, className }: { children: ReactNode; classNam
   )
 }
 
-export function StaggerItem({ children, className }: { children: ReactNode; className?: string }) {
+export function StaggerItem({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
   return (
     <motion.div
       className={className}
+      style={style}
       variants={{
         hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },

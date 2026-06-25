@@ -153,6 +153,13 @@
 
 /* ── Landing motion ── */
 
+/* Smooth in-page anchor scrolling for the landing nav links. */
+html { scroll-behavior: smooth; }
+
+/* Floating WhatsApp-order notification on the hero phone. */
+@keyframes dk-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.dk-float { animation: dk-float 4s ease-in-out infinite; }
+
 /* Horizontal marquee (category strip). Track is duplicated; -50% loops seamlessly. */
 @keyframes dukkan-marquee {
   from { transform: translateX(0); }
@@ -185,6 +192,7 @@
 .btn-shimmer:hover::after { transform: translateX(150%); transition: transform 0.85s ease; }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee, .aurora-1, .aurora-2 { animation: none; }
+  html { scroll-behavior: auto; }
+  .animate-marquee, .aurora-1, .aurora-2, .dk-float { animation: none; }
   .btn-shimmer::after { display: none; }
 }

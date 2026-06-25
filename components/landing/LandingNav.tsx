@@ -4,46 +4,55 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useScroll, useMotionValueEvent } from 'motion/react'
 import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
 import { BrandMark } from '@/components/BrandMark'
 
-// Sticky nav that shrinks + gains a frosted backdrop once you scroll past the hero.
+const LINKS = [
+  { href: '#how', label: 'إزاي بتشتغل' },
+  { href: '#features', label: 'المميزات' },
+  { href: '#pricing', label: 'الأسعار' },
+]
+
+// Sticky, warm frosted nav. Gains a touch more presence once you scroll past the hero.
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false)
   const { scrollY } = useScroll()
   useMotionValueEvent(scrollY, 'change', (y) => setScrolled(y > 40))
 
   return (
-    <nav
+    <header
       className={cn(
-        'sticky top-0 z-50 transition-all duration-300',
+        'sticky top-0 z-50 transition-all duration-300 backdrop-blur-md',
         scrolled
-          ? 'bg-white/80 backdrop-blur-md border-b border-gray-200/70 shadow-[0_4px_20px_-8px_rgba(16,24,40,0.12)]'
-          : 'bg-white/40 backdrop-blur-sm border-b border-transparent'
+          ? 'bg-[#FBFAF7]/85 border-b border-[#ECE7DC] shadow-[0_4px_20px_-12px_rgba(29,27,22,0.18)]'
+          : 'bg-[#FBFAF7]/70 border-b border-transparent'
       )}
     >
-      <div
-        className={cn(
-          'max-w-5xl mx-auto px-5 flex items-center justify-between gap-4 transition-all duration-300',
-          scrolled ? 'h-14' : 'h-16'
-        )}
-      >
+      <div className="max-w-[1140px] mx-auto px-[clamp(18px,5vw,40px)] h-16 flex items-center justify-between gap-4">
+        <a href="#top" className="flex items-center gap-2.5 text-[#1d1b16]">
+          <BrandMark size={38} className="rounded-xl" />
+          <span className="font-extrabold text-[22px] tracking-tight">دكان</span>
+        </a>
+
+        <nav className="hidden md:flex items-center gap-8 font-semibold text-[15px]">
+          {LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="text-[#74716a] hover:text-[#1d1b16] transition-colors">
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
         <div className="flex items-center gap-2">
-          <BrandMark size={scrolled ? 28 : 32} className="transition-all duration-300" />
-          <span className="font-bold text-gray-900 text-[15px]">دكان</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/login" className="text-sm text-gray-500 hover:text-gray-800 px-3 py-1.5 transition-colors font-medium hidden sm:block">
-            تسجيل الدخول
+          <Link href="/login" className="hidden sm:block text-[15px] font-semibold text-[#74716a] hover:text-[#1d1b16] px-3 py-1.5 transition-colors">
+            دخول
           </Link>
           <Link
             href="/signup"
-            className={cn(buttonVariants({ size: 'sm' }), 'bg-green-600 hover:bg-green-700 text-white font-semibold px-4 h-9 text-sm')}
+            className="bg-[#16a34a] hover:bg-[#15803d] hover:-translate-y-0.5 text-white font-bold text-[15px] px-5 py-2.5 rounded-xl shadow-[0_5px_15px_rgba(21,128,61,0.26)] transition-all"
           >
             ابدأ مجاناً
           </Link>
         </div>
       </div>
-    </nav>
+    </header>
   )
 }
