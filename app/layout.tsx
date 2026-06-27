@@ -47,7 +47,7 @@ export const viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" className={`${cairo.variable} ${tajawal.variable} ${almarai.variable} ${amiri.variable} h-full antialiased`}>
-      <body className={`min-h-full flex flex-col font-[var(--font-cairo)]`}>
+      <body className={`min-h-full flex flex-col font-sans`}>
         {children}
         <Toaster position="top-center" dir="rtl" />
       </body>

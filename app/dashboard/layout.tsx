@@ -37,7 +37,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBFAF7] text-[#1d1b16] font-[var(--font-cairo)]" dir="rtl">
+    <div className="flex flex-col min-h-screen bg-[#FBFAF7] text-[#1d1b16] font-sans" dir="rtl">
       {/* Top bar */}
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-5 h-[62px] flex-shrink-0 border-b border-[#ECE7DC] bg-[#FBFAF7]/90 backdrop-blur-md">
         <div className="flex items-center gap-2.5 min-w-0">
