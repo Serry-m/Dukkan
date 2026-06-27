@@ -4,6 +4,7 @@ import { ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { isAdminEmail } from '@/lib/admin'
 import { isPro } from '@/lib/plan'
+import { BrandMark } from '@/components/BrandMark'
 import DashboardSidebar from '@/components/dashboard/Sidebar'
 import MobileNav from '@/components/dashboard/MobileNav'
 
@@ -18,31 +19,45 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Lightweight store fetch for the top bar (identity + plan state).
   const { data: store } = await supabase
     .from('stores')
-    .select('name, slug, plan, plan_expires_at')
+    .select('id, name, slug, plan, plan_expires_at, store_type')
     .eq('owner_id', user.id)
     .single()
 
   const pro = store ? isPro(store) : false
 
+  // Pending-orders count drives the badge on the "الطلبات" nav item.
+  let pendingCount = 0
+  if (store?.id) {
+    const { count } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('store_id', store.id)
+      .or('status.eq.pending,status.is.null')
+    pendingCount = count ?? 0
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#FBFAF7] text-[#1d1b16]" dir="rtl">
+    <div className="flex flex-col min-h-screen bg-[#FBFAF7] text-[#1d1b16] font-[var(--font-cairo)]" dir="rtl">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-5 h-[60px] flex-shrink-0 border-b border-[#ECE7DC] bg-[#FBFAF7]/90 backdrop-blur-md">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 sm:px-5 h-[62px] flex-shrink-0 border-b border-[#ECE7DC] bg-[#FBFAF7]/90 backdrop-blur-md">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-[10px] bg-[#16a34a] text-white font-extrabold text-lg flex items-center justify-center flex-shrink-0 shadow-[0_3px_8px_rgba(22,163,74,0.25)]">
-            {store?.name?.trim().charAt(0) ?? 'د'}
-          </div>
-          <div className="min-w-0 flex items-center gap-2">
-            <span className="font-extrabold text-[15.5px] truncate">{store?.name ?? 'دكان'}</span>
-            <span
-              className={
-                pro
-                  ? 'flex-shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#D8F0DE] text-[#15803d]'
-                  : 'flex-shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#F4F0E8] text-[#74716a] border border-[#ECE7DC]'
-              }
-            >
-              {pro ? 'برو' : 'مجاني'}
-            </span>
+          <BrandMark size={36} className="rounded-[10px] flex-shrink-0 shadow-[0_3px_8px_rgba(22,163,74,0.22)]" />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-[15.5px] truncate">{store?.name ?? 'دكان'}</span>
+              <span
+                className={
+                  pro
+                    ? 'flex-shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#D8F0DE] text-[#15803d]'
+                    : 'flex-shrink-0 text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#F4F0E8] text-[#74716a] border border-[#ECE7DC]'
+                }
+              >
+                {pro ? 'برو' : 'مجاني'}
+              </span>
+            </div>
+            {store?.store_type && (
+              <span className="block text-[11.5px] text-[#9a9488] font-medium truncate leading-tight">{store.store_type}</span>
+            )}
           </div>
         </div>
 
@@ -71,7 +86,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Content row */}
       <div className="flex flex-1 min-h-0">
         <div className="hidden lg:block">
-          <DashboardSidebar userEmail={user.email ?? ''} isAdmin={admin} pro={pro} />
+          <DashboardSidebar userEmail={user.email ?? ''} isAdmin={admin} pro={pro} pendingCount={pendingCount} />
         </div>
 
         <main className="flex-1 min-w-0 p-4 lg:p-8 overflow-auto pb-20 lg:pb-8">
@@ -79,7 +94,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </main>
       </div>
 
-      <MobileNav />
+      <MobileNav pendingCount={pendingCount} />
     </div>
   )
 }

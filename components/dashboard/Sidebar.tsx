@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import { LayoutDashboard, Package, Store, LogOut, ShoppingBag, Ticket, Users, Shield } from 'lucide-react'
-import { BrandMark } from '@/components/BrandMark'
 
 const navItems = [
   { href: '/dashboard', label: 'الرئيسية', icon: LayoutDashboard },
@@ -20,10 +19,12 @@ export default function DashboardSidebar({
   userEmail,
   isAdmin,
   pro,
+  pendingCount = 0,
 }: {
   userEmail: string
   isAdmin?: boolean
   pro?: boolean
+  pendingCount?: number
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -37,18 +38,13 @@ export default function DashboardSidebar({
 
   return (
     <aside className="w-64 bg-[#FBFAF7] border-l border-[#ECE7DC] flex flex-col">
-      {/* Brand */}
-      <div className="px-5 py-5 flex items-center gap-2.5">
-        <BrandMark size={32} className="rounded-[10px]" />
-        <span className="font-extrabold text-[#1d1b16] text-lg">دكان</span>
-      </div>
-
       {/* Navigation */}
-      <nav className="flex-1 px-3.5 overflow-y-auto">
-        <p className="text-[11px] font-bold text-[#a8a193] tracking-wider px-3 pt-1 pb-2.5">القائمة</p>
+      <nav className="flex-1 px-3.5 pt-5 overflow-y-auto">
+        <p className="text-[11px] font-bold text-[#a8a193] tracking-wider px-3 pb-2.5">القائمة</p>
         <div className="space-y-1">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href
+            const showBadge = href === '/dashboard/orders' && pendingCount > 0
             return (
               <Link
                 key={href}
@@ -62,6 +58,16 @@ export default function DashboardSidebar({
               >
                 <Icon size={19} strokeWidth={active ? 2.2 : 1.9} />
                 {label}
+                {showBadge && (
+                  <span
+                    className={cn(
+                      'mr-auto text-[11px] font-extrabold px-2 py-0.5 rounded-full',
+                      active ? 'bg-white/20 text-white' : 'bg-[#FBEBC8] text-[#92610A]'
+                    )}
+                  >
+                    {pendingCount.toLocaleString('ar-EG')}
+                  </span>
+                )}
               </Link>
             )
           })}
