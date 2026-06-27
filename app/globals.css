@@ -160,6 +160,12 @@ html { scroll-behavior: smooth; }
 @keyframes dk-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 .dk-float { animation: dk-float 4s ease-in-out infinite; }
 
+/* Dashboard side-drawer (orders / customers / coupons review panels). */
+@keyframes dk-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dk-drawer-in { from { transform: translateX(-24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.dk-fade-in { animation: dk-fade-in .18s ease; }
+.dk-drawer-in { animation: dk-drawer-in .22s cubic-bezier(.2,.7,.3,1); }
+
 /* Horizontal marquee (category strip). Track is duplicated; -50% loops seamlessly. */
 @keyframes dukkan-marquee {
   from { transform: translateX(0); }
@@ -193,6 +199,6 @@ html { scroll-behavior: smooth; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .animate-marquee, .aurora-1, .aurora-2, .dk-float { animation: none; }
+  .animate-marquee, .aurora-1, .aurora-2, .dk-float, .dk-fade-in, .dk-drawer-in { animation: none; }
   .btn-shimmer::after { display: none; }
 }
