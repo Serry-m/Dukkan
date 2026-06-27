@@ -1,8 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import OrdersView from '@/components/dashboard/OrdersView'
-import type { Order } from '@/types'
+import type { Order, OrderStatus } from '@/types'
 
-export default async function OrdersPage() {
+export default async function OrdersPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  const { status } = await searchParams
+  const initialFilter = (['pending', 'confirmed', 'delivered'] as const).includes(status as OrderStatus) ? (status as OrderStatus) : 'all'
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -23,6 +26,7 @@ export default async function OrdersPage() {
       orders={(orders ?? []) as Order[]}
       storeName={store?.name ?? ''}
       currency={store?.currency ?? 'EGP'}
+      initialFilter={initialFilter}
     />
   )
 }

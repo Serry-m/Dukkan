@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Search, MessageCircle, X, MapPin, Calendar, ChevronDown, Users, Ticket } from 'lucide-react'
 import CustomerExport from '@/components/dashboard/CustomerExport'
 import { normalizeEgyptianNumber } from '@/lib/whatsapp'
-import { formatPrice } from '@/lib/currency'
 import type { OrderItem, OrderStatus } from '@/types'
 import type { CustomerRecord } from '@/app/dashboard/customers/page'
 
@@ -39,7 +38,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'all', label: 'الكل' }, { key: 'repeat', label: 'متكرر' }, { key: 'new', label: 'جديد' }, { key: 'vip', label: 'VIP' },
 ]
 
-export default function CustomersView({ customers, storeName, currency }: { customers: CustomerRecord[]; storeName: string; currency: string }) {
+export default function CustomersView({ customers, storeName }: { customers: CustomerRecord[]; storeName: string }) {
   const [filter, setFilter] = useState<Tab>('all')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<'spent' | 'orders' | 'recent' | 'name'>('spent')

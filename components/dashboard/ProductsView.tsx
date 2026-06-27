@@ -36,8 +36,8 @@ function isLow(p: Product) {
 }
 
 export default function ProductsView({
-  products, currency, sold, storeName, storeSlug, storeId, categories,
-}: { products: Product[]; currency: string; sold: Record<string, number>; storeName: string; storeSlug: string; storeId: string; categories: string[] }) {
+  products, sold, storeName, storeSlug, storeId, categories,
+}: { products: Product[]; sold: Record<string, number>; storeName: string; storeSlug: string; storeId: string; categories: string[] }) {
   const router = useRouter()
   const [filter, setFilter] = useState<Tab>('all')
   const [query, setQuery] = useState('')

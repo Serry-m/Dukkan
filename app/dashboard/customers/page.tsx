@@ -59,5 +59,5 @@ export default async function CustomersPage() {
   const customers = [...map.values()]
   customers.forEach((c) => { c.vip = c.ordersCount >= 5 || c.total >= 3000 })
 
-  return <CustomersView customers={customers} storeName={store?.name ?? ''} currency={store?.currency ?? 'EGP'} />
+  return <CustomersView customers={customers} storeName={store?.name ?? ''} />
 }

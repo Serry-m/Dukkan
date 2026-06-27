@@ -43,7 +43,6 @@ export default async function ProductsPage() {
   return (
     <ProductsView
       products={(products ?? []) as Product[]}
-      currency={store.currency}
       sold={sold}
       storeName={store.name}
       storeSlug={store.slug}

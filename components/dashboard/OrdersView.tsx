@@ -41,9 +41,9 @@ function relTime(iso: string): string {
   return new Date(iso).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' })
 }
 
-export default function OrdersView({ orders, storeName, currency }: { orders: Order[]; storeName: string; currency: string }) {
+export default function OrdersView({ orders, storeName, currency, initialFilter = 'all' }: { orders: Order[]; storeName: string; currency: string; initialFilter?: 'all' | OrderStatus }) {
   const router = useRouter()
-  const [filter, setFilter] = useState<'all' | OrderStatus>('all')
+  const [filter, setFilter] = useState<'all' | OrderStatus>(initialFilter)
   const [query, setQuery] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
   const [overrides, setOverrides] = useState<Record<string, OrderStatus>>({})
