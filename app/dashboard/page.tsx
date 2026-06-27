@@ -6,6 +6,7 @@ import {
   ChevronLeft, Check, Crown, TrendingUp,
 } from 'lucide-react'
 import ShareButton from '@/components/dashboard/ShareButton'
+import ShareStoreButton from '@/components/dashboard/ShareStoreButton'
 import { isPro } from '@/lib/plan'
 import { normalizeEgyptianNumber } from '@/lib/whatsapp'
 import type { OrderItem } from '@/types'
@@ -160,6 +161,7 @@ export default async function DashboardPage() {
           <Link href="/dashboard/products/new" className="inline-flex items-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-[0_5px_14px_rgba(22,163,74,0.22)] transition-colors">
             <Plus size={17} /> أضف منتج
           </Link>
+          <ShareStoreButton slug={store.slug} storeName={store.name} />
         </div>
       </div>
 
