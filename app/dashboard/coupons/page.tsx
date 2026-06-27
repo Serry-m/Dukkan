@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { isPro } from '@/lib/plan'
 import { ProUpsell } from '@/components/dashboard/ProLock'
-import CouponsManager from '@/components/dashboard/CouponsManager'
+import CouponsView from '@/components/dashboard/CouponsView'
 import type { Coupon } from '@/types'
 
 export default async function CouponsPage() {
@@ -14,35 +14,27 @@ export default async function CouponsPage() {
     .eq('owner_id', user!.id)
     .single()
 
+  if (!store) return <p className="max-w-[1180px] mx-auto text-sm text-[#9a9488]">أنشئ متجرك أولاً.</p>
+
   const pro = isPro(store)
-
-  let coupons: Coupon[] = []
-  const usageByCode: Record<string, number> = {}
-  if (store && pro) {
-    const { data } = await supabase.from('coupons').select('*').eq('store_id', store.id).order('created_at', { ascending: false })
-    coupons = (data ?? []) as Coupon[]
-
-    // Tally how many orders used each code.
-    const { data: usedCodes } = await supabase.from('orders').select('coupon_code').eq('store_id', store.id)
-    for (const o of usedCodes ?? []) {
-      if (o.coupon_code) usageByCode[o.coupon_code] = (usageByCode[o.coupon_code] ?? 0) + 1
-    }
+  if (!pro) {
+    return (
+      <div className="max-w-[1180px] mx-auto">
+        <div className="mb-6">
+          <h1 className="text-[26px] font-extrabold tracking-tight">كوبونات</h1>
+          <p className="text-[#74716a] text-sm mt-1">أنشئ أكواداً يستخدمها عملاؤك عند الطلب</p>
+        </div>
+        <ProUpsell feature="أكواد الخصم" />
+      </div>
+    )
   }
 
-  return (
-    <div className="max-w-3xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">أكواد الخصم</h1>
-        <p className="text-sm text-gray-500">أنشئ أكواداً يستخدمها عملاؤك عند الطلب</p>
-      </div>
+  const { data } = await supabase.from('coupons').select('*').eq('store_id', store.id).order('created_at', { ascending: false })
+  const coupons = (data ?? []) as Coupon[]
 
-      {!pro ? (
-        <ProUpsell feature="أكواد الخصم" />
-      ) : store ? (
-        <CouponsManager storeId={store.id} currency={store.currency} coupons={coupons} usage={usageByCode} />
-      ) : (
-        <p className="text-sm text-gray-400">أنشئ متجرك أولاً.</p>
-      )}
-    </div>
-  )
+  const { data: usedCodes } = await supabase.from('orders').select('coupon_code').eq('store_id', store.id)
+  const usage: Record<string, number> = {}
+  for (const o of usedCodes ?? []) { if (o.coupon_code) usage[o.coupon_code] = (usage[o.coupon_code] ?? 0) + 1 }
+
+  return <CouponsView storeId={store.id} currency={store.currency} coupons={coupons} usage={usage} />
 }

@@ -53,6 +53,8 @@ export type Coupon = {
   type: 'percent' | 'fixed'
   value: number
   active: boolean
+  expires_at: string | null   // optional expiry date; null = never expires
+  usage_limit: number | null  // optional max redemptions; null = unlimited
   created_at: string
 }
 
