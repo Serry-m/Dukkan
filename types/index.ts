@@ -96,6 +96,7 @@ export type Product = {
   images: string[]           // up to 3 photos shown in the detail carousel
   in_stock: boolean
   stock_quantity: number | null  // optional inventory count; null = use in_stock toggle only
+  hidden: boolean                // hidden from the public storefront (still in the dashboard)
   sort_order: number
   featured: boolean
   category: string | null

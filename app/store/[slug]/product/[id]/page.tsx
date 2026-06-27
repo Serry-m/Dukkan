@@ -49,7 +49,7 @@ export default async function ProductPage({ params }: Props) {
     .eq('id', id)
     .eq('store_id', store.id)
     .single()
-  if (!product) notFound()
+  if (!product || product.hidden) notFound()
 
   // Related: other products from the store, same category first.
   const { data: others } = await supabase
@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: Props) {
     .order('sort_order', { ascending: true })
     .limit(20)
 
-  const all = (others ?? []) as Product[]
+  const all = ((others ?? []) as Product[]).filter((p) => !p.hidden)
   const sameCat = product.category ? all.filter((p) => p.category === product.category) : []
   const relatedRaw = [...sameCat, ...all.filter((p) => !sameCat.includes(p))].slice(0, 8)
 

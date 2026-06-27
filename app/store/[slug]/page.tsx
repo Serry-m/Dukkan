@@ -64,7 +64,7 @@ export default async function StorefrontPage({ params }: Props) {
           </div>
         )}
 
-        <ProductGrid products={limitProducts(products ?? [], store)} store={store} />
+        <ProductGrid products={limitProducts((products ?? []).filter((p) => !p.hidden), store)} store={store} />
       </main>
     </>
   )
