@@ -15,9 +15,11 @@ export default async function StoreSettingsPage() {
     .single()
 
   return (
-    <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">إعدادات المتجر</h1>
-      <p className="text-gray-500 text-sm mb-6">اسم المتجر وواتساب والرابط المميز</p>
+    <div className="max-w-[1120px] mx-auto">
+      <div className="mb-5">
+        <h1 className="text-[26px] font-extrabold tracking-tight text-[#1d1b16]">إعدادات المتجر</h1>
+        <p className="text-[#74716a] text-sm mt-1">عدّل بيانات متجرك وطرق الدفع والتوصيل والمظهر.</p>
+      </div>
       <StoreSettingsForm store={store} userId={user!.id} />
     </div>
   )
