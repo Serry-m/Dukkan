@@ -53,9 +53,11 @@ export default async function NewProductPage() {
   const categories = Array.from(new Set((cats ?? []).map((c) => c.category).filter(Boolean))) as string[]
 
   return (
-    <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">إضافة منتج جديد</h1>
-      <p className="text-gray-500 text-sm mb-6">أضف منتجاً لمتجرك</p>
+    <div className="max-w-[1000px] mx-auto">
+      <div className="mb-5">
+        <h1 className="text-[26px] font-extrabold tracking-tight text-[#1d1b16]">إضافة منتج جديد</h1>
+        <p className="text-[#74716a] text-sm mt-1">أضف منتجاً لمتجرك</p>
+      </div>
       <ProductForm storeId={store.id} product={null} categories={categories} isPro={isPro(store)} />
     </div>
   )

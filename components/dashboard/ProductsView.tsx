@@ -5,13 +5,14 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Search, ChevronDown, Plus, Pencil, MoreVertical, Trash2, Star, Package } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, Plus, Pencil, MoreVertical, Trash2, Star, Package, ArrowDownUp, Tags, X, Check } from 'lucide-react'
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import ShareStoreButton from '@/components/dashboard/ShareStoreButton'
+import CategoriesManager from '@/components/dashboard/CategoriesManager'
 import { effectivePrice, isOnSale } from '@/lib/price'
 import type { Product } from '@/types'
 
@@ -35,8 +36,8 @@ function isLow(p: Product) {
 }
 
 export default function ProductsView({
-  products, currency, sold, storeName, storeSlug,
-}: { products: Product[]; currency: string; sold: Record<string, number>; storeName: string; storeSlug: string }) {
+  products, currency, sold, storeName, storeSlug, storeId, categories,
+}: { products: Product[]; currency: string; sold: Record<string, number>; storeName: string; storeSlug: string; storeId: string; categories: string[] }) {
   const router = useRouter()
   const [filter, setFilter] = useState<Tab>('all')
   const [query, setQuery] = useState('')
@@ -44,6 +45,26 @@ export default function ProductsView({
   const [patch, setPatch] = useState<Record<string, Patch>>({})
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
   const [busy, setBusy] = useState(false)
+  const [catsOpen, setCatsOpen] = useState(false)
+  const [arrangeMode, setArrangeMode] = useState(false)
+  const [arrangeList, setArrangeList] = useState<Product[]>([])
+
+  function enterArrange() { setArrangeList([...products]); setArrangeMode(true) }
+  async function moveItem(i: number, dir: -1 | 1) {
+    const j = i + dir
+    if (j < 0 || j >= arrangeList.length) return
+    const A = arrangeList[i], B = arrangeList[j]
+    setArrangeList((prev) => {
+      const next = [...prev]
+      next[i] = { ...B, sort_order: A.sort_order }
+      next[j] = { ...A, sort_order: B.sort_order }
+      return next
+    })
+    const supabase = createClient()
+    await supabase.from('products').update({ sort_order: B.sort_order }).eq('id', A.id)
+    await supabase.from('products').update({ sort_order: A.sort_order }).eq('id', B.id)
+    router.refresh()
+  }
 
   const eff = (p: Product): Product => ({ ...p, ...patch[p.id] })
 
@@ -106,6 +127,7 @@ export default function ProductsView({
       </div>
 
       {/* Toolbar */}
+      {!arrangeMode && (
       <div className="flex flex-wrap items-center justify-between gap-3 mb-[18px]">
         <div className="flex gap-1.5 flex-wrap">
           {([['all', 'الكل'], ['published', 'منشور'], ['hidden', 'مخفي'], ['low', 'مخزون منخفض']] as [Tab, string][]).map(([key, label]) => {
@@ -132,11 +154,37 @@ export default function ProductsView({
             </select>
             <ChevronDown size={16} className="absolute left-2.5 text-[#9a9488] pointer-events-none" />
           </div>
+          <button type="button" onClick={() => setCatsOpen(true)} className="inline-flex items-center gap-1.5 bg-white border border-[#ECE7DC] text-[#74716a] rounded-[11px] px-3 py-2.5 text-[13px] font-bold hover:bg-[#F4F0E8] hover:text-[#1d1b16] transition-colors"><Tags size={15} /> التصنيفات</button>
+          {products.length > 1 && <button type="button" onClick={enterArrange} className="inline-flex items-center gap-1.5 bg-white border border-[#ECE7DC] text-[#74716a] rounded-[11px] px-3 py-2.5 text-[13px] font-bold hover:bg-[#F4F0E8] hover:text-[#1d1b16] transition-colors"><ArrowDownUp size={15} /> ترتيب</button>}
         </div>
       </div>
+      )}
+
+      {/* Arrange mode — reorder how products appear in the store */}
+      {arrangeMode && (
+        <div className="bg-white border border-[#ECE7DC] rounded-2xl shadow-[0_1px_2px_rgba(29,27,22,0.04)] overflow-hidden">
+          <div className="flex items-center justify-between px-[18px] py-3.5 border-b border-[#ECE7DC]">
+            <div><div className="font-extrabold text-[15px]">ترتيب المنتجات</div><div className="text-xs text-[#74716a] mt-0.5">رتّب ظهور المنتجات في متجرك بالأسهم.</div></div>
+            <button onClick={() => setArrangeMode(false)} className="inline-flex items-center gap-1.5 bg-[#16a34a] hover:bg-[#15803d] text-white font-bold text-[13px] px-4 py-2 rounded-[10px] transition-colors"><Check size={15} /> تم</button>
+          </div>
+          {arrangeList.map((p, i) => (
+            <div key={p.id} className="flex items-center gap-3 px-[18px] py-2.5 border-t border-[#F1ECE1] first:border-t-0">
+              <div className="flex flex-col">
+                <button onClick={() => moveItem(i, -1)} disabled={i === 0} className="w-7 h-6 flex items-center justify-center rounded text-[#9a9488] hover:text-[#1d1b16] hover:bg-[#F4F0E8] disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ChevronUp size={16} /></button>
+                <button onClick={() => moveItem(i, 1)} disabled={i === arrangeList.length - 1} className="w-7 h-6 flex items-center justify-center rounded text-[#9a9488] hover:text-[#1d1b16] hover:bg-[#F4F0E8] disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ChevronDown size={16} /></button>
+              </div>
+              <div className="w-11 h-11 rounded-[10px] bg-[#F4F0E8] overflow-hidden flex items-center justify-center flex-shrink-0">
+                {p.image_url ? <img src={p.image_url} alt="" className="w-full h-full object-cover" /> : <Package size={18} className="text-[#c9bfa9]" />}
+              </div>
+              <div className="flex-1 min-w-0"><div className="font-bold text-[14px] truncate">{p.name}</div>{p.category && <div className="text-xs text-[#a8a193] font-semibold">{p.category}</div>}</div>
+              <span className="text-xs text-[#9a9488] font-bold tabular-nums">{ar(i + 1)}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Grid / empty */}
-      {list.length === 0 ? (
+      {!arrangeMode && (list.length === 0 ? (
         <div className="bg-white border border-dashed border-[#e0d9c9] rounded-2xl py-14 text-center">
           <Package size={34} className="mx-auto text-[#d8d2c5] mb-2" />
           <p className="font-bold">{products.length === 0 ? 'لا توجد منتجات بعد' : 'لا توجد منتجات مطابقة'}</p>
@@ -226,6 +274,22 @@ export default function ProductsView({
               </div>
             )
           })}
+        </div>
+      ))}
+
+      {/* Categories drawer */}
+      {catsOpen && (
+        <div className="fixed inset-0 z-40 flex justify-start">
+          <div onClick={() => setCatsOpen(false)} className="absolute inset-0 bg-[#1d1b16]/30 dk-fade-in" />
+          <div className="relative w-[420px] max-w-[92vw] h-full bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
+            <div className="flex items-center justify-between gap-2.5 px-[18px] py-4 border-b border-[#ECE7DC] flex-shrink-0">
+              <div><div className="font-extrabold text-[17px]">التصنيفات</div><div className="text-xs text-[#74716a] mt-0.5">رتّب أو عدّل تصنيفات متجرك — تظهر للعملاء كفلاتر في المتجر.</div></div>
+              <button onClick={() => setCatsOpen(false)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-[18px]">
+              <CategoriesManager storeId={storeId} categories={categories} />
+            </div>
+          </div>
         </div>
       )}
 
