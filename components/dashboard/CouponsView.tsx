@@ -122,12 +122,12 @@ export default function CouponsView({
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+        <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
           {([['all', 'الكل'], ['active', 'نشط'], ['expired', 'منتهٍ']] as [Tab, string][]).map(([key, label]) => {
             const active = filter === key
             return (
-              <button key={key} onClick={() => setFilter(key)} className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
+              <button key={key} onClick={() => setFilter(key)} className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
                 {label}
                 <span className={`text-[11px] font-extrabold px-1.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-[#F4F0E8] text-[#9a9488]'}`}>{ar(counts[key])}</span>
               </button>
@@ -136,7 +136,7 @@ export default function CouponsView({
         </div>
         <div className="relative flex items-center">
           <Search size={16} className="absolute right-3 text-[#a8a193] pointer-events-none" />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث بكود الكوبون…" maxLength={40} className="bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] w-[212px] max-w-[60vw] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15" dir="ltr" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث بكود الكوبون…" maxLength={40} className="w-full lg:w-[220px] bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15" dir="ltr" />
         </div>
       </div>
 
@@ -247,7 +247,7 @@ export default function CouponsView({
                 <label className="block text-[13px] font-bold mb-2">{fType === 'percent' ? 'نسبة الخصم (٪)' : `قيمة الخصم (${curr})`}</label>
                 <input value={fValue} onChange={(e) => setFValue(e.target.value)} type="number" min="0" placeholder={fType === 'percent' ? 'مثال: 25' : 'مثال: 50'} dir="ltr" className="w-full bg-white border border-[#ECE7DC] rounded-[11px] px-3 py-2.5 text-sm font-bold outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15 text-right" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[13px] font-bold mb-2">حد الاستخدام</label>
                   <input value={fLimit} onChange={(e) => setFLimit(e.target.value)} type="number" min="0" placeholder="بدون حد" dir="ltr" className="w-full bg-white border border-[#ECE7DC] rounded-[11px] px-3 py-2.5 text-sm font-bold outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15 text-right" />
