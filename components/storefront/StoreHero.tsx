@@ -14,14 +14,15 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
 
   return (
     <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-[1400px] mx-auto">
-      {/* Cover — shown at the banner's natural ratio so the merchant's full image
-          is never cropped. Falls back to a theme gradient at a fixed height. */}
-      <div className="relative w-full overflow-hidden sm:rounded-b-3xl">
+      {/* Cover — a controlled, professional header height (object-cover). A tall
+          banner is cropped to this wide strip; for the whole image to show, the
+          merchant should upload a wide (~3:1) banner. */}
+      <div className="relative w-full overflow-hidden sm:rounded-b-3xl h-44 sm:h-56 lg:h-72 xl:h-80">
         {store.banner_url ? (
-          <img src={store.banner_url} alt={store.name} className="block w-full h-auto" />
+          <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
         ) : (
           <div
-            className="w-full h-40 sm:h-56 lg:h-64"
+            className="w-full h-full"
             style={{ background: `radial-gradient(120% 120% at 30% 0%, ${themeColor}, ${themeColor}b0 60%, ${themeColor}80)` }}
           />
         )}

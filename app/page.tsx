@@ -132,8 +132,8 @@ export default function HomePage() {
                     افتح دكانك مجاناً
                     <Chevron />
                   </Link>
-                  <a href="#proof" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 9, background: '#fff', color: 'var(--ink)', padding: '15px 26px', borderRadius: 14, fontWeight: 700, fontSize: 17.5, border: '1.5px solid var(--border)' }}>
-                    شوف مثال حي
+                  <a href="/store/rue" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 9, background: '#fff', color: 'var(--ink)', padding: '15px 26px', borderRadius: 14, fontWeight: 700, fontSize: 17.5, border: '1.5px solid var(--border)' }}>
+                    شوف متجر حقيقي
                   </a>
                 </div>
               </StaggerItem>
