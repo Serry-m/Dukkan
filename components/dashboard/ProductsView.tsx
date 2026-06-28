@@ -25,8 +25,8 @@ type Tab = 'all' | 'published' | 'hidden' | 'low'
 function stockPill(p: Product): { label: string; cls: string } {
   const sq = p.stock_quantity
   if (sq != null) {
-    if (sq === 0) return { label: 'نفذ المخزون', cls: 'bg-[#F6E4E1] text-[#B4453A]' }
-    if (sq <= 3) return { label: `مخزون منخفض · ${ar(sq)}`, cls: 'bg-[#FBEBC8] text-[#92610A]' }
+    if (sq === 0) return { label: 'نفذ', cls: 'bg-[#F6E4E1] text-[#B4453A]' }
+    if (sq <= 3) return { label: `منخفض · ${ar(sq)}`, cls: 'bg-[#FBEBC8] text-[#92610A]' }
     return { label: `متوفر · ${ar(sq)}`, cls: 'bg-[#E7F3EA] text-[#15803d]' }
   }
   return p.in_stock ? { label: 'متاح', cls: 'bg-[#E7F3EA] text-[#15803d]' } : { label: 'نفذ', cls: 'bg-[#F6E4E1] text-[#B4453A]' }
@@ -128,24 +128,26 @@ export default function ProductsView({
 
       {/* Toolbar */}
       {!arrangeMode && (
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-[18px]">
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-[18px]">
+        {/* Filter tabs — scroll horizontally on mobile instead of wrapping */}
+        <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
           {([['all', 'الكل'], ['published', 'منشور'], ['hidden', 'مخفي'], ['low', 'مخزون منخفض']] as [Tab, string][]).map(([key, label]) => {
             const active = filter === key
             return (
-              <button key={key} onClick={() => setFilter(key)} className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
+              <button key={key} onClick={() => setFilter(key)} className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
                 {label}
                 <span className={`text-[11px] font-extrabold px-1.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-[#F4F0E8] text-[#9a9488]'}`}>{ar(counts[key])}</span>
               </button>
             )
           })}
         </div>
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="relative flex items-center">
+        {/* Search grows on mobile; category/arrange collapse to icons */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex items-center flex-1 lg:flex-none">
             <Search size={16} className="absolute right-3 text-[#a8a193] pointer-events-none" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث عن منتج…" maxLength={80} className="bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] w-[212px] max-w-[60vw] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث عن منتج…" maxLength={80} className="w-full lg:w-[200px] bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15" />
           </div>
-          <div className="relative flex items-center">
+          <div className="relative flex items-center flex-shrink-0">
             <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="appearance-none bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-3.5 pl-8 text-[13px] font-semibold cursor-pointer outline-none focus:border-[#16a34a]">
               <option value="sold">الأكثر مبيعاً</option>
               <option value="new">الأحدث</option>
@@ -154,8 +156,8 @@ export default function ProductsView({
             </select>
             <ChevronDown size={16} className="absolute left-2.5 text-[#9a9488] pointer-events-none" />
           </div>
-          <button type="button" onClick={() => setCatsOpen(true)} className="inline-flex items-center gap-1.5 bg-white border border-[#ECE7DC] text-[#74716a] rounded-[11px] px-3 py-2.5 text-[13px] font-bold hover:bg-[#F4F0E8] hover:text-[#1d1b16] transition-colors"><Tags size={15} /> التصنيفات</button>
-          {products.length > 1 && <button type="button" onClick={enterArrange} className="inline-flex items-center gap-1.5 bg-white border border-[#ECE7DC] text-[#74716a] rounded-[11px] px-3 py-2.5 text-[13px] font-bold hover:bg-[#F4F0E8] hover:text-[#1d1b16] transition-colors"><ArrowDownUp size={15} /> ترتيب</button>}
+          <button type="button" onClick={() => setCatsOpen(true)} aria-label="التصنيفات" className="flex-shrink-0 inline-flex items-center gap-1.5 bg-white border border-[#ECE7DC] text-[#74716a] rounded-[11px] px-3 py-2.5 text-[13px] font-bold hover:bg-[#F4F0E8] hover:text-[#1d1b16] transition-colors"><Tags size={15} /> <span className="hidden sm:inline">التصنيفات</span></button>
+          {products.length > 1 && <button type="button" onClick={enterArrange} aria-label="ترتيب المنتجات" className="flex-shrink-0 inline-flex items-center gap-1.5 bg-white border border-[#ECE7DC] text-[#74716a] rounded-[11px] px-3 py-2.5 text-[13px] font-bold hover:bg-[#F4F0E8] hover:text-[#1d1b16] transition-colors"><ArrowDownUp size={15} /> <span className="hidden sm:inline">ترتيب</span></button>}
         </div>
       </div>
       )}
@@ -191,7 +193,7 @@ export default function ProductsView({
           <p className="text-sm text-[#74716a] mt-1">{products.length === 0 ? 'أضف أول منتج لمتجرك.' : 'جرّب تغيير الفلتر أو كلمة البحث.'}</p>
         </div>
       ) : (
-        <div className="grid gap-[15px] grid-cols-[repeat(auto-fill,minmax(214px,1fr))]">
+        <div className="grid gap-3 sm:gap-[15px] grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(214px,1fr))]">
           {list.map((p, i) => {
             const pill = stockPill(p)
             const out = (p.stock_quantity != null && p.stock_quantity === 0) || (p.stock_quantity == null && !p.in_stock)
@@ -217,29 +219,29 @@ export default function ProductsView({
                 </div>
 
                 {/* body */}
-                <div className="p-3.5 flex flex-col gap-2.5 flex-1">
+                <div className="p-2.5 sm:p-3.5 flex flex-col gap-2 sm:gap-2.5 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="font-extrabold text-[14.5px] leading-tight">{p.name}</div>
-                      {p.category && <div className="text-xs text-[#a8a193] font-semibold mt-0.5">{p.category}</div>}
+                      <div className="font-extrabold text-[13.5px] sm:text-[14.5px] leading-tight truncate">{p.name}</div>
+                      {p.category && <div className="text-xs text-[#a8a193] font-semibold mt-0.5 truncate">{p.category}</div>}
                     </div>
                     <div className="text-left whitespace-nowrap flex-shrink-0">
-                      <span className="font-extrabold text-[15px]">{ar(effectivePrice(p))}</span>
+                      <span className="font-extrabold text-[14px] sm:text-[15px]">{ar(effectivePrice(p))}</span>
                       <span className="text-[11.5px] text-[#9a9488] font-bold"> ج</span>
                       {isOnSale(p) && <div className="text-[11px] text-[#a8a193] line-through">{ar(p.price)}</div>}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
                     <span className={`text-[11.5px] font-extrabold px-2.5 py-0.5 rounded-full ${pill.cls}`}>{pill.label}</span>
                     <span className="text-xs text-[#74716a] font-semibold whitespace-nowrap">{ar(soldN)} مبيع</span>
                   </div>
 
                   {/* footer */}
-                  <div className="mt-auto pt-3 border-t border-[#F1ECE1] flex items-center justify-between gap-2">
+                  <div className="mt-auto pt-2.5 sm:pt-3 border-t border-[#F1ECE1] flex items-center justify-between gap-1.5">
                     <div className="flex items-center gap-1.5">
-                      <Link href={`/dashboard/products/${p.id}`} className="inline-flex items-center gap-1.5 bg-[#F4F0E8] text-[#5f5c54] rounded-[9px] px-3 py-2 font-bold text-[12.5px] hover:bg-[#e9e3d6] hover:text-[#1d1b16] transition-colors">
-                        <Pencil size={14} /> تعديل
+                      <Link href={`/dashboard/products/${p.id}`} className="inline-flex items-center gap-1.5 bg-[#F4F0E8] text-[#5f5c54] rounded-[9px] px-2 sm:px-3 py-2 font-bold text-[12.5px] hover:bg-[#e9e3d6] hover:text-[#1d1b16] transition-colors">
+                        <Pencil size={14} /> <span className="hidden sm:inline">تعديل</span>
                       </Link>
                       <DropdownMenu>
                         <DropdownMenuTrigger aria-label="خيارات" className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9a9488] hover:text-[#1d1b16] hover:bg-[#F4F0E8] transition-colors">
@@ -258,17 +260,15 @@ export default function ProductsView({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold" style={{ color: visible ? '#15803d' : '#9a9488' }}>{visible ? 'منشور' : 'مخفي'}</span>
-                      <button
-                        onClick={() => update(p.id, { hidden: visible }, visible ? 'تم إخفاء المنتج' : 'تم نشر المنتج')}
-                        aria-label="إظهار/إخفاء"
-                        className="relative w-[42px] h-[24px] rounded-full flex-shrink-0 transition-colors"
-                        style={{ background: visible ? '#16a34a' : '#d8d2c4' }}
-                      >
-                        <span className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white shadow transition-all" style={{ [visible ? 'left' : 'right']: '3px' } as React.CSSProperties} />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => update(p.id, { hidden: visible }, visible ? 'تم إخفاء المنتج' : 'تم نشر المنتج')}
+                      aria-label={visible ? 'إخفاء من المتجر' : 'إظهار في المتجر'}
+                      title={visible ? 'منشور — اضغط للإخفاء' : 'مخفي — اضغط للنشر'}
+                      className="relative w-[42px] h-[24px] rounded-full flex-shrink-0 transition-colors"
+                      style={{ background: visible ? '#16a34a' : '#d8d2c4' }}
+                    >
+                      <span className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white shadow transition-all" style={{ [visible ? 'left' : 'right']: '3px' } as React.CSSProperties} />
+                    </button>
                   </div>
                 </div>
               </div>

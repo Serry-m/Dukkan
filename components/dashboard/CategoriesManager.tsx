@@ -76,16 +76,16 @@ export default function CategoriesManager({ storeId, categories }: Props) {
 
   if (!list.length) {
     return (
-      <div className="bg-white rounded-xl border border-dashed border-gray-200 p-5 text-center">
-        <FolderOpen size={28} className="mx-auto text-gray-300 mb-2" />
-        <p className="text-sm text-gray-500">لا توجد تصنيفات بعد</p>
-        <p className="text-xs text-gray-400 mt-1">أضف تصنيفاً لأي منتج وسيظهر هنا لإدارته وترتيبه</p>
+      <div className="bg-white rounded-2xl border border-dashed border-[#e0d9c9] p-8 text-center">
+        <FolderOpen size={30} className="mx-auto text-[#d8d2c5] mb-2.5" />
+        <p className="text-sm font-bold text-[#1d1b16]">لا توجد تصنيفات بعد</p>
+        <p className="text-xs text-[#9a9488] mt-1">أضف تصنيفاً لأي منتج وسيظهر هنا لإدارته وترتيبه.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+    <div className="flex flex-col gap-2">
       {list.map((cat, i) => (
         <div
           key={cat}
@@ -93,14 +93,14 @@ export default function CategoriesManager({ storeId, categories }: Props) {
           onDragStart={() => onDragStart(i)}
           onDragOver={(e) => onDragOver(e, i)}
           onDrop={onDrop}
-          className="flex items-center gap-2 px-3 py-2.5"
+          className="flex items-center gap-2.5 px-3 py-2.5 bg-white border border-[#ECE7DC] rounded-xl"
         >
-          <GripVertical size={16} className="text-gray-300 cursor-grab active:cursor-grabbing hidden sm:block flex-shrink-0" />
+          <GripVertical size={17} className="text-[#c9bfa9] cursor-grab active:cursor-grabbing hidden sm:block flex-shrink-0" />
 
           {/* Mobile arrows */}
-          <div className="flex flex-col sm:hidden">
-            <button onClick={() => move(i, -1)} disabled={i === 0} className="text-gray-300 disabled:opacity-20"><ChevronUp size={14} /></button>
-            <button onClick={() => move(i, 1)} disabled={i === list.length - 1} className="text-gray-300 disabled:opacity-20"><ChevronDown size={14} /></button>
+          <div className="flex flex-col sm:hidden flex-shrink-0">
+            <button onClick={() => move(i, -1)} disabled={i === 0} aria-label="لأعلى" className="text-[#9a9488] disabled:opacity-20 hover:text-[#1d1b16]"><ChevronUp size={15} /></button>
+            <button onClick={() => move(i, 1)} disabled={i === list.length - 1} aria-label="لأسفل" className="text-[#9a9488] disabled:opacity-20 hover:text-[#1d1b16]"><ChevronDown size={15} /></button>
           </div>
 
           {editing === cat ? (
@@ -109,28 +109,28 @@ export default function CategoriesManager({ storeId, categories }: Props) {
               onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') saveRename(cat); if (e.key === 'Escape') setEditing(null) }}
               autoFocus
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40"
+              className="flex-1 min-w-0 bg-white border border-[#ECE7DC] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15"
             />
           ) : (
-            <span className="flex-1 text-sm font-medium text-gray-800">{cat}</span>
+            <span className="flex-1 min-w-0 text-[14px] font-bold text-[#1d1b16] truncate">{cat}</span>
           )}
 
           <div className="flex items-center gap-1 flex-shrink-0">
             {editing === cat ? (
               <>
-                <button onClick={() => saveRename(cat)} className="w-7 h-7 flex items-center justify-center rounded-lg text-green-600 hover:bg-green-50"><Check size={15} /></button>
-                <button onClick={() => setEditing(null)} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"><X size={15} /></button>
+                <button onClick={() => saveRename(cat)} aria-label="حفظ" className="w-8 h-8 flex items-center justify-center rounded-lg text-[#15803d] hover:bg-[#EAF6EC] transition-colors"><Check size={16} /></button>
+                <button onClick={() => setEditing(null)} aria-label="إلغاء" className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9a9488] hover:bg-[#F4F0E8] transition-colors"><X size={16} /></button>
               </>
             ) : (
               <>
-                <button onClick={() => { setEditing(cat); setEditValue(cat) }} disabled={busy} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100"><Pencil size={14} /></button>
+                <button onClick={() => { setEditing(cat); setEditValue(cat) }} disabled={busy} aria-label="تعديل" className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9a9488] hover:text-[#1d1b16] hover:bg-[#F4F0E8] transition-colors"><Pencil size={15} /></button>
                 <ConfirmDialog
                   title={`حذف تصنيف "${cat}"`}
                   description="المنتجات لن تُحذف، فقط يُزال التصنيف عنها."
                   confirmLabel="حذف"
                   onConfirm={() => remove(cat)}
                   trigger={
-                    <button disabled={busy} className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14} /></button>
+                    <button disabled={busy} aria-label="حذف" className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9a9488] hover:text-red-500 hover:bg-red-50 transition-colors"><Trash2 size={15} /></button>
                   }
                 />
               </>
