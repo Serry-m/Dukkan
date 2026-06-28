@@ -113,7 +113,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </main>
       </div>
 
-      <MobileNav pendingCount={pendingCount} />
+      <MobileNav pendingCount={pendingCount} userEmail={user.email ?? ''} isAdmin={admin} storeSlug={store?.slug} />
     </div>
   )
 }

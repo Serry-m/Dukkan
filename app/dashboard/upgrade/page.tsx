@@ -28,8 +28,8 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
   return (
     <div className="max-w-md mx-auto">
       {status === 'success' && (
-        <div className="mb-5 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 text-sm">
-          <CheckCircle2 size={16} /> تم تفعيل خطة Pro
+        <div className="mb-5 flex items-center gap-2 bg-[#D8F0DE] border border-[#bfe3c8] text-[#15803d] rounded-xl px-4 py-3 text-sm font-semibold">
+          <CheckCircle2 size={16} /> تم تفعيل خطة برو
         </div>
       )}
       {status === 'failed' && (
@@ -39,9 +39,9 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
       )}
 
       {pro && (
-        <div className="mb-4 flex items-center gap-2 rounded-xl bg-gradient-to-br from-green-600 to-green-700 text-white px-4 py-3">
+        <div className="mb-4 flex items-center gap-2 rounded-2xl bg-gradient-to-br from-[#16a34a] to-[#15803d] text-white px-4 py-3.5 shadow-[0_8px_22px_rgba(22,163,74,0.25)]">
           <Crown size={18} />
-          <span className="text-sm font-bold">خطة Pro نشطة</span>
+          <span className="text-sm font-extrabold">خطة برو نشطة</span>
           {expires && <span className="text-xs text-green-100 mr-auto">حتى {expires}</span>}
         </div>
       )}
@@ -51,16 +51,16 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
       {!pro && (
         <>
           <div className="mb-5 text-center">
-            <h1 className="text-2xl font-extrabold text-gray-900">طوّر متجرك إلى الاحتراف</h1>
-            <p className="mt-1.5 text-sm text-gray-500">كل أدوات البيع المتقدمة لمتجرك في خطة واحدة.</p>
+            <h1 className="text-2xl font-extrabold text-[#1d1b16]">طوّر متجرك إلى الاحتراف</h1>
+            <p className="mt-1.5 text-sm text-[#74716a]">كل أدوات البيع المتقدمة لمتجرك في خطة واحدة.</p>
           </div>
 
-          <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+          <div className="mb-4 rounded-2xl border border-[#ECE7DC] bg-[#F4F0E8] px-4 py-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-gray-600">خطتك الحالية: المجانية</span>
-              <span className="text-xs text-gray-400">مجاناً</span>
+              <span className="text-sm font-bold text-[#5f5c54]">خطتك الحالية: المجانية</span>
+              <span className="text-xs text-[#9a9488]">مجاناً</span>
             </div>
-            <p className="mt-1 text-xs leading-relaxed text-gray-400">
+            <p className="mt-1 text-xs leading-relaxed text-[#9a9488]">
               حتى {FREE_PRODUCT_LIMIT.toLocaleString('ar-EG')} منتجات · شعار «صُنع بواسطة دكان» ظاهر · مميزات أساسية فقط
             </p>
           </div>
@@ -68,36 +68,36 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
       )}
 
       {/* Premium pricing card */}
-      <div className="relative overflow-hidden rounded-3xl border border-green-200 bg-white p-8 shadow-[var(--shadow-lift)]">
+      <div className="relative overflow-hidden rounded-3xl border border-[#ECE7DC] bg-white p-8 shadow-[var(--shadow-lift)]">
         {/* Ambient glow */}
-        <div className="pointer-events-none absolute -top-10 -left-10 h-40 w-40 rounded-full bg-green-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-green-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -top-10 -left-10 h-40 w-40 rounded-full bg-[#16a34a]/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-[#16a34a]/10 blur-3xl" />
 
         <div className="relative flex flex-col items-center text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
-            <Crown size={30} className="text-green-700" />
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D8F0DE]">
+            <Crown size={30} className="text-[#15803d]" />
           </div>
 
           <div className="mb-1 flex items-baseline gap-2">
-            <span className="text-5xl font-extrabold tracking-tight text-gray-900 tabular-nums">{PRO_PRICE_EGP}</span>
+            <span className="text-5xl font-extrabold tracking-tight text-[#1d1b16] tabular-nums">{PRO_PRICE_EGP}</span>
             <div className="flex flex-col items-start leading-tight">
-              <span className="text-base font-semibold text-gray-500">جنيه</span>
-              <span className="text-xs text-gray-400">/ شهرياً</span>
+              <span className="text-base font-semibold text-[#74716a]">جنيه</span>
+              <span className="text-xs text-[#9a9488]">/ شهرياً</span>
             </div>
           </div>
 
-          <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700">
-            <Crown size={12} /> دكان Pro
+          <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#D8F0DE] px-3 py-1 text-xs font-bold text-[#15803d]">
+            <Crown size={12} /> دكان برو
           </span>
         </div>
 
         <div className="relative my-7 space-y-3.5">
           {PRO_FEATURES.map((f) => (
             <div key={f} className="flex items-start gap-3 text-right">
-              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-green-100">
-                <Check size={13} strokeWidth={3} className="text-green-700" />
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#D8F0DE]">
+                <Check size={13} strokeWidth={3} className="text-[#15803d]" />
               </span>
-              <span className="text-sm leading-relaxed text-gray-700">{f}</span>
+              <span className="text-sm leading-relaxed text-[#4a4843]">{f}</span>
             </div>
           ))}
         </div>
@@ -106,14 +106,14 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
           href={waLink}
           target="_blank"
           rel="noreferrer"
-          className="relative flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-green-600 text-base font-bold text-white shadow-lg shadow-green-600/20 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/25 active:scale-[0.98]"
+          className="relative flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#16a34a] text-base font-bold text-white shadow-[0_10px_24px_-8px_rgba(22,163,74,0.5)] transition-all hover:bg-[#15803d] active:scale-[0.98]"
         >
           <MessageCircle size={18} />
           {pro ? 'تواصل معنا للتجديد' : 'تواصل معنا للاشتراك'}
         </a>
 
-        <p className="relative mt-4 text-center text-xs text-gray-400">
-          راسلنا على واتساب وسنفعّل خطة Pro لمتجرك خلال دقائق. الاشتراك شهري.
+        <p className="relative mt-4 text-center text-xs text-[#9a9488]">
+          راسلنا على واتساب وسنفعّل خطة برو لمتجرك خلال دقائق. الاشتراك شهري.
         </p>
       </div>
     </div>

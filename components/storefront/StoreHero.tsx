@@ -13,14 +13,15 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
   const chip = 'inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-100 px-3 py-1.5 rounded-full'
 
   return (
-    <div>
-      {/* Cover — full-bleed (edge to edge) so the header feels immersive on desktop. */}
-      <div className="relative h-40 sm:h-56 lg:h-64 xl:h-72 w-full overflow-hidden">
+    <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-[1400px] mx-auto">
+      {/* Cover — shown at the banner's natural ratio so the merchant's full image
+          is never cropped. Falls back to a theme gradient at a fixed height. */}
+      <div className="relative w-full overflow-hidden sm:rounded-b-3xl">
         {store.banner_url ? (
-          <img src={store.banner_url} alt={store.name} className="w-full h-full object-cover" />
+          <img src={store.banner_url} alt={store.name} className="block w-full h-auto" />
         ) : (
           <div
-            className="w-full h-full"
+            className="w-full h-40 sm:h-56 lg:h-64"
             style={{ background: `radial-gradient(120% 120% at 30% 0%, ${themeColor}, ${themeColor}b0 60%, ${themeColor}80)` }}
           />
         )}
@@ -40,8 +41,8 @@ export function StoreHero({ store, themeColor }: { store: Store; themeColor: str
         )}
       </div>
 
-      {/* Profile — capped + right-anchored for native RTL reading (logo on the right). */}
-      <div className="max-w-6xl xl:max-w-[1400px] mx-auto px-4 -mt-12 sm:-mt-16 relative">
+      {/* Profile — right-anchored for native RTL reading (logo on the right). */}
+      <div className="px-4 -mt-12 sm:-mt-16 relative">
         <div className="flex items-end gap-3.5">
           {/* Logo — double-bezel (machined). Smaller on mobile so products surface sooner. */}
           <div className="w-[74px] h-[74px] sm:w-[104px] sm:h-[104px] rounded-[1.3rem] sm:rounded-[1.6rem] bg-white p-1.5 shadow-[var(--shadow-lift)] ring-1 ring-gray-900/[0.06] flex-shrink-0">

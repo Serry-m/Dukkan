@@ -70,7 +70,6 @@ export default function CartBar({ store }: { store: Store }) {
       : 0
   )
   const grandTotal = Math.max(0, totalPrice - discount) + deliveryFee
-  const selectedPayNumber = payOptions.find((p) => p.key === payment)?.number
 
   async function applyCoupon() {
     const code = couponInput.trim()
@@ -309,11 +308,7 @@ export default function CartBar({ store }: { store: Store }) {
                     )
                   })}
                 </div>
-                {selectedPayNumber && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    التحويل على: <span className="font-bold text-gray-700 tabular-nums" dir="ltr">{selectedPayNumber}</span>
-                  </p>
-                )}
+                <p className="text-[11px] text-gray-400 mt-2">هتتفق على تفاصيل الدفع مع المتجر على واتساب بعد تأكيد الطلب.</p>
               </div>
             )}
 
