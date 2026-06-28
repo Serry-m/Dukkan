@@ -28,6 +28,21 @@ const TABS: { key: 'all' | OrderStatus; label: string }[] = [
 ]
 const RANK: Record<OrderStatus, number> = { pending: 0, confirmed: 1, delivered: 2 }
 
+// Escape user-controlled text before it goes into the print window's raw HTML.
+// Customer name/address/notes and product names are attacker-controllable (a
+// customer types them at checkout), and the print popup is about:blank — which
+// inherits this dashboard's origin — so an unescaped <img onerror> would run in
+// the merchant's logged-in session. React escapes everything else for us; this
+// is the one place we hand-build HTML.
+function esc(v: unknown): string {
+  return String(v ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const ar = (n: number) => n.toLocaleString('ar-EG')
 const initialOf = (name: string | null) => name?.trim().charAt(0) ?? '؟'
 const itemsSummary = (items: OrderItem[] | null) => (items ?? []).map((i) => `${i.name} ×${ar(i.quantity)}`).join(' · ') || '—'
@@ -92,13 +107,13 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
     if (!w) return
     const items = (o.items ?? []) as OrderItem[]
     const rows = items
-      .map((i) => `<tr><td>${i.name}${i.options ? ` <span style="color:#888;font-size:11px">(${Object.entries(i.options).map(([k, v]) => `${k}: ${v}`).join('، ')})</span>` : ''}</td><td style="text-align:center">×${ar(i.quantity)}</td><td style="text-align:left">${ar(i.price * i.quantity)}</td></tr>`)
+      .map((i) => `<tr><td>${esc(i.name)}${i.options ? ` <span style="color:#888;font-size:11px">(${Object.entries(i.options).map(([k, v]) => `${esc(k)}: ${esc(v)}`).join('، ')})</span>` : ''}</td><td style="text-align:center">×${ar(i.quantity)}</td><td style="text-align:left">${ar(i.price * i.quantity)}</td></tr>`)
       .join('')
-    w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>طلب ${orderRef(o)}</title>
+    w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>طلب ${esc(orderRef(o))}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>body{font-family:'Cairo',system-ui,sans-serif;color:#1d1b16;padding:26px;max-width:480px;margin:0 auto}h1{font-size:20px;margin:0 0 2px}.muted{color:#777;font-size:12px}hr{border:none;border-top:1px dashed #ddd;margin:14px 0}table{width:100%;border-collapse:collapse;margin-top:8px}td,th{padding:7px 0;border-bottom:1px solid #eee;font-size:13px;text-align:right}.tot{text-align:left;font-weight:800;font-size:15px;margin-top:12px}.info{font-size:13px;line-height:1.9}</style></head>
-<body><h1>${storeName}</h1><div class="muted">طلب ${orderRef(o)} · ${new Date(o.created_at).toLocaleString('ar-EG')}</div><hr/>
-<div class="info"><b>العميل:</b> ${o.customer_name ?? '—'}<br/><b>الهاتف:</b> ${o.customer_phone ?? '—'}<br/><b>العنوان:</b> ${o.customer_address ?? '—'}${o.notes ? `<br/><b>ملاحظات:</b> ${o.notes}` : ''}</div>
+<body><h1>${esc(storeName)}</h1><div class="muted">طلب ${esc(orderRef(o))} · ${esc(new Date(o.created_at).toLocaleString('ar-EG'))}</div><hr/>
+<div class="info"><b>العميل:</b> ${esc(o.customer_name ?? '—')}<br/><b>الهاتف:</b> ${esc(o.customer_phone ?? '—')}<br/><b>العنوان:</b> ${esc(o.customer_address ?? '—')}${o.notes ? `<br/><b>ملاحظات:</b> ${esc(o.notes)}` : ''}</div>
 <table><tr><th>المنتج</th><th style="text-align:center">الكمية</th><th style="text-align:left">الإجمالي</th></tr>${rows}</table>
 <div class="tot">الإجمالي: ${formatPrice(o.total, currency)}</div>
 <script>window.onload=function(){window.print()}</script></body></html>`)

@@ -5,6 +5,17 @@ import type { Order, OrderItem } from '@/types'
 
 const STATUS_AR: Record<string, string> = { pending: 'جديد', confirmed: 'مؤكد', delivered: 'مسلّم' }
 
+// One CSV cell. Quotes the value (doubling internal quotes) AND neutralizes
+// spreadsheet formula injection: a cell that starts with = + - @ (or a control
+// char) is evaluated as a formula by Excel/Sheets, so a customer who types
+// =HYPERLINK(...) as their name could run it on the merchant's machine. Prefix
+// such values with a single quote so they're treated as plain text.
+function csvCell(v: unknown): string {
+  let s = String(v ?? '')
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
+  return `"${s.replace(/"/g, '""')}"`
+}
+
 // Download all orders as CSV — the records merchants keep in a notebook today.
 export default function OrderExport({ orders, storeName }: { orders: Order[]; storeName: string }) {
   function exportCsv() {
@@ -23,7 +34,7 @@ export default function OrderExport({ orders, storeName }: { orders: Order[]; st
       ]
     })
     const csv = [header, ...rows]
-      .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .map((r) => r.map(csvCell).join(','))
       .join('\n')
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
