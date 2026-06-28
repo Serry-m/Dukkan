@@ -6,7 +6,6 @@ import CartBar from '@/components/storefront/CartBar'
 import { StoreFooter } from '@/components/storefront/StoreFooter'
 import { getTheme } from '@/lib/themes'
 import { applyPlanToStore } from '@/lib/storefront'
-import { readableText } from '@/lib/color'
 import { Store } from 'lucide-react'
 
 type Props = {
@@ -98,12 +97,15 @@ export default async function StorefrontLayout({ children, params }: Props) {
       }}
     >
 
-      {/* Announcement bar (Pro, merchant-controlled) — scrolls away above the header */}
+      {/* Announcement bar (Pro, merchant-controlled) — scrolls away above the header.
+          A calm theme-tinted strip (not a saturated band) so it reads as a quiet
+          note and never fights an elegant brand. */}
       {store.announcement_enabled && store.announcement_text && (
         <div
-          className="text-center text-xs font-medium py-2 px-3"
-          style={{ backgroundColor: themeColor, color: readableText(themeColor) }}
+          className="flex items-center justify-center gap-2 text-center text-xs font-semibold py-2 px-3"
+          style={{ backgroundColor: `${themeColor}14`, color: '#44403c' }}
         >
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: themeColor }} />
           {store.announcement_text}
         </div>
       )}

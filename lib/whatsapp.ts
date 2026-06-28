@@ -37,6 +37,7 @@ type Customer = {
   phone: string
   address?: string
   notes?: string
+  payment?: string
   discount?: { code: string; amount: number }
 }
 
@@ -83,9 +84,12 @@ export function buildWhatsAppOrderUrl(
     `الاسم: ${customer.name}`,
     `الهاتف: ‎${customer.phone}`,
     ...(customer.address?.trim() ? [`العنوان: ${customer.address.trim()}`] : []),
+    ...(customer.payment?.trim() ? [`طريقة الدفع المفضّلة: ${customer.payment.trim()}`] : []),
     ...(customer.notes?.trim() ? [`ملاحظات: ${customer.notes.trim()}`] : []),
     ``,
-    `من فضلك أكّد الطلب وقول لي طريقة الدفع.`,
+    // If the customer already picked a payment method, the merchant just confirms;
+    // otherwise we still ask them to say how they'd like to pay.
+    customer.payment?.trim() ? `من فضلك أكّد الطلب.` : `من فضلك أكّد الطلب وقول لي طريقة الدفع.`,
   ].join('\n')
 
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
