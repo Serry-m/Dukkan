@@ -125,24 +125,24 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+        <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
           {TABS.map((t) => {
             const active = filter === t.key
             return (
-              <button key={t.key} onClick={() => setFilter(t.key)} className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
+              <button key={t.key} onClick={() => setFilter(t.key)} className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
                 {t.label}
                 <span className={`text-[11px] font-extrabold px-1.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-[#F4F0E8] text-[#9a9488]'}`}>{ar(counts[t.key])}</span>
               </button>
             )
           })}
         </div>
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="relative flex items-center">
+        <div className="flex items-center gap-2">
+          <div className="relative flex items-center flex-1 lg:flex-none">
             <Search size={16} className="absolute right-3 text-[#a8a193] pointer-events-none" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث باسم العميل…" maxLength={60} className="bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] w-[212px] max-w-[60vw] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث باسم العميل…" maxLength={60} className="w-full lg:w-[200px] bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15" />
           </div>
-          <div className="relative flex items-center">
+          <div className="relative flex items-center flex-shrink-0">
             <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="appearance-none bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-3.5 pl-8 text-[13px] font-semibold cursor-pointer outline-none focus:border-[#16a34a]">
               <option value="spent">الأكثر إنفاقاً</option>
               <option value="orders">الأكثر طلباً</option>
@@ -267,7 +267,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
                 <MessageCircle size={17} /> راسل العميل
               </a>
               <Link href="/dashboard/coupons" className="inline-flex items-center justify-center gap-2 bg-white border border-[#ECE7DC] text-[#74716a] font-bold text-[13.5px] px-4 py-3 rounded-xl hover:bg-[#F4F0E8] transition-colors">
-                <Ticket size={16} /> كوبون خاص
+                <Ticket size={16} /> إنشاء كوبون
               </Link>
             </div>
           </div>

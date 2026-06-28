@@ -15,10 +15,12 @@ export type CustomerRecord = {
 }
 
 // Best-effort "city" from the free-text address (last comma-separated part = governorate).
+// Falls back to "—" when the result is too short to be a real place name.
 function cityFromAddress(addr: string | null): string {
   if (!addr) return '—'
   const parts = addr.split(/[،,]/).map((s) => s.trim()).filter(Boolean)
-  return parts.length ? parts[parts.length - 1] : '—'
+  const city = parts.length ? parts[parts.length - 1] : ''
+  return city.length >= 2 ? city : '—'
 }
 
 export default async function CustomersPage() {
