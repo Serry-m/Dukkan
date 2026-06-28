@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Product } from '@/types'
@@ -9,7 +8,7 @@ import { currencyLabel } from '@/lib/currency'
 import { effectivePrice, isOnSale, isLowStock } from '@/lib/price'
 import { ProductBadges } from './ProductBadges'
 import type { ThemeConfig } from '@/lib/themes'
-import { Plus, Check, SlidersHorizontal } from 'lucide-react'
+import { Plus, Minus, SlidersHorizontal } from 'lucide-react'
 import { ImagePlaceholder } from './ImagePlaceholder'
 
 type Props = {
@@ -23,7 +22,11 @@ type Props = {
 
 export default function ProductCard({ product, slug, themeColor, currency, layout = 'grid', theme }: Props) {
   const addItem = useCartStore((s) => s.addItem)
-  const [added, setAdded] = useState(false)
+  const updateQuantity = useCartStore((s) => s.updateQuantity)
+  // Simple products key the cart by their id; products with options live as
+  // multiple lines (one per variant), so the card-level stepper only applies to
+  // simple products — variant products route to the detail page to choose.
+  const qty = useCartStore((s) => s.items.find((i) => i.lineId === product.id)?.quantity ?? 0)
 
   const hasOptions = (product.options?.length ?? 0) > 0
   const outOfStock = !product.in_stock
@@ -31,36 +34,6 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
 
   const radius = theme.cardRadius
   const innerRadius = theme.innerRadius
-
-  function quickAdd(e: React.MouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
-    addItem(product)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1200)
-  }
-
-  // Simplified add control — used by the LIST layout. Variant products route to
-  // the detail page to choose options; the grid layout uses an on-image quick-add.
-  const addControl = outOfStock ? (
-    <div className={`w-full bg-gray-100 text-gray-400 text-xs font-medium ${innerRadius} py-2.5 text-center`}>غير متاح</div>
-  ) : hasOptions ? (
-    <Link
-      href={href}
-      className={`block w-full text-center text-sm font-semibold ${innerRadius} py-2.5 border-[1.5px] transition-all active:scale-95`}
-      style={{ borderColor: themeColor, color: themeColor }}
-    >
-      اختر الخيارات
-    </Link>
-  ) : (
-    <button
-      onClick={() => addItem(product)}
-      className={`w-full text-sm font-semibold ${innerRadius} py-2.5 border-[1.5px] transition-all active:scale-95`}
-      style={{ borderColor: themeColor, color: themeColor }}
-    >
-      أضف للسلة
-    </button>
-  )
 
   const onSale = isOnSale(product)
   const eff = effectivePrice(product)
@@ -80,6 +53,43 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
   const lowStockTag = lowStock ? (
     <span className="text-[11px] font-bold text-amber-600">متبقّي {product.stock_quantity!.toLocaleString('ar-EG')}</span>
   ) : null
+
+  // Compact add control that sits next to the price in the footer.
+  // States: out-of-stock → none (image carries "نفد") · has options → + that
+  // routes to the detail page to choose · simple in-cart → qty stepper · else → +.
+  function addControl(size: 'grid' | 'list') {
+    if (outOfStock) {
+      return size === 'list'
+        ? <span className="text-[11px] font-medium text-gray-400">غير متاح</span>
+        : null
+    }
+    const btn = 'w-9 h-9 flex items-center justify-center rounded-xl transition-transform active:scale-90'
+    if (hasOptions) {
+      return (
+        <Link href={href} aria-label="اختر الخيارات" className={`${btn} border-[1.5px]`} style={{ borderColor: themeColor, color: themeColor }}>
+          <Plus size={18} />
+        </Link>
+      )
+    }
+    if (qty > 0) {
+      return (
+        <div className="flex items-center rounded-xl overflow-hidden border" style={{ borderColor: `${themeColor}40`, backgroundColor: `${themeColor}0f` }}>
+          <button onClick={() => updateQuantity(product.id, qty - 1)} aria-label="إنقاص" className="w-8 h-9 flex items-center justify-center" style={{ color: themeColor }}>
+            <Minus size={15} />
+          </button>
+          <span className="min-w-[20px] text-center text-sm font-bold text-gray-900">{qty.toLocaleString('ar-EG')}</span>
+          <button onClick={() => addItem(product)} aria-label="زيادة" className="w-8 h-9 flex items-center justify-center" style={{ color: themeColor }}>
+            <Plus size={15} />
+          </button>
+        </div>
+      )
+    }
+    return (
+      <button onClick={() => addItem(product)} aria-label="أضف للسلة" className={`${btn} text-white`} style={{ backgroundColor: themeColor, boxShadow: `0 5px 14px -5px ${themeColor}` }}>
+        <Plus size={18} />
+      </button>
+    )
+  }
 
   // ── LIST layout: horizontal row ──
   if (layout === 'list') {
@@ -108,14 +118,14 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
           {lowStockTag && <div className="-mt-0.5">{lowStockTag}</div>}
           <div className="flex items-center justify-between gap-2 mt-auto">
             {priceBlock}
-            <div className="w-32">{addControl}</div>
+            {addControl('list')}
           </div>
         </div>
       </div>
     )
   }
 
-  // ── GRID layout: vertical card with on-image quick-add ──
+  // ── GRID layout: vertical card; add control lives in the footer next to price ──
   return (
     <div className={`group bg-white ${radius} overflow-hidden flex flex-col ${theme.cardSurface} transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${outOfStock ? 'opacity-60' : ''}`}>
       <Link href={href} className="aspect-[4/5] bg-gray-50 relative overflow-hidden block w-full text-right">
@@ -143,17 +153,6 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
         <div className="absolute top-2 right-2">
           <ProductBadges product={product} themeColor={themeColor} />
         </div>
-
-        {/* On-image quick-add — simple in-stock products add directly (one tap = +1) */}
-        {!outOfStock && !hasOptions && (
-          <button
-            onClick={quickAdd}
-            aria-label="أضف للسلة"
-            className="absolute bottom-2 left-2 w-9 h-9 rounded-full bg-white shadow-md ring-1 ring-black/5 flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
-          >
-            {added ? <Check size={17} style={{ color: themeColor }} strokeWidth={2.4} /> : <Plus size={18} style={{ color: themeColor }} />}
-          </button>
-        )}
       </Link>
 
       <div className="p-3 flex flex-col flex-1 gap-1.5">
@@ -163,8 +162,11 @@ export default function ProductCard({ product, slug, themeColor, currency, layou
             <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1 leading-relaxed">{product.description}</p>
           )}
         </Link>
-        {priceBlock}
         {lowStockTag}
+        <div className="flex items-end justify-between gap-2 mt-1">
+          {priceBlock}
+          {addControl('grid')}
+        </div>
       </div>
     </div>
   )
