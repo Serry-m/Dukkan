@@ -4,6 +4,7 @@ import { ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { isAdminEmail } from '@/lib/admin'
 import { isPro } from '@/lib/plan'
+import { storeTypeLabel } from '@/lib/store-types'
 import { BrandMark } from '@/components/BrandMark'
 import DashboardSidebar from '@/components/dashboard/Sidebar'
 import MobileNav from '@/components/dashboard/MobileNav'
@@ -73,8 +74,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 {pro ? 'برو' : 'مجاني'}
               </span>
             </div>
-            {store?.store_type && (
-              <span className="block text-[11.5px] text-[#9a9488] font-medium truncate leading-tight">{store.store_type}</span>
+            {storeTypeLabel(store?.store_type) && (
+              <span className="block text-[11.5px] text-[#9a9488] font-medium truncate leading-tight">{storeTypeLabel(store?.store_type)}</span>
             )}
           </div>
         </div>

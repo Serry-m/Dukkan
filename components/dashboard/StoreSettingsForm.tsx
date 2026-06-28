@@ -8,6 +8,7 @@ import type { Store } from '@/types'
 import { isLightColor } from '@/lib/color'
 import { isPro } from '@/lib/plan'
 import { THEME_LIST } from '@/lib/themes'
+import { STORE_TYPES } from '@/lib/store-types'
 import { ProUpsell, ProBadge } from '@/components/dashboard/ProLock'
 import { Lock, Check, Camera, Store as StoreIcon, CreditCard, Truck, Palette, MessageCircle, LayoutGrid, Info, Copy } from 'lucide-react'
 import { toast } from 'sonner'
@@ -26,14 +27,6 @@ const SECTIONS: { id: Section; label: string; icon: typeof StoreIcon }[] = [
   { id: 'appearance', label: 'المظهر', icon: Palette },
   { id: 'whatsapp', label: 'واتساب', icon: MessageCircle },
   { id: 'home', label: 'الصفحة الرئيسية', icon: LayoutGrid },
-]
-
-const STORE_TYPES = [
-  { id: 'fashion', label: 'أزياء وإكسسوار' },
-  { id: 'food', label: 'طعام' },
-  { id: 'electronics', label: 'إلكترونيات' },
-  { id: 'home', label: 'منزل' },
-  { id: 'other', label: 'أخرى' },
 ]
 
 // Small reusable switch (matches the rest of the dashboard).

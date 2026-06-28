@@ -270,22 +270,6 @@ export default async function DashboardPage() {
             )}
           </div>
 
-          {showSparkline && (
-            <div className="bg-white border border-[#ECE7DC] rounded-2xl shadow-[0_1px_2px_rgba(29,27,22,0.04)] px-[18px] py-4">
-              <div className="flex items-center justify-between mb-3.5">
-                <h2 className="text-[15px] font-extrabold text-[#1d1b16]">الطلبات آخر ٧ أيام</h2>
-                {wow !== null && (
-                  <span className={`text-[12.5px] font-bold px-2.5 py-0.5 rounded-full ${wow >= 0 ? 'text-[#15803d] bg-[#EAF6EC]' : 'text-[#b91c1c] bg-[#FBE9E9]'}`}>
-                    {wow >= 0 ? '▲' : '▼'} {Math.abs(wow).toLocaleString('ar-EG')}٪
-                  </span>
-                )}
-              </div>
-              <Spark data={buckets} />
-              <div className="flex justify-between mt-2 text-[11px] text-[#a8a193] font-semibold">
-                {dayLabels.map((d, i) => <span key={i}>{d}</span>)}
-              </div>
-            </div>
-          )}
         </section>
 
         {/* Right: checklist + top products */}
@@ -334,6 +318,24 @@ export default async function DashboardPage() {
           </aside>
         )}
       </div>
+
+      {/* 7-day orders trend — full width below the row */}
+      {showSparkline && (
+        <div className="mt-[18px] bg-white border border-[#ECE7DC] rounded-2xl shadow-[0_1px_2px_rgba(29,27,22,0.04)] px-[18px] py-4">
+          <div className="flex items-center justify-between mb-3.5">
+            <h2 className="text-[15px] font-extrabold text-[#1d1b16]">الطلبات آخر ٧ أيام</h2>
+            {wow !== null && (
+              <span className={`text-[12.5px] font-bold px-2.5 py-0.5 rounded-full ${wow >= 0 ? 'text-[#15803d] bg-[#EAF6EC]' : 'text-[#b91c1c] bg-[#FBE9E9]'}`}>
+                {wow >= 0 ? '▲' : '▼'} {Math.abs(wow).toLocaleString('ar-EG')}٪
+              </span>
+            )}
+          </div>
+          <Spark data={buckets} />
+          <div className="flex justify-between mt-2 text-[11px] text-[#a8a193] font-semibold">
+            {dayLabels.map((d, i) => <span key={i}>{d}</span>)}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
