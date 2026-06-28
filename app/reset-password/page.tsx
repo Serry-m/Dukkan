@@ -95,8 +95,8 @@ function ResetPasswordForm() {
 
         {!ready && !error && (
           <div className="text-center py-6">
-            <div className="inline-block w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-gray-500 mt-3">جاري التحقق من الرابط...</p>
+            <div className="inline-block w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-[#74716a] mt-3">جاري التحقق من الرابط...</p>
           </div>
         )}
 
@@ -134,7 +134,7 @@ function ResetPasswordForm() {
         <CardFooter>
           <Button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700"
+            className="w-full bg-[#16a34a] hover:bg-[#15803d]"
             disabled={loading}
           >
             {loading ? 'جاري الحفظ...' : 'حفظ كلمة المرور'}
@@ -147,12 +147,12 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-green-50/60 via-white to-white" dir="rtl">
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-green-200/30 rounded-full blur-3xl" />
-      <Card className="relative w-full max-w-md shadow-[var(--shadow-lift)]">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-[#F4F0E8] via-[#FBFAF7] to-[#FBFAF7]" dir="rtl">
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#16a34a]/10 rounded-full blur-3xl" />
+      <Card className="relative w-full max-w-md border-[#ECE7DC] shadow-[var(--shadow-lift)]">
         <CardHeader className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-3">
-            <KeyRound size={22} className="text-green-700" />
+          <div className="w-12 h-12 rounded-2xl bg-[#D8F0DE] flex items-center justify-center mx-auto mb-3">
+            <KeyRound size={22} className="text-[#15803d]" />
           </div>
           <CardTitle className="text-2xl">تعيين كلمة مرور جديدة</CardTitle>
           <CardDescription>أدخل كلمة المرور الجديدة لحسابك</CardDescription>
@@ -160,7 +160,7 @@ export default function ResetPasswordPage() {
         <Suspense fallback={
           <CardContent>
             <div className="text-center py-6">
-              <div className="inline-block w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+              <div className="inline-block w-6 h-6 border-2 border-[#16a34a] border-t-transparent rounded-full animate-spin" />
             </div>
           </CardContent>
         }>

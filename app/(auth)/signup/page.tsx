@@ -63,10 +63,10 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-green-50/60 via-white to-white" dir="rtl">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-[#F4F0E8] via-[#FBFAF7] to-[#FBFAF7]" dir="rtl">
       {/* Ambient brand glow */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-green-200/30 rounded-full blur-3xl" />
-      <Card className="relative w-full max-w-md shadow-[var(--shadow-lift)]">
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#16a34a]/10 rounded-full blur-3xl" />
+      <Card className="relative w-full max-w-md border-[#ECE7DC] shadow-[var(--shadow-lift)]">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3"><BrandMark size={48} className="rounded-2xl" /></div>
           <CardTitle className="text-2xl">إنشاء حساب جديد</CardTitle>
@@ -80,7 +80,7 @@ export default function SignupPage() {
               </div>
             )}
             {success && (
-              <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md space-y-2">
+              <div className="bg-[#D8F0DE] text-[#15803d] border border-[#bfe3c8] text-sm p-3 rounded-lg space-y-2">
                 <p>{success}</p>
                 <Link href="/login" className="inline-block font-bold underline">
                   الذهاب لتسجيل الدخول ←
@@ -125,12 +125,12 @@ export default function SignupPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
+            <Button type="submit" className="w-full bg-[#16a34a] hover:bg-[#15803d]" disabled={loading}>
               {loading ? 'جاري الإنشاء...' : 'إنشاء الحساب'}
             </Button>
-            <p className="text-sm text-center text-gray-500">
+            <p className="text-sm text-center text-[#74716a]">
               لديك حساب بالفعل؟{' '}
-              <Link href="/login" className="text-green-600 hover:underline font-medium">
+              <Link href="/login" className="text-[#15803d] hover:underline font-bold">
                 سجل الدخول
               </Link>
             </p>

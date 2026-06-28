@@ -57,10 +57,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-green-50/60 via-white to-white" dir="rtl">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-gradient-to-b from-[#F4F0E8] via-[#FBFAF7] to-[#FBFAF7]" dir="rtl">
       {/* Ambient brand glow */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-green-200/30 rounded-full blur-3xl" />
-      <Card className="relative w-full max-w-md shadow-[var(--shadow-lift)]">
+      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#16a34a]/10 rounded-full blur-3xl" />
+      <Card className="relative w-full max-w-md border-[#ECE7DC] shadow-[var(--shadow-lift)]">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3"><BrandMark size={48} className="rounded-2xl" /></div>
           <CardTitle className="text-2xl">
@@ -74,7 +74,7 @@ export default function LoginPage() {
         <form onSubmit={mode === 'login' ? handleLogin : handleForgot}>
           <CardContent className="space-y-4">
             {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">{error}</div>}
-            {success && <div className="bg-green-50 text-green-700 text-sm p-3 rounded-md">{success}</div>}
+            {success && <div className="bg-[#D8F0DE] text-[#15803d] border border-[#bfe3c8] text-sm p-3 rounded-lg">{success}</div>}
 
             <div className="space-y-1">
               <Label htmlFor="email">البريد الإلكتروني</Label>
@@ -85,7 +85,7 @@ export default function LoginPage() {
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="password">كلمة المرور</Label>
-                  <button type="button" onClick={() => { setMode('forgot'); setError(null); setSuccess(null) }} className="text-xs text-green-600 hover:underline">
+                  <button type="button" onClick={() => { setMode('forgot'); setError(null); setSuccess(null) }} className="text-xs text-[#15803d] hover:underline font-medium">
                     نسيت كلمة المرور؟
                   </button>
                 </div>
@@ -95,17 +95,17 @@ export default function LoginPage() {
           </CardContent>
 
           <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
+            <Button type="submit" className="w-full bg-[#16a34a] hover:bg-[#15803d]" disabled={loading}>
               {loading ? 'جاري...' : mode === 'login' ? 'دخول' : 'إرسال رابط التعيين'}
             </Button>
 
             {mode === 'login' ? (
-              <p className="text-sm text-center text-gray-500">
+              <p className="text-sm text-center text-[#74716a]">
                 ليس لديك حساب؟{' '}
-                <Link href="/signup" className="text-green-600 hover:underline font-medium">سجل الآن</Link>
+                <Link href="/signup" className="text-[#15803d] hover:underline font-bold">سجل الآن</Link>
               </p>
             ) : (
-              <button type="button" onClick={() => { setMode('login'); setError(null); setSuccess(null) }} className="text-sm text-gray-500 hover:text-gray-700">
+              <button type="button" onClick={() => { setMode('login'); setError(null); setSuccess(null) }} className="text-sm text-[#74716a] hover:text-[#1d1b16]">
                 ← رجوع لتسجيل الدخول
               </button>
             )}
