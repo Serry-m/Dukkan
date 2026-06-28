@@ -4,12 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Search, MessageCircle, X, MapPin, Calendar, ChevronDown, Users, Ticket } from 'lucide-react'
 import CustomerExport from '@/components/dashboard/CustomerExport'
-import { normalizeEgyptianNumber } from '@/lib/whatsapp'
+import { normalizeEgyptianNumber, orderRef } from '@/lib/whatsapp'
 import type { OrderItem, OrderStatus } from '@/types'
 import type { CustomerRecord } from '@/app/dashboard/customers/page'
 
 const ar = (n: number) => n.toLocaleString('ar-EG')
-const orderCode = (id: string) => '#' + id.replace(/-/g, '').slice(0, 4).toUpperCase()
 const monthYear = (iso: string) => new Date(iso).toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' })
 const itemsSummary = (items: OrderItem[]) => items.map((i) => `${i.name} ×${ar(i.quantity)}`).join(' · ') || '—'
 
@@ -252,7 +251,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
                   <div key={h.id} className="flex items-center justify-between gap-2.5 px-[15px] py-2.5 border-b border-[#F1ECE1]">
                     <div className="min-w-0">
                       <div className="font-bold text-[13.5px] truncate">{itemsSummary(h.items)}</div>
-                      <div className="text-[11.5px] text-[#a8a193] font-semibold" dir="rtl">{orderCode(h.id)} · {relTime(h.created_at)}</div>
+                      <div className="text-[11.5px] text-[#a8a193] font-semibold" dir="rtl">{orderRef(h)} · {relTime(h.created_at)}</div>
                     </div>
                     <div className="flex items-center gap-2.5 flex-shrink-0">
                       <span className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${STATUS[h.status].pill}`}>{STATUS[h.status].label}</span>

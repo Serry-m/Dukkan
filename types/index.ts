@@ -70,6 +70,7 @@ export type OrderItem = {
 export type Order = {
   id: string
   store_id: string
+  order_number: number | null  // sequential per-store number (#1001…); null for pre-v23 orders
   items: OrderItem[]
   total: number
   customer_name: string | null

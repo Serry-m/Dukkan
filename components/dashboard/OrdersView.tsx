@@ -7,15 +7,18 @@ import { toast } from 'sonner'
 import { Search, MessageCircle, X, MapPin, Phone, Printer, Bell, ShoppingBag, StickyNote, Package, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import OrderExport from '@/components/dashboard/OrderExport'
-import { normalizeEgyptianNumber } from '@/lib/whatsapp'
+import { normalizeEgyptianNumber, orderRef } from '@/lib/whatsapp'
 import { formatPrice } from '@/lib/currency'
 import type { Order, OrderItem, OrderStatus } from '@/types'
 
-const STATUS: Record<OrderStatus, { label: string; pill: string; avatar: string }> = {
-  pending: { label: 'جديد', pill: 'bg-[#FBEBC8] text-[#92610A]', avatar: 'bg-[#FBEBC8] text-[#92610A]' },
-  confirmed: { label: 'مؤكد', pill: 'bg-[#DCE8FB] text-[#1E4FB0]', avatar: 'bg-[#DCE8FB] text-[#1E4FB0]' },
-  delivered: { label: 'مسلّم', pill: 'bg-[#D8F0DE] text-[#15803d]', avatar: 'bg-[#D8F0DE] text-[#15803d]' },
+const STATUS: Record<OrderStatus, { label: string; pill: string }> = {
+  pending: { label: 'جديد', pill: 'bg-[#FBEBC8] text-[#92610A]' },
+  confirmed: { label: 'مؤكد', pill: 'bg-[#DCE8FB] text-[#1E4FB0]' },
+  delivered: { label: 'مسلّم', pill: 'bg-[#D8F0DE] text-[#15803d]' },
 }
+// Avatars identify the customer, not the status — keep them a calm neutral tint
+// (the status pill already carries the state).
+const AVATAR = 'bg-[#F4F0E8] text-[#5f5c54]'
 const STEPS: OrderStatus[] = ['pending', 'confirmed', 'delivered']
 const TABS: { key: 'all' | OrderStatus; label: string }[] = [
   { key: 'all', label: 'الكل' },
@@ -26,7 +29,6 @@ const TABS: { key: 'all' | OrderStatus; label: string }[] = [
 const RANK: Record<OrderStatus, number> = { pending: 0, confirmed: 1, delivered: 2 }
 
 const ar = (n: number) => n.toLocaleString('ar-EG')
-const orderCode = (id: string) => '#' + id.replace(/-/g, '').slice(0, 4).toUpperCase()
 const initialOf = (name: string | null) => name?.trim().charAt(0) ?? '؟'
 const itemsSummary = (items: OrderItem[] | null) => (items ?? []).map((i) => `${i.name} ×${ar(i.quantity)}`).join(' · ') || '—'
 
@@ -57,7 +59,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
   const q = query.trim()
   const list = orders.filter((o) => {
     if (filter !== 'all' && stat(o) !== filter) return false
-    if (q && !(o.customer_name ?? '').includes(q) && !orderCode(o.id).includes(q.toUpperCase()) && !(o.customer_phone ?? '').includes(q)) return false
+    if (q && !(o.customer_name ?? '').includes(q) && !orderRef(o).includes(q) && !String(o.order_number ?? '').includes(q) && !(o.customer_phone ?? '').includes(q)) return false
     return true
   })
 
@@ -82,7 +84,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
 
   const waLink = (o: Order) =>
     o.customer_phone
-      ? `https://wa.me/${normalizeEgyptianNumber(o.customer_phone)}?text=${encodeURIComponent(`مرحباً ${o.customer_name ?? ''}، بخصوص طلبك ${orderCode(o.id)} من ${storeName} 🛍️`)}`
+      ? `https://wa.me/${normalizeEgyptianNumber(o.customer_phone)}?text=${encodeURIComponent(`مرحباً ${o.customer_name ?? ''}، بخصوص طلبك ${orderRef(o)} من ${storeName} 🛍️`)}`
       : null
 
   function printOrder(o: Order) {
@@ -92,10 +94,10 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
     const rows = items
       .map((i) => `<tr><td>${i.name}${i.options ? ` <span style="color:#888;font-size:11px">(${Object.entries(i.options).map(([k, v]) => `${k}: ${v}`).join('، ')})</span>` : ''}</td><td style="text-align:center">×${ar(i.quantity)}</td><td style="text-align:left">${ar(i.price * i.quantity)}</td></tr>`)
       .join('')
-    w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>طلب ${orderCode(o.id)}</title>
+    w.document.write(`<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>طلب ${orderRef(o)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>body{font-family:'Cairo',system-ui,sans-serif;color:#1d1b16;padding:26px;max-width:480px;margin:0 auto}h1{font-size:20px;margin:0 0 2px}.muted{color:#777;font-size:12px}hr{border:none;border-top:1px dashed #ddd;margin:14px 0}table{width:100%;border-collapse:collapse;margin-top:8px}td,th{padding:7px 0;border-bottom:1px solid #eee;font-size:13px;text-align:right}.tot{text-align:left;font-weight:800;font-size:15px;margin-top:12px}.info{font-size:13px;line-height:1.9}</style></head>
-<body><h1>${storeName}</h1><div class="muted">طلب ${orderCode(o.id)} · ${new Date(o.created_at).toLocaleString('ar-EG')}</div><hr/>
+<body><h1>${storeName}</h1><div class="muted">طلب ${orderRef(o)} · ${new Date(o.created_at).toLocaleString('ar-EG')}</div><hr/>
 <div class="info"><b>العميل:</b> ${o.customer_name ?? '—'}<br/><b>الهاتف:</b> ${o.customer_phone ?? '—'}<br/><b>العنوان:</b> ${o.customer_address ?? '—'}${o.notes ? `<br/><b>ملاحظات:</b> ${o.notes}` : ''}</div>
 <table><tr><th>المنتج</th><th style="text-align:center">الكمية</th><th style="text-align:left">الإجمالي</th></tr>${rows}</table>
 <div class="tot">الإجمالي: ${formatPrice(o.total, currency)}</div>
@@ -148,15 +150,15 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+        <div className="flex gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
           {TABS.map((t) => {
             const active = filter === t.key
             return (
               <button
                 key={t.key}
                 onClick={() => setFilter(t.key)}
-                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}
+                className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-[11px] font-bold text-[13px] border transition-colors ${active ? 'bg-[#1d1b16] border-[#1d1b16] text-white' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}
               >
                 {t.label}
                 <span className={`text-[11px] font-extrabold px-1.5 rounded-full ${active ? 'bg-white/20 text-white' : 'bg-[#F4F0E8] text-[#9a9488]'}`}>
@@ -173,7 +175,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
             onChange={(e) => setQuery(e.target.value)}
             placeholder="ابحث باسم العميل أو رقم الطلب…"
             maxLength={60}
-            className="bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] text-[#1d1b16] w-[240px] max-w-[62vw] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15"
+            className="w-full lg:w-[240px] bg-white border border-[#ECE7DC] rounded-[11px] py-2.5 pr-9 pl-3 text-[13px] text-[#1d1b16] outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15"
           />
         </div>
       </div>
@@ -201,9 +203,9 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
                   onClick={() => setOpenId(o.id)}
                   className="grid grid-cols-[96px_1.5fr_1.7fr_96px_110px_140px] gap-3 px-[18px] py-3 items-center border-t border-[#F1ECE1] cursor-pointer hover:bg-[#FBFAF7] transition-colors"
                 >
-                  <span className="font-extrabold text-[13px] text-[#74716a]" dir="ltr">{orderCode(o.id)}</span>
+                  <span className="font-extrabold text-[13px] text-[#74716a]" dir="ltr">{orderRef(o)}</span>
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base flex-shrink-0 ${STATUS[s].avatar}`}>{initialOf(o.customer_name)}</div>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base flex-shrink-0 ${AVATAR}`}>{initialOf(o.customer_name)}</div>
                     <div className="min-w-0">
                       <div className="font-bold text-[13.5px] truncate">{o.customer_name ?? 'عميل'}</div>
                       <div className="text-[11.5px] text-[#a8a193] font-semibold">{relTime(o.created_at)}</div>
@@ -232,13 +234,13 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
               return (
                 <div key={o.id} onClick={() => setOpenId(o.id)} className="bg-white border border-[#ECE7DC] rounded-2xl p-3.5 shadow-[0_1px_2px_rgba(29,27,22,0.04)] cursor-pointer">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base flex-shrink-0 ${STATUS[s].avatar}`}>{initialOf(o.customer_name)}</div>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base flex-shrink-0 ${AVATAR}`}>{initialOf(o.customer_name)}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-extrabold text-[14.5px]">{o.customer_name ?? 'عميل'}</span>
                         <span className={`text-[11.5px] font-extrabold px-2.5 py-0.5 rounded-full ${STATUS[s].pill}`}>{STATUS[s].label}</span>
                       </div>
-                      <div className="text-xs text-[#a8a193] font-semibold" dir="rtl">{orderCode(o.id)} · {relTime(o.created_at)}</div>
+                      <div className="text-xs text-[#a8a193] font-semibold" dir="rtl">{orderRef(o)} · {relTime(o.created_at)}</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between gap-2.5 pt-3 border-t border-[#F1ECE1]">
@@ -265,10 +267,10 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
             {/* head */}
             <div className="flex items-center justify-between gap-2.5 px-[18px] py-4 border-b border-[#ECE7DC] flex-shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base flex-shrink-0 ${STATUS[stat(open)].avatar}`}>{initialOf(open.customer_name)}</div>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-base flex-shrink-0 ${AVATAR}`}>{initialOf(open.customer_name)}</div>
                 <div className="min-w-0">
                   <div className="font-extrabold text-base">{open.customer_name ?? 'عميل'}</div>
-                  <div className="text-xs text-[#a8a193] font-semibold" dir="rtl">{orderCode(open.id)} · {relTime(open.created_at)}</div>
+                  <div className="text-xs text-[#a8a193] font-semibold" dir="rtl">{orderRef(open)} · {relTime(open.created_at)}</div>
                 </div>
               </div>
               <button onClick={() => setOpenId(null)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center flex-shrink-0 hover:bg-[#F4F0E8] transition-colors">

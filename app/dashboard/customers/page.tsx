@@ -11,7 +11,7 @@ export type CustomerRecord = {
   lastIso: string
   firstIso: string
   vip: boolean
-  history: { id: string; items: OrderItem[]; status: OrderStatus; total: number; created_at: string }[]
+  history: { id: string; order_number: number | null; items: OrderItem[]; status: OrderStatus; total: number; created_at: string }[]
 }
 
 // Best-effort "city" from the free-text address (last comma-separated part = governorate).
@@ -33,7 +33,7 @@ export default async function CustomersPage() {
 
   const { data: orders } = await supabase
     .from('orders')
-    .select('id, customer_name, customer_phone, customer_address, items, total, status, created_at')
+    .select('id, order_number, customer_name, customer_phone, customer_address, items, total, status, created_at')
     .eq('store_id', store?.id ?? '')
     .order('created_at', { ascending: false })
 
@@ -54,7 +54,7 @@ export default async function CustomersPage() {
     e.ordersCount += 1
     e.total += Number(o.total)
     if (new Date(o.created_at) < new Date(e.firstIso)) e.firstIso = o.created_at
-    e.history.push({ id: o.id, items: (o.items ?? []) as OrderItem[], status: (o.status ?? 'pending') as OrderStatus, total: Number(o.total), created_at: o.created_at })
+    e.history.push({ id: o.id, order_number: o.order_number ?? null, items: (o.items ?? []) as OrderItem[], status: (o.status ?? 'pending') as OrderStatus, total: Number(o.total), created_at: o.created_at })
   }
   const customers = [...map.values()]
   customers.forEach((c) => { c.vip = c.ordersCount >= 5 || c.total >= 3000 })

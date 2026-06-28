@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import type { Store } from '@/types'
 import { useCartStore } from '@/lib/cart-store'
-import { buildWhatsAppOrderUrl, saveOrder, orderCode } from '@/lib/whatsapp'
+import { buildWhatsAppOrderUrl, saveOrder } from '@/lib/whatsapp'
 import { currencyLabel } from '@/lib/currency'
 import { readableText } from '@/lib/color'
 import { effectivePrice } from '@/lib/price'
@@ -111,13 +111,12 @@ export default function CartBar({ store }: { store: Store }) {
       notes: notes.trim(),
       discount: appliedCoupon && discount > 0 ? { code: appliedCoupon.code, amount: discount } : undefined,
     }
-    // Generate the order id up front so the WhatsApp message can carry the matching
-    // reference. A DB failure must NOT block the order — the WhatsApp message IS the order.
-    const orderId = crypto.randomUUID()
+    // Save the order to get its sequential number for the WhatsApp message.
+    // A DB failure must NOT block the order — the WhatsApp message IS the order.
     let orderRef: string | undefined
     try {
-      await saveOrder(store, items, customer, orderId)
-      orderRef = orderCode(orderId)
+      const num = await saveOrder(store, items, customer)
+      if (num != null) orderRef = `#${num}`
     } catch (err) {
       console.error('Failed to save order:', err)
     }
