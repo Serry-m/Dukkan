@@ -183,13 +183,13 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     <form onSubmit={handleSubmit} className="pb-24">
       {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">{error}</div>}
 
-      {/* Section chips */}
-      <div className="flex gap-2 flex-wrap mb-5">
+      {/* Section chips — scroll horizontally on mobile instead of wrapping */}
+      <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap mb-5">
         {SECTIONS.map((s) => {
           const active = section === s.id
           const Icon = s.icon
           return (
-            <button key={s.id} type="button" onClick={() => setSection(s.id)} className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-[13.5px] border transition-colors ${active ? 'bg-[#16a34a] border-[#16a34a] text-white shadow-[0_5px_14px_rgba(22,163,74,0.2)]' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
+            <button key={s.id} type="button" onClick={() => setSection(s.id)} className={`flex-shrink-0 inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl font-bold text-[13.5px] border transition-colors ${active ? 'bg-[#16a34a] border-[#16a34a] text-white shadow-[0_5px_14px_rgba(22,163,74,0.2)]' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8] hover:text-[#1d1b16]'}`}>
               <Icon size={16} /> {s.label}
             </button>
           )
@@ -288,11 +288,11 @@ export default function StoreSettingsForm({ store, userId }: Props) {
             <div className="space-y-2">
               <Label className="flex items-center gap-2">روابط التواصل (اختياري) {!pro && <ProBadge />}</Label>
               {pro ? (
-                <>
-                  <Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="إنستجرام — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
-                  <Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="فيسبوك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
-                  <Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="تيك توك — اسم المستخدم أو الرابط" dir="ltr" maxLength={150} />
-                </>
+                <div className="space-y-2.5">
+                  <div className="space-y-1"><label className="text-xs font-medium text-gray-600">إنستجرام</label><Input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="اسم المستخدم أو الرابط" dir="ltr" maxLength={150} /></div>
+                  <div className="space-y-1"><label className="text-xs font-medium text-gray-600">فيسبوك</label><Input value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="اسم المستخدم أو الرابط" dir="ltr" maxLength={150} /></div>
+                  <div className="space-y-1"><label className="text-xs font-medium text-gray-600">تيك توك</label><Input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="اسم المستخدم أو الرابط" dir="ltr" maxLength={150} /></div>
+                </div>
               ) : <ProUpsell feature="روابط التواصل الاجتماعي" />}
             </div>
           </CardContent></Card>
