@@ -158,7 +158,14 @@ export default function StoreSettingsForm({ store, userId }: Props) {
     }
     toast.success(store ? 'تم حفظ التغييرات' : 'تم إنشاء المتجر')
     setLoading(false)
-    router.refresh()
+    // A brand-new store: take the owner to the dashboard home so they land on
+    // the setup checklist (next step: add the first product). Edits just refresh.
+    if (store) {
+      router.refresh()
+    } else {
+      router.push('/dashboard')
+      router.refresh()
+    }
   }
 
   const dirty = !store || (
