@@ -52,16 +52,21 @@ export function buildWhatsAppOrderUrl(
   // The customer's opening line — the merchant can customise it; default otherwise.
   const greeting = store.message_template?.trim()
     ? store.message_template.trim()
-    : `مرحباً! حابب أطلب من ${store.name} 🛍️`
+    : `مرحباً! حابب أطلب من ${store.name}`
 
-  // Clean, WhatsApp-native message (uses *bold* for scannability). We do NOT echo
-  // the merchant's own payment methods back to them — the customer saw those in the
-  // cart, and the closing line asks the merchant to confirm the payment method.
+  // A Left-to-Right mark keeps the Latin order code (#A1B2) from being flipped
+  // when it sits inside an Arabic (right-to-left) line.
+  const refLine = orderRef ? [`رقم الطلب: ‎${orderRef}‎`] : []
+
+  // Clean, WhatsApp-native message (uses *bold* for scannability). No emojis —
+  // they render as broken boxes on some devices. We also do NOT echo the merchant's
+  // own payment methods back to them — the customer saw those in the cart, and the
+  // closing line asks the merchant to confirm the payment method.
   const message = [
     greeting,
     ``,
-    `📦 *تفاصيل الطلب*`,
-    ...(orderRef ? [`رقم الطلب: ${orderRef}`] : []),
+    `*تفاصيل الطلب*`,
+    ...refLine,
     ...lines,
     ``,
     ...(showBreakdown ? [`المجموع الفرعي: ${formatPrice(subtotal, store.currency)}`] : []),
@@ -69,13 +74,13 @@ export function buildWhatsAppOrderUrl(
     ...(deliveryFee > 0 ? [`الشحن: ${formatPrice(deliveryFee, store.currency)}`] : []),
     `*الإجمالي: ${formatPrice(total, store.currency)}*`,
     ``,
-    `📋 *بياناتي*`,
+    `*بياناتي*`,
     `الاسم: ${customer.name}`,
-    `الهاتف: ${customer.phone}`,
+    `الهاتف: ‎${customer.phone}`,
     ...(customer.address?.trim() ? [`العنوان: ${customer.address.trim()}`] : []),
     ...(customer.notes?.trim() ? [`ملاحظات: ${customer.notes.trim()}`] : []),
     ``,
-    `من فضلك أكّد الطلب وقول لي طريقة الدفع 🙏`,
+    `من فضلك أكّد الطلب وقول لي طريقة الدفع.`,
   ].join('\n')
 
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
