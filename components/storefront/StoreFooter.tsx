@@ -11,7 +11,7 @@ export function StoreFooter({ store, themeColor }: { store: Store; themeColor: s
 
   return (
     <footer className="mt-10 border-t border-gray-100 bg-white">
-      <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-8 space-y-5">
+      <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-[1400px] mx-auto px-4 py-8 space-y-5">
         {/* About */}
         {store.about && (
           <div>

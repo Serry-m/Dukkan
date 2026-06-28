@@ -130,7 +130,7 @@ export default function ProductGrid({ products, store }: Props) {
       {store.show_collection_tiles && categories.length > 0 && activeCategory === ALL && !query.trim() && (
         <section className="mb-7">
           <SectionHeading title="تصفّح حسب الفئة" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
             {categories.map((cat) => {
               const cover = products.find((p) => p.category?.trim() === cat && p.image_url)?.image_url
               return (
@@ -182,7 +182,7 @@ type CardProps = { slug: string; themeColor: string; currency: string; layout: '
 
 function Grid({ products, layout, cardProps }: { products: Product[]; layout: 'grid' | 'list'; cardProps: CardProps }) {
   return (
-    <div className={layout === 'list' ? 'grid grid-cols-1 md:grid-cols-2 gap-2.5' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4'}>
+    <div className={layout === 'list' ? 'grid grid-cols-1 md:grid-cols-2 gap-2.5' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4'}>
       {products.map((product) => (
         <ProductCard key={product.id} product={product} {...cardProps} />
       ))}

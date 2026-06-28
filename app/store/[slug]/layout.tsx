@@ -115,7 +115,7 @@ export default async function StorefrontLayout({ children, params }: Props) {
         {/* Theme-colored accent stripe */}
         <div className="h-[3px]" style={{ backgroundColor: themeColor }} />
 
-        <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-lg sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-[1400px] mx-auto px-4 py-3 flex items-center gap-3">
           {/* Logo */}
           {store.logo_url ? (
             <img
