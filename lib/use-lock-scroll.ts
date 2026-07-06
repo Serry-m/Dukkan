@@ -1,24 +1,18 @@
 import { useEffect } from 'react'
 
-// While a full-height drawer/overlay is open, lock the page's scroll containers
-// (the dashboard <main> that actually scrolls, plus <body>/<html>) so that
-// touch-dragging on the drawer — including on its non-scrolling header/footer —
-// can't chain into the page behind it on mobile. Restores exactly on close.
+// While a full-height drawer is open, freeze ONLY the dashboard's scroll
+// container (the <main> that scrolls) so touch-dragging on the drawer can't
+// chain into the page behind it. We deliberately do NOT touch <body>/<html>:
+// on iOS, overflow:hidden on the document freezes scrolling everywhere —
+// including the drawer's own inner scroll. <main> is a normal overflow-auto
+// element, so hiding its overflow stops it cleanly and leaves inner scroll alone.
 export function useLockScroll(active: boolean) {
   useEffect(() => {
     if (!active) return
-    const main = document.querySelector('main')
-    const html = document.documentElement
-    const prevMain = main?.style.overflow ?? ''
-    const prevBody = document.body.style.overflow
-    const prevHtml = html.style.overflow
-    if (main) main.style.overflow = 'hidden'
-    document.body.style.overflow = 'hidden'
-    html.style.overflow = 'hidden'
-    return () => {
-      if (main) main.style.overflow = prevMain
-      document.body.style.overflow = prevBody
-      html.style.overflow = prevHtml
-    }
+    const main = document.querySelector('main') as HTMLElement | null
+    if (!main) return
+    const prev = main.style.overflow
+    main.style.overflow = 'hidden'
+    return () => { main.style.overflow = prev }
   }, [active])
 }
