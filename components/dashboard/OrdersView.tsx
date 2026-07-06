@@ -278,7 +278,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
 
       {/* Detail drawer */}
       {open && (
-        <div className="fixed inset-0 z-40 flex justify-start">
+        <div className="fixed inset-0 z-[60] flex justify-start">
           <div onClick={() => setOpenId(null)} className="absolute inset-0 bg-[#1d1b16]/30 dk-fade-in" />
           <div className="relative w-[430px] max-w-[92vw] h-[100dvh] bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
             {/* head */}
@@ -385,7 +385,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
             </div>
 
             {/* footer */}
-            <div className="flex-shrink-0 border-t border-[#ECE7DC] px-[18px] py-3.5 flex gap-2.5 bg-[#FBFAF7]">
+            <div className="flex-shrink-0 border-t border-[#ECE7DC] px-[18px] pt-3.5 pb-[max(14px,env(safe-area-inset-bottom))] flex gap-2.5 bg-[#FBFAF7]">
               {waLink(open) && (
                 <a href={waLink(open)!} target="_blank" rel="noreferrer" className="flex-1 inline-flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white font-extrabold text-sm py-3 rounded-xl shadow-[0_5px_14px_rgba(22,163,74,0.22)] transition-colors">
                   <MessageCircle size={17} /> رد عبر واتساب

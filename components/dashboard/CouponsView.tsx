@@ -222,7 +222,7 @@ export default function CouponsView({
 
       {/* Create drawer */}
       {createOpen && (
-        <div className="fixed inset-0 z-40 flex justify-start">
+        <div className="fixed inset-0 z-[60] flex justify-start">
           <div onClick={() => setCreateOpen(false)} className="absolute inset-0 bg-[#1d1b16]/30 dk-fade-in" />
           <div className="relative w-[420px] max-w-[92vw] h-[100dvh] bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
             <div className="flex items-center justify-between gap-2.5 px-[18px] py-4 border-b border-[#ECE7DC] flex-shrink-0">
