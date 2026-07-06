@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLockScroll } from '@/lib/use-lock-scroll'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -46,6 +47,7 @@ export default function ProductsView({
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
   const [busy, setBusy] = useState(false)
   const [catsOpen, setCatsOpen] = useState(false)
+  useLockScroll(catsOpen)
   const [arrangeMode, setArrangeMode] = useState(false)
   const [arrangeList, setArrangeList] = useState<Product[]>([])
 

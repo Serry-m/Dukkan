@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLockScroll } from '@/lib/use-lock-scroll'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Plus, Search, X, Copy, Check, Calendar, Ticket } from 'lucide-react'
@@ -33,6 +34,7 @@ export default function CouponsView({
   const [filter, setFilter] = useState<Tab>('all')
   const [query, setQuery] = useState('')
   const [createOpen, setCreateOpen] = useState(false)
+  useLockScroll(createOpen)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   // create form

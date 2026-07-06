@@ -8,6 +8,7 @@ import { Search, MessageCircle, X, MapPin, Phone, Printer, Bell, ShoppingBag, St
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import OrderExport from '@/components/dashboard/OrderExport'
 import { normalizeEgyptianNumber, orderRef } from '@/lib/whatsapp'
+import { useLockScroll } from '@/lib/use-lock-scroll'
 import { formatPrice } from '@/lib/currency'
 import type { Order, OrderItem, OrderStatus } from '@/types'
 
@@ -63,6 +64,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
   const [filter, setFilter] = useState<'all' | OrderStatus>(initialFilter)
   const [query, setQuery] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
+  useLockScroll(openId !== null)
   const [overrides, setOverrides] = useState<Record<string, OrderStatus>>({})
   const [busy, setBusy] = useState(false)
 

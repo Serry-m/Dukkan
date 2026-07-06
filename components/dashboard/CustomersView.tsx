@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useLockScroll } from '@/lib/use-lock-scroll'
 import Link from 'next/link'
 import { Search, MessageCircle, X, MapPin, Calendar, ChevronDown, Users, Ticket } from 'lucide-react'
 import CustomerExport from '@/components/dashboard/CustomerExport'
@@ -42,6 +43,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<'spent' | 'orders' | 'recent' | 'name'>('spent')
   const [openPhone, setOpenPhone] = useState<string | null>(null)
+  useLockScroll(openPhone !== null)
 
   const idx = (phone: string) => customers.findIndex((c) => c.phone === phone)
   const seg = (c: CustomerRecord): 'repeat' | 'new' => (c.ordersCount >= 2 ? 'repeat' : 'new')
