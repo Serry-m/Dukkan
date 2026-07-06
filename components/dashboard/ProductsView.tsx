@@ -281,12 +281,12 @@ export default function ProductsView({
       {catsOpen && (
         <div className="fixed inset-0 z-40 flex justify-start">
           <div onClick={() => setCatsOpen(false)} className="absolute inset-0 bg-[#1d1b16]/30 dk-fade-in" />
-          <div className="relative w-[420px] max-w-[92vw] h-full bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
+          <div className="relative w-[420px] max-w-[92vw] h-[100dvh] bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
             <div className="flex items-center justify-between gap-2.5 px-[18px] py-4 border-b border-[#ECE7DC] flex-shrink-0">
               <div><div className="font-extrabold text-[17px]">التصنيفات</div><div className="text-xs text-[#74716a] mt-0.5">رتّب أو عدّل تصنيفات متجرك — تظهر للعملاء كفلاتر في المتجر.</div></div>
               <button onClick={() => setCatsOpen(false)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
             </div>
-            <div className="flex-1 overflow-y-auto p-[18px]">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-[18px]">
               <CategoriesManager storeId={storeId} categories={categories} />
             </div>
           </div>

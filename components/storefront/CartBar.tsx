@@ -168,7 +168,7 @@ export default function CartBar({ store }: { store: Store }) {
         </SheetTrigger>
       )}
 
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[92vh] overflow-auto px-4 pb-8 max-w-lg mx-auto" dir="rtl">
+      <SheetContent side="bottom" className="rounded-t-2xl max-h-[90dvh] overflow-auto overscroll-contain px-4 pb-8 max-w-lg mx-auto" dir="rtl">
 
         {/* ── Checkout: cart + details + payment, all in one ── */}
         {step === 'checkout' && (

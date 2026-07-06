@@ -218,7 +218,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
       {open && (
         <div className="fixed inset-0 z-40 flex justify-start">
           <div onClick={() => setOpenPhone(null)} className="absolute inset-0 bg-[#1d1b16]/30 dk-fade-in" />
-          <div className="relative w-[430px] max-w-[92vw] h-full bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
+          <div className="relative w-[430px] max-w-[92vw] h-[100dvh] bg-[#FBFAF7] border-l border-[#ECE7DC] shadow-[-18px_0_50px_rgba(29,27,22,0.16)] flex flex-col dk-drawer-in">
             <div className="flex items-center justify-between gap-2.5 px-[18px] py-4 border-b border-[#ECE7DC] flex-shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className={`w-[46px] h-[46px] rounded-[13px] flex items-center justify-center font-extrabold text-lg flex-shrink-0 ${AVATARS[idx(open.phone) % AVATARS.length]}`}>{open.name.charAt(0)}</div>
@@ -230,7 +230,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
               <button onClick={() => setOpenPhone(null)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center flex-shrink-0 hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-[18px] flex flex-col gap-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
               {/* KPIs */}
               <div className="grid grid-cols-3 gap-2.5">
                 <div className="bg-white border border-[#ECE7DC] rounded-[13px] p-3 text-center"><div className="text-xl font-extrabold">{ar(open.ordersCount)}</div><div className="text-[11.5px] text-[#74716a] font-semibold mt-0.5">طلب</div></div>
