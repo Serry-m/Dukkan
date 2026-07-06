@@ -184,7 +184,7 @@ export default async function AdminPage() {
                     <span className="text-gray-400 tabular-nums hidden sm:inline">
                       {new Date(u.created_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}
                     </span>
-                    <AdminAccountPro userId={u.id} pending={u.pendingPro} />
+                    <AdminAccountPro userId={u.id} email={u.email ?? ''} pending={u.pendingPro} />
                   </div>
                 </div>
               ))}

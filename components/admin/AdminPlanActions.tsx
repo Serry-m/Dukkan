@@ -3,27 +3,40 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { ChevronDown } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 
-type Action = 'grant' | 'extend' | 'revoke'
+const DURATIONS = [
+  { d: 30, l: '٣٠ يوم' },
+  { d: 90, l: '٩٠ يوم' },
+  { d: 365, l: 'سنة كاملة' },
+]
 
 export default function AdminPlanActions({ storeId, isPro }: { storeId: string; isPro: boolean }) {
   const router = useRouter()
-  const [loading, setLoading] = useState<Action | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  async function run(action: Action) {
-    setLoading(action)
+  async function run(action: 'grant' | 'extend' | 'revoke', days?: number) {
+    setLoading(true)
     const res = await fetch('/api/admin/set-plan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ storeId, action }),
+      body: JSON.stringify({ storeId, action, days }),
     })
-    setLoading(null)
+    setLoading(false)
     if (!res.ok) {
       toast.error('فشل تحديث الاشتراك')
       return
     }
     toast.success(
-      action === 'revoke' ? 'تم إلغاء Pro' : action === 'extend' ? 'تم تمديد 30 يوم' : 'تم تفعيل Pro 30 يوم'
+      action === 'revoke' ? 'تم إلغاء Pro'
+      : action === 'extend' ? `تم التمديد ${days} يوم`
+      : `تم تفعيل Pro ${days} يوم`
     )
     router.refresh()
   }
@@ -33,17 +46,29 @@ export default function AdminPlanActions({ storeId, isPro }: { storeId: string; 
   return (
     <div className="flex items-center gap-1.5">
       {!isPro ? (
-        <button onClick={() => run('grant')} disabled={loading !== null} className={`${btn} bg-green-600 text-white hover:bg-green-700`}>
-          {loading === 'grant' ? '...' : 'تفعيل Pro'}
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger disabled={loading} className={`${btn} bg-green-600 text-white hover:bg-green-700 inline-flex items-center gap-1`}>
+            {loading ? '...' : 'تفعيل Pro'} <ChevronDown size={12} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {DURATIONS.map((x) => (
+              <DropdownMenuItem key={x.d} onClick={() => run('grant', x.d)}>{x.l}</DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       ) : (
         <>
-          <button onClick={() => run('extend')} disabled={loading !== null} className={`${btn} bg-green-50 text-green-700 hover:bg-green-100`}>
-            {loading === 'extend' ? '...' : '+٣٠ يوم'}
-          </button>
-          <button onClick={() => run('revoke')} disabled={loading !== null} className={`${btn} text-red-500 hover:bg-red-50`}>
-            {loading === 'revoke' ? '...' : 'إلغاء'}
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger disabled={loading} className={`${btn} bg-green-50 text-green-700 hover:bg-green-100 inline-flex items-center gap-1`}>
+              {loading ? '...' : 'تمديد'} <ChevronDown size={12} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {DURATIONS.map((x) => (
+                <DropdownMenuItem key={x.d} onClick={() => run('extend', x.d)}>+ {x.l}</DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button onClick={() => run('revoke')} disabled={loading} className={`${btn} text-red-500 hover:bg-red-50`}>إلغاء</button>
         </>
       )}
     </div>

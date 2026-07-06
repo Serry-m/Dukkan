@@ -14,12 +14,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
 
-  const { storeId, action } = (await request.json()) as { storeId?: string; action?: Action }
-  if (!storeId || !action || !ACTIONS.includes(action)) {
+  const { storeId, userId, action } = (await request.json()) as { storeId?: string; userId?: string; action?: Action }
+  if (!action || !ACTIONS.includes(action)) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 })
   }
 
   const admin = createAdminClient()
+
+  // ── Account-level delete: a store-less signup (cleanup test/spam). ──
+  if (userId && !storeId) {
+    if (action !== 'delete-account') {
+      return NextResponse.json({ error: 'bad_request' }, { status: 400 })
+    }
+    let email: string | null = null
+    try { const { data } = await admin.auth.admin.getUserById(userId); email = data.user?.email ?? null } catch { /* ignore */ }
+    await admin.auth.admin.deleteUser(userId)
+    await logAdminAction(admin, { adminEmail: user!.email!, action: 'delete_account', targetEmail: email })
+    return NextResponse.json({ ok: true })
+  }
+
+  if (!storeId) {
+    return NextResponse.json({ error: 'bad_request' }, { status: 400 })
+  }
 
   // Look up the store (owner + email) for the action + audit trail.
   const { data: store } = await admin

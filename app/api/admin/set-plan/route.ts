@@ -12,10 +12,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
 
-  const { storeId, userId, action } = await request.json()
+  const { storeId, userId, action, days } = await request.json()
   if (!['grant', 'extend', 'revoke'].includes(action) || (!storeId && !userId)) {
     return NextResponse.json({ error: 'bad_request' }, { status: 400 })
   }
+  // Duration for grant/extend (default 30). Bounded 1..730 days.
+  const dur = Number.isInteger(days) && days > 0 && days <= 730 ? days : PRO_DURATION_DAYS
 
   const admin = createAdminClient()
   const adminEmail = user!.email!
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
     // grant / extend (pre-store: both = 30 days from now)
     const exp = new Date()
-    exp.setDate(exp.getDate() + PRO_DURATION_DAYS)
+    exp.setDate(exp.getDate() + dur)
     const { error } = await admin
       .from('pending_pro')
       .upsert({ user_id: userId, plan_expires_at: exp.toISOString(), granted_by: adminEmail })
@@ -57,7 +59,7 @@ export async function POST(request: NextRequest) {
       base = new Date(store.plan_expires_at)
     }
   }
-  base.setDate(base.getDate() + PRO_DURATION_DAYS)
+  base.setDate(base.getDate() + dur)
 
   await admin.from('stores').update({ plan: 'pro', plan_expires_at: base.toISOString() }).eq('id', storeId)
   await logAdminAction(admin, { adminEmail, action, targetStoreId: storeId, detail: `حتى ${base.toLocaleDateString('ar-EG')}` })
