@@ -104,13 +104,13 @@ export default function AdminStoreList({ stores }: { stores: StoreRow[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] py-12 text-center text-sm text-gray-400">
+        <div className="bg-white rounded-2xl border border-[#ECE7DC] py-12 text-center text-sm text-gray-400">
           لا توجد متاجر مطابقة
         </div>
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-2xl ring-1 ring-foreground/[0.07] shadow-[var(--shadow-soft)] overflow-hidden">
+          <div className="hidden md:block bg-white rounded-2xl border border-[#ECE7DC] shadow-[var(--shadow-soft)] overflow-hidden">
             <table className="w-full text-sm text-right">
               <thead>
                 <tr className="bg-gray-50/70 text-[11px] font-bold text-gray-400 border-b border-gray-100">
@@ -157,7 +157,7 @@ export default function AdminStoreList({ stores }: { stores: StoreRow[] }) {
           {/* Mobile cards */}
           <div className="md:hidden space-y-2">
             {filtered.map((s) => (
-              <div key={s.id} className={`bg-white rounded-xl ring-1 ring-foreground/[0.07] p-4 ${s.atRisk ? 'ring-amber-200' : ''}`}>
+              <div key={s.id} className={`bg-white rounded-xl border border-[#ECE7DC] p-4 ${s.atRisk ? 'ring-amber-200' : ''}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <Link href={`/admin/store/${s.id}`} className="font-bold text-gray-900 truncate">{s.name}</Link>
                   <a href={`/store/${s.slug}`} target="_blank" rel="noreferrer" aria-label="عرض المتجر">

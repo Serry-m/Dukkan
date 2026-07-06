@@ -6,6 +6,7 @@ import { isAdminEmail } from '@/lib/admin'
 import { isPro, PRO_PRICE_EGP } from '@/lib/plan'
 import { BrandMark } from '@/components/BrandMark'
 import AdminStoreList from '@/components/admin/AdminStoreList'
+import AdminAccountPro from '@/components/admin/AdminAccountPro'
 import { formatPrice } from '@/lib/currency'
 import { Store, Crown, Wallet } from 'lucide-react'
 
@@ -35,6 +36,11 @@ export default async function AdminPage() {
     if (batch.length < 1000) break
   }
   const emailById = new Map(allUsers.map((u) => [u.id, u.email ?? '']))
+
+  // Pro grants parked before store creation (migration v24). Safe if the table
+  // isn't there yet — the query just returns null.
+  const { data: pendingRows } = await admin.from('pending_pro').select('user_id, plan_expires_at')
+  const pendingSet = new Set((pendingRows ?? []).map((r) => r.user_id))
 
   // Product counts per store.
   const { data: productRows } = await admin.from('products').select('store_id')
@@ -74,8 +80,9 @@ export default async function AdminPage() {
       lastOrderAt: lastOrderAt.get(s.id) ?? null,
       // Activated = ready to sell: has WhatsApp + at least one product.
       activated: !!s.whatsapp_number?.trim() && products > 0,
-      // At risk = paying but no orders in the last 30 days.
-      atRisk: pro && o30 === 0,
+      // At risk = paying but no orders in 30 days — but NOT a store younger than
+      // 14 days (a freshly-activated store hasn't had a fair chance to sell yet).
+      atRisk: pro && o30 === 0 && (now - new Date(s.created_at).getTime()) > 14 * 86_400_000,
     }
   })
 
@@ -95,6 +102,7 @@ export default async function AdminPage() {
   const ownerIds = new Set((stores ?? []).map((s) => s.owner_id))
   const noStoreAccounts = allUsers
     .filter((u) => !ownerIds.has(u.id))
+    .map((u) => ({ ...u, pendingPro: pendingSet.has(u.id) }))
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   // Recent admin actions (audit trail).
@@ -115,8 +123,17 @@ export default async function AdminPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f7f8fa]">
-      <header className="bg-white border-b border-gray-100">
+    <div
+      dir="rtl"
+      className="min-h-screen bg-[#FBFAF7] text-[#1d1b16]"
+      style={{
+        '--color-gray-50': '#F6F2EB', '--color-gray-100': '#F1ECE1', '--color-gray-200': '#ECE7DC',
+        '--color-gray-300': '#DBD4C6', '--color-gray-400': '#A8A193', '--color-gray-500': '#74716A',
+        '--color-gray-600': '#5F5C54', '--color-gray-700': '#4A4843', '--color-gray-800': '#2E2C27',
+        '--color-gray-900': '#1D1B16',
+      } as React.CSSProperties}
+    >
+      <header className="bg-[#FBFAF7] border-b border-[#ECE7DC]">
         <div className="max-w-4xl mx-auto px-5 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BrandMark size={30} />
@@ -129,12 +146,12 @@ export default async function AdminPage() {
       <main className="max-w-4xl mx-auto px-5 py-8">
         {/* Summary */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] p-4">
+          <div className="bg-white rounded-2xl border border-[#ECE7DC] p-4">
             <Store size={18} className="text-gray-400 mb-2" />
             <p className="text-2xl font-extrabold text-gray-900">{list.length.toLocaleString('ar-EG')}</p>
             <p className="text-[11px] text-gray-400 mt-1">إجمالي المتاجر</p>
           </div>
-          <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] p-4">
+          <div className="bg-white rounded-2xl border border-[#ECE7DC] p-4">
             <Crown size={18} className="text-green-600 mb-2" />
             <p className="text-2xl font-extrabold text-gray-900">{proCount.toLocaleString('ar-EG')}</p>
             <p className="text-[11px] text-gray-400 mt-1">مشترك Pro نشط</p>
@@ -147,7 +164,7 @@ export default async function AdminPage() {
         </div>
 
         {list.length === 0 ? (
-          <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] py-16 text-center text-sm text-gray-400">
+          <div className="bg-white rounded-2xl border border-[#ECE7DC] py-16 text-center text-sm text-gray-400">
             لا توجد متاجر بعد
           </div>
         ) : (
@@ -158,14 +175,17 @@ export default async function AdminPage() {
         {noStoreAccounts.length > 0 && (
           <div className="mt-8">
             <h2 className="text-sm font-bold text-gray-700 mb-1">حسابات بدون متجر ({noStoreAccounts.length.toLocaleString('ar-EG')})</h2>
-            <p className="text-xs text-gray-400 mb-3">سجّلوا ولم ينشئوا متجرًا بعد — تواصل معهم لمساعدتهم على البدء. (Pro يُفعَّل بعد إنشاء المتجر.)</p>
-            <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] divide-y divide-gray-100">
+            <p className="text-xs text-gray-400 mb-3">سجّلوا ولم ينشئوا متجرًا بعد. تقدر تفعّل Pro لأي حساب دلوقتي — وهيتطبّق تلقائيًا أول ما ينشئ متجره.</p>
+            <div className="bg-white rounded-2xl border border-[#ECE7DC] divide-y divide-gray-100">
               {noStoreAccounts.map((u) => (
                 <div key={u.id} className="px-4 py-2.5 flex items-center justify-between gap-3 text-xs">
-                  <span className="text-gray-700 truncate" dir="ltr">{u.email ?? '—'}</span>
-                  <span className="text-gray-300 tabular-nums flex-shrink-0">
-                    {new Date(u.created_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}
-                  </span>
+                  <span className="text-gray-700 truncate min-w-0" dir="ltr">{u.email ?? '—'}</span>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-gray-400 tabular-nums hidden sm:inline">
+                      {new Date(u.created_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}
+                    </span>
+                    <AdminAccountPro userId={u.id} pending={u.pendingPro} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -176,7 +196,7 @@ export default async function AdminPage() {
         {(auditLog?.length ?? 0) > 0 && (
           <div className="mt-8">
             <h2 className="text-sm font-bold text-gray-700 mb-3">سجل الإجراءات</h2>
-            <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] divide-y divide-gray-100">
+            <div className="bg-white rounded-2xl border border-[#ECE7DC] divide-y divide-gray-100">
               {auditLog!.map((a) => (
                 <div key={a.id} className="px-4 py-2.5 flex items-center gap-3 text-xs">
                   <span className="font-medium text-gray-700 flex-shrink-0">{ACTION_LABELS[a.action] ?? a.action}</span>

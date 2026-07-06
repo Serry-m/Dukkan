@@ -60,8 +60,17 @@ export default async function AdminStoreDetail({ params }: Props) {
   const socials = [store.instagram && 'إنستجرام', store.facebook && 'فيسبوك', store.tiktok && 'تيك توك'].filter(Boolean).join(' · ') || null
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f7f8fa]">
-      <header className="bg-white border-b border-gray-100">
+    <div
+      dir="rtl"
+      className="min-h-screen bg-[#FBFAF7] text-[#1d1b16]"
+      style={{
+        '--color-gray-50': '#F6F2EB', '--color-gray-100': '#F1ECE1', '--color-gray-200': '#ECE7DC',
+        '--color-gray-300': '#DBD4C6', '--color-gray-400': '#A8A193', '--color-gray-500': '#74716A',
+        '--color-gray-600': '#5F5C54', '--color-gray-700': '#4A4843', '--color-gray-800': '#2E2C27',
+        '--color-gray-900': '#1D1B16',
+      } as React.CSSProperties}
+    >
+      <header className="bg-[#FBFAF7] border-b border-[#ECE7DC]">
         <div className="max-w-3xl mx-auto px-5 h-16 flex items-center justify-between">
           <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
             <ArrowRight size={15} /> لوحة الإدارة
@@ -101,7 +110,7 @@ export default async function AdminStoreDetail({ params }: Props) {
         </div>
 
         {/* Config */}
-        <section className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] p-5">
+        <section className="bg-white rounded-2xl border border-[#ECE7DC] p-5">
           <h2 className="text-sm font-bold text-gray-900 mb-2">الإعدادات</h2>
           <Row label="المالك" value={ownerEmail} />
           <Row label="الرابط" value={<span dir="ltr">/store/{store.slug}</span>} />
@@ -117,7 +126,7 @@ export default async function AdminStoreDetail({ params }: Props) {
         </section>
 
         {/* Products */}
-        <section className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] p-5">
+        <section className="bg-white rounded-2xl border border-[#ECE7DC] p-5">
           <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
             <Package size={15} className="text-gray-400" /> المنتجات ({productList.length.toLocaleString('ar-EG')})
           </h2>
@@ -139,7 +148,7 @@ export default async function AdminStoreDetail({ params }: Props) {
         </section>
 
         {/* Recent orders */}
-        <section className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] p-5">
+        <section className="bg-white rounded-2xl border border-[#ECE7DC] p-5">
           <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
             <ShoppingBag size={15} className="text-gray-400" /> آخر الطلبات
           </h2>
@@ -160,7 +169,7 @@ export default async function AdminStoreDetail({ params }: Props) {
         </section>
 
         {/* Payments history (#18) */}
-        <section className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] p-5">
+        <section className="bg-white rounded-2xl border border-[#ECE7DC] p-5">
           <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
             <Wallet size={15} className="text-gray-400" /> سجل المدفوعات
           </h2>
