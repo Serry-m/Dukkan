@@ -230,7 +230,7 @@ export default function CouponsView({
               <button onClick={() => setCreateOpen(false)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
             </div>
 
-            <div className="flex-1 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-[18px]">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-[18px]">
               <div>
                 <label className="block text-[13px] font-bold mb-2">كود الكوبون</label>
                 <input value={fCode} onChange={(e) => setFCode(e.target.value.toUpperCase())} placeholder="مثال: EID25" dir="ltr" className="w-full bg-white border border-[#ECE7DC] rounded-[11px] px-3 py-2.5 text-sm font-bold tracking-wide outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/15 text-right" />

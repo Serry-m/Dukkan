@@ -288,7 +288,7 @@ export default function ProductsView({
               <div><div className="font-extrabold text-[17px]">التصنيفات</div><div className="text-xs text-[#74716a] mt-0.5">رتّب أو عدّل تصنيفات متجرك — تظهر للعملاء كفلاتر في المتجر.</div></div>
               <button onClick={() => setCatsOpen(false)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
             </div>
-            <div className="flex-1 overflow-y-auto overscroll-contain p-[18px]">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-[18px]">
               <CategoriesManager storeId={storeId} categories={categories} />
             </div>
           </div>

@@ -296,7 +296,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
             </div>
 
             {/* body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
               {/* items */}
               <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden">
                 <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1]">تفاصيل الطلب</div>

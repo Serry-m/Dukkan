@@ -232,7 +232,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
               <button onClick={() => setOpenPhone(null)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center flex-shrink-0 hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
             </div>
 
-            <div className="flex-1 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
               {/* KPIs */}
               <div className="grid grid-cols-3 gap-2.5">
                 <div className="bg-white border border-[#ECE7DC] rounded-[13px] p-3 text-center"><div className="text-xl font-extrabold">{ar(open.ordersCount)}</div><div className="text-[11.5px] text-[#74716a] font-semibold mt-0.5">طلب</div></div>
