@@ -24,9 +24,17 @@ export default async function AdminPage() {
     .from('stores')
     .select('id, name, slug, owner_id, plan, plan_expires_at, created_at, suspended, whatsapp_number')
 
-  // Owner emails.
-  const { data: usersData } = await admin.auth.admin.listUsers()
-  const emailById = new Map((usersData?.users ?? []).map((u) => [u.id, u.email ?? '']))
+  // All signed-up accounts. listUsers() returns only 50/page by default, so page
+  // through them all — otherwise owner emails (and the store-less list) miss
+  // anyone past the first page once signups exceed 50.
+  const allUsers: { id: string; email?: string; created_at: string }[] = []
+  for (let page = 1; ; page++) {
+    const { data } = await admin.auth.admin.listUsers({ page, perPage: 1000 })
+    const batch = data?.users ?? []
+    allUsers.push(...batch.map((u) => ({ id: u.id, email: u.email, created_at: u.created_at })))
+    if (batch.length < 1000) break
+  }
+  const emailById = new Map(allUsers.map((u) => [u.id, u.email ?? '']))
 
   // Product counts per store.
   const { data: productRows } = await admin.from('products').select('store_id')
@@ -81,6 +89,13 @@ export default async function AdminPage() {
 
   const proCount = list.filter((s) => s.pro).length
   const mrr = proCount * PRO_PRICE_EGP
+
+  // Accounts that signed up but never created a store (activation drop-off).
+  // Can't grant Pro here (plan lives on the store) — this is for follow-up.
+  const ownerIds = new Set((stores ?? []).map((s) => s.owner_id))
+  const noStoreAccounts = allUsers
+    .filter((u) => !ownerIds.has(u.id))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   // Recent admin actions (audit trail).
   const { data: auditLog } = await admin
@@ -137,6 +152,24 @@ export default async function AdminPage() {
           </div>
         ) : (
           <AdminStoreList stores={list} />
+        )}
+
+        {/* Signed-up accounts with no store yet — activation drop-off / follow-up */}
+        {noStoreAccounts.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-bold text-gray-700 mb-1">حسابات بدون متجر ({noStoreAccounts.length.toLocaleString('ar-EG')})</h2>
+            <p className="text-xs text-gray-400 mb-3">سجّلوا ولم ينشئوا متجرًا بعد — تواصل معهم لمساعدتهم على البدء. (Pro يُفعَّل بعد إنشاء المتجر.)</p>
+            <div className="bg-white rounded-2xl ring-1 ring-foreground/[0.07] divide-y divide-gray-100">
+              {noStoreAccounts.map((u) => (
+                <div key={u.id} className="px-4 py-2.5 flex items-center justify-between gap-3 text-xs">
+                  <span className="text-gray-700 truncate" dir="ltr">{u.email ?? '—'}</span>
+                  <span className="text-gray-300 tabular-nums flex-shrink-0">
+                    {new Date(u.created_at).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Audit log — recent admin actions */}
