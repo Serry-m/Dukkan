@@ -232,25 +232,24 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
               <button onClick={() => setOpenPhone(null)} aria-label="إغلاق" className="w-[34px] h-[34px] rounded-[10px] border border-[#ECE7DC] bg-white text-[#74716a] flex items-center justify-center flex-shrink-0 hover:bg-[#F4F0E8] transition-colors"><X size={18} /></button>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
+            <div className="flex-1 min-h-0 p-[18px] flex flex-col gap-4">
               {/* KPIs */}
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-3 gap-2.5 flex-shrink-0">
                 <div className="bg-white border border-[#ECE7DC] rounded-[13px] p-3 text-center"><div className="text-xl font-extrabold">{ar(open.ordersCount)}</div><div className="text-[11.5px] text-[#74716a] font-semibold mt-0.5">طلب</div></div>
                 <div className="bg-white border border-[#ECE7DC] rounded-[13px] p-3 text-center"><div className="text-xl font-extrabold text-[#15803d]">{ar(open.total)}</div><div className="text-[11.5px] text-[#74716a] font-semibold mt-0.5">جنيه إنفاق</div></div>
                 <div className="bg-white border border-[#ECE7DC] rounded-[13px] p-3 text-center"><div className="text-xl font-extrabold">{ar(Math.round(open.total / open.ordersCount))}</div><div className="text-[11.5px] text-[#74716a] font-semibold mt-0.5">متوسط الطلب</div></div>
               </div>
 
               {/* info */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-3.5 flex flex-col gap-3">
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-3.5 flex flex-col gap-3 flex-shrink-0">
                 <div className="flex items-start gap-2.5"><MapPin size={18} className="text-[#9a9488] mt-px flex-shrink-0" /><div><div className="text-xs text-[#a8a193] font-bold mb-px">المدينة</div><div className="text-[13.5px] font-semibold">{open.city}</div></div></div>
                 <div className="flex items-start gap-2.5"><Calendar size={18} className="text-[#9a9488] mt-px flex-shrink-0" /><div><div className="text-xs text-[#a8a193] font-bold mb-px">عميل منذ</div><div className="text-[13.5px] font-semibold">{monthYear(open.firstIso)}</div></div></div>
               </div>
 
               {/* history */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden">
-                <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1]">سجل الطلبات</div>
-                {/* History scrolls inside the card (bounded) so many orders stay reachable without a huge card. */}
-                <div className="max-h-[42vh] overflow-y-auto overscroll-contain">
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden flex-1 min-h-0 flex flex-col">
+                <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1] flex-shrink-0">سجل الطلبات</div>
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
                 {open.history.map((h) => (
                   <div key={h.id} className="flex items-center justify-between gap-2.5 px-[15px] py-2.5 border-b border-[#F1ECE1]">
                     <div className="min-w-0">

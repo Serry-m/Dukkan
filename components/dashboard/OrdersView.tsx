@@ -295,13 +295,12 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
               </button>
             </div>
 
-            {/* body */}
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-[18px] flex flex-col gap-4">
-              {/* items */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden">
-                <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1]">تفاصيل الطلب</div>
-                {/* Items scroll inside the card (bounded) so a long order stays compact and the total below stays visible. */}
-                <div className="max-h-[48vh] overflow-y-auto overscroll-contain">
+            {/* body — pure layout; the items list is the one region that scrolls */}
+            <div className="flex-1 min-h-0 p-[18px] flex flex-col gap-4">
+              {/* items — flex-1 so the order details get the room; the list scrolls, total pinned below */}
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden flex-1 min-h-0 flex flex-col">
+                <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1] flex-shrink-0">تفاصيل الطلب</div>
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
                 {(open.items ?? []).map((li, i) => (
                   <div key={i} className="flex items-center justify-between gap-2.5 px-[15px] py-2.5 border-b border-[#F1ECE1]">
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -318,14 +317,14 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
                   </div>
                 ))}
                 </div>
-                <div className="flex items-center justify-between px-[15px] py-3 bg-[#FBFAF7]">
+                <div className="flex items-center justify-between px-[15px] py-3 bg-[#FBFAF7] flex-shrink-0">
                   <span className="font-extrabold text-sm">الإجمالي</span>
                   <span className="font-extrabold text-base text-[#15803d]">{formatPrice(open.total, currency)}</span>
                 </div>
               </div>
 
               {/* customer info — compact so the order details get the room */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-2.5 flex flex-col gap-2">
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-2.5 flex flex-col gap-2 flex-shrink-0">
                 {open.customer_address && (
                   <div className="flex items-start gap-2">
                     <MapPin size={15} className="text-[#9a9488] mt-0.5 flex-shrink-0" />
@@ -353,7 +352,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
               </div>
 
               {/* status stepper */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl p-[15px]">
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl p-[15px] flex-shrink-0">
                 <div className="font-extrabold text-[13.5px] mb-3">حدّث حالة الطلب</div>
                 <div className="flex gap-2">
                   {STEPS.map((step) => {
@@ -380,7 +379,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
                 confirmLabel="حذف"
                 onConfirm={() => remove(open.id)}
                 trigger={
-                  <button disabled={busy} className="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[#9a9488] hover:text-red-600 transition-colors disabled:opacity-50 py-1">
+                  <button disabled={busy} className="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[#9a9488] hover:text-red-600 transition-colors disabled:opacity-50 py-1 flex-shrink-0">
                     <Trash2 size={14} /> حذف الطلب
                   </button>
                 }
