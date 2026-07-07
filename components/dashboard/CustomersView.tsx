@@ -249,6 +249,8 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
               {/* history */}
               <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden">
                 <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1]">سجل الطلبات</div>
+                {/* History scrolls inside the card (bounded) so many orders stay reachable without a huge card. */}
+                <div className="max-h-[42vh] overflow-y-auto overscroll-contain">
                 {open.history.map((h) => (
                   <div key={h.id} className="flex items-center justify-between gap-2.5 px-[15px] py-2.5 border-b border-[#F1ECE1]">
                     <div className="min-w-0">
@@ -261,6 +263,7 @@ export default function CustomersView({ customers, storeName }: { customers: Cus
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
             </div>
 

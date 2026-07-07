@@ -300,6 +300,8 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
               {/* items */}
               <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden">
                 <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1]">تفاصيل الطلب</div>
+                {/* Items scroll inside the card (bounded) so a long order stays compact and the total below stays visible. */}
+                <div className="max-h-[48vh] overflow-y-auto overscroll-contain">
                 {(open.items ?? []).map((li, i) => (
                   <div key={i} className="flex items-center justify-between gap-2.5 px-[15px] py-2.5 border-b border-[#F1ECE1]">
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -315,36 +317,37 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
                     <span className="font-bold text-[13.5px] whitespace-nowrap">{ar(li.price * li.quantity)} <span className="text-[11px] text-[#9a9488]">ج</span></span>
                   </div>
                 ))}
+                </div>
                 <div className="flex items-center justify-between px-[15px] py-3 bg-[#FBFAF7]">
                   <span className="font-extrabold text-sm">الإجمالي</span>
                   <span className="font-extrabold text-base text-[#15803d]">{formatPrice(open.total, currency)}</span>
                 </div>
               </div>
 
-              {/* customer info */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-3.5 flex flex-col gap-3">
+              {/* customer info — compact so the order details get the room */}
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-2.5 flex flex-col gap-2">
                 {open.customer_address && (
-                  <div className="flex items-start gap-2.5">
-                    <MapPin size={18} className="text-[#9a9488] mt-px flex-shrink-0" />
-                    <div><div className="text-xs text-[#a8a193] font-bold mb-px">التوصيل</div><div className="text-[13.5px] font-semibold">{open.customer_address}</div></div>
+                  <div className="flex items-start gap-2">
+                    <MapPin size={15} className="text-[#9a9488] mt-0.5 flex-shrink-0" />
+                    <div><div className="text-[11px] text-[#a8a193] font-bold">التوصيل</div><div className="text-[12.5px] font-semibold leading-snug">{open.customer_address}</div></div>
                   </div>
                 )}
                 {open.customer_phone && (
-                  <div className="flex items-start gap-2.5">
-                    <Phone size={18} className="text-[#9a9488] mt-px flex-shrink-0" />
-                    <div><div className="text-xs text-[#a8a193] font-bold mb-px">رقم العميل</div><a href={`tel:${open.customer_phone}`} className="text-[13.5px] font-semibold text-[#15803d]" dir="ltr">{open.customer_phone}</a></div>
+                  <div className="flex items-start gap-2">
+                    <Phone size={15} className="text-[#9a9488] mt-0.5 flex-shrink-0" />
+                    <div><div className="text-[11px] text-[#a8a193] font-bold">رقم العميل</div><a href={`tel:${open.customer_phone}`} className="text-[12.5px] font-semibold text-[#15803d]" dir="ltr">{open.customer_phone}</a></div>
                   </div>
                 )}
                 {open.coupon_code && (
-                  <div className="flex items-start gap-2.5">
-                    <span className="text-[#9a9488] mt-px flex-shrink-0 text-base">🎟</span>
-                    <div><div className="text-xs text-[#a8a193] font-bold mb-px">كوبون</div><div className="text-[13.5px] font-semibold" dir="ltr">{open.coupon_code}</div></div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#9a9488] mt-0.5 flex-shrink-0 text-sm">🎟</span>
+                    <div><div className="text-[11px] text-[#a8a193] font-bold">كوبون</div><div className="text-[12.5px] font-semibold" dir="ltr">{open.coupon_code}</div></div>
                   </div>
                 )}
                 {open.notes && (
-                  <div className="flex items-start gap-2.5">
-                    <StickyNote size={18} className="text-[#9a9488] mt-px flex-shrink-0" />
-                    <div><div className="text-xs text-[#a8a193] font-bold mb-px">ملاحظات</div><div className="text-[13.5px] font-semibold">{open.notes}</div></div>
+                  <div className="flex items-start gap-2">
+                    <StickyNote size={15} className="text-[#9a9488] mt-0.5 flex-shrink-0" />
+                    <div><div className="text-[11px] text-[#a8a193] font-bold">ملاحظات</div><div className="text-[12.5px] font-semibold leading-snug">{open.notes}</div></div>
                   </div>
                 )}
               </div>
