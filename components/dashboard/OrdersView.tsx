@@ -296,7 +296,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
             </div>
 
             {/* body — pure layout; the items list is the one region that scrolls */}
-            <div className="flex-1 min-h-0 p-[18px] flex flex-col gap-4">
+            <div className="flex-1 min-h-0 p-[18px] flex flex-col gap-2.5">
               {/* items — flex-1 so the order details get the room; the list scrolls, total pinned below */}
               <div className="bg-white border border-[#ECE7DC] rounded-2xl overflow-hidden flex-1 min-h-0 flex flex-col">
                 <div className="px-[15px] py-3 font-extrabold text-[13.5px] border-b border-[#F1ECE1] flex-shrink-0">تفاصيل الطلب</div>
@@ -324,7 +324,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
               </div>
 
               {/* customer info — compact so the order details get the room */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-2.5 flex flex-col gap-2 flex-shrink-0">
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-2 flex flex-col gap-1.5 flex-shrink-0">
                 {open.customer_address && (
                   <div className="flex items-start gap-2">
                     <MapPin size={15} className="text-[#9a9488] mt-0.5 flex-shrink-0" />
@@ -352,8 +352,8 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
               </div>
 
               {/* status stepper */}
-              <div className="bg-white border border-[#ECE7DC] rounded-2xl p-[15px] flex-shrink-0">
-                <div className="font-extrabold text-[13.5px] mb-3">حدّث حالة الطلب</div>
+              <div className="bg-white border border-[#ECE7DC] rounded-2xl px-[15px] py-2.5 flex-shrink-0">
+                <div className="font-extrabold text-[13.5px] mb-2">حدّث حالة الطلب</div>
                 <div className="flex gap-2">
                   {STEPS.map((step) => {
                     const cur = stat(open)
@@ -363,7 +363,7 @@ export default function OrdersView({ orders, storeName, currency, initialFilter 
                       <button
                         key={step}
                         onClick={() => setStatus(open.id, step)}
-                        className={`flex-1 py-2.5 px-1.5 rounded-[10px] font-bold text-[12.5px] border transition-colors ${active ? 'bg-[#16a34a] border-[#16a34a] text-white shadow-[0_4px_12px_rgba(22,163,74,0.2)]' : done ? 'bg-[#EAF6EC] border-[#cfe8d5] text-[#15803d]' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8]'}`}
+                        className={`flex-1 py-2 px-1.5 rounded-[10px] font-bold text-[12.5px] border transition-colors ${active ? 'bg-[#16a34a] border-[#16a34a] text-white shadow-[0_4px_12px_rgba(22,163,74,0.2)]' : done ? 'bg-[#EAF6EC] border-[#cfe8d5] text-[#15803d]' : 'bg-white border-[#ECE7DC] text-[#74716a] hover:bg-[#F4F0E8]'}`}
                       >
                         {STATUS[step].label}
                       </button>
